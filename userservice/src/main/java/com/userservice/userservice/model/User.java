@@ -3,13 +3,12 @@ package com.userservice.userservice.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "_user")
 public class User {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @Column(name = "nome")
+    @Column(name = "name")
     private String name;
 
     @Column(unique = true, name = "email")
