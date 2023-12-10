@@ -30,8 +30,16 @@ public class UserController {
 
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        Iterable<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+
     @PostMapping()
-    public void addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody User user) {
+        //TODO check if email already exists and return 409
         userRepository.save(user);
+        return ResponseEntity.ok(user);
     }
 }
