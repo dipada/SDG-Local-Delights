@@ -1,4 +1,4 @@
-package com.userservice.userservice.controller;
+package com.userservice.userservice.dto;
 
 public class UserResponse {
 }
