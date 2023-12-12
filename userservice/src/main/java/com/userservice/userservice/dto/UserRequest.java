@@ -11,4 +11,5 @@ public class UserRequest {
     private String phoneNumber;
     private String shippingAddress;
     private String paymentMethod;
+    private String shopName;
 }

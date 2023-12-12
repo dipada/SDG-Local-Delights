@@ -76,10 +76,41 @@ public class UserController {
         userRepository.save(user);
 
 
-        return ResponseEntity.ok("User created successfully");
+        return ResponseEntity.ok("User-CUSTOMER created successfully");
     }
 
-    //public ResponseEntity<UserResponse> createSeller(@RequestBody @NotNull UserRequest userRequest) {
+    @Operation(summary = "Create new user_seller")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User created successfully"), @ApiResponse(responseCode = "409", description = "Email already exists")})
+    @PostMapping("/seller")
+    public ResponseEntity<String> createSeller(@RequestBody @NotNull UserRequest userRequest) {
+        Optional<User> userByEmail = userRepository.findUserByEmail(userRequest.getEmail());
+        if (userByEmail.isPresent()) {
+            if (userByEmail.get().getUserRoles().contains(UserRole.SELLER)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
+            } else {
+                userByEmail.get().getUserRoles().add(UserRole.SELLER);
+                userRepository.save(userByEmail.get());
+                return ResponseEntity.ok("User created successfully");
+            }
+        }
 
-    //}
+        User user = User.builder()
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .email(userRequest.getEmail())
+                .userRoles(Set.of(UserRole.SELLER))
+                .phoneNumber(userRequest.getPhoneNumber())
+                .password(userRequest.getPassword())
+                .shopName(userRequest.getShopName())
+                .build();
+
+        userRepository.save(user);
+
+
+        return ResponseEntity.ok("User-SELLER created successfully");
+
+    }
+
+
+
 }
