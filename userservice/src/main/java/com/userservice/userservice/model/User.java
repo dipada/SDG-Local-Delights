@@ -25,8 +25,9 @@ public class User {
 
     private Set<UserRole> userRoles;
 
-    // Client fields
     private String phoneNumber;
+
+    // Client fields
     private String shippingAddress;
     private String paymentMethod;
 
