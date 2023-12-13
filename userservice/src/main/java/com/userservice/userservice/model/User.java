@@ -23,15 +23,16 @@ public class User {
     private String email;
     private String password;
 
-    private Set<UserRole> userRoles;
+    //private Set<UserRole> userRoles;
+
+    //private String phoneNumber;
 
     // Client fields
-    private String phoneNumber;
-    private String shippingAddress;
-    private String paymentMethod;
+    //private String shippingAddress;
+    //private String paymentMethod;
 
     // Seller fields
-    private String shopName; // TODO: check if this is needed
+    //private String shopName; // TODO: check if this is needed
 
 
 
