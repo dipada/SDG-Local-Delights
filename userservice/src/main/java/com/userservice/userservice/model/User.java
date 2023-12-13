@@ -22,18 +22,4 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
-
-    //private Set<UserRole> userRoles;
-
-    //private String phoneNumber;
-
-    // Client fields
-    //private String shippingAddress;
-    //private String paymentMethod;
-
-    // Seller fields
-    //private String shopName; // TODO: check if this is needed
-
-
-
 }

@@ -3,19 +3,17 @@ package com.userservice.userservice.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "customer")
-@Builder
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
     @OneToOne
     @JoinColumn(name = "id")
+    @Id
     private User user;
     private String shippingAddress;
     private String paymentMethod;

@@ -1,8 +1,19 @@
 package com.userservice.userservice.model;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "customer")
+@Data
+@NoArgsConstructor
 public class Seller {
 
-    private final User user;
+    @OneToOne
+    @JoinColumn(name = "id")
+    @Id
+    private User user;
 
     private String shopName;
 
