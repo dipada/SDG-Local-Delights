@@ -11,14 +11,17 @@ import lombok.NoArgsConstructor;
 public class Seller {
 
     @OneToOne
-    @JoinColumn(name = "id")
-    @Id
     private User user;
+
+    @Id
+    @JoinColumn(name = "_user_email")
+    private String email;
 
     private String shopName;
 
     public Seller(User user, String shopName) {
         this.user = user;
         this.shopName = shopName;
+        this.email = user.getEmail();
     }
 }

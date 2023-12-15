@@ -1,18 +1,22 @@
 package com.userservice.userservice.controller;
 
 import com.userservice.userservice.dto.UserRequest;
+import com.userservice.userservice.model.Seller;
 import com.userservice.userservice.model.User;
 import com.userservice.userservice.model.UserRole;
+import com.userservice.userservice.repository.SellerRepository;
 import com.userservice.userservice.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.support.Repositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,6 +25,9 @@ import java.util.Set;
 public class UserController {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
 
     @Autowired
     protected UserController(UserRepository userRepository) {
@@ -46,7 +53,7 @@ public class UserController {
         Iterable<User> users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
-
+/*
     @Operation(summary = "Create new user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User created successfully"), @ApiResponse(responseCode = "409", description = "Email already exists")})
     @PostMapping()
@@ -98,10 +105,7 @@ public class UserController {
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .email(userRequest.getEmail())
-                .userRoles(Set.of(UserRole.SELLER))
-                .phoneNumber(userRequest.getPhoneNumber())
                 .password(userRequest.getPassword())
-                .shopName(userRequest.getShopName())
                 .build();
 
         userRepository.save(user);
@@ -109,8 +113,29 @@ public class UserController {
 
         return ResponseEntity.ok("User-SELLER created successfully");
 
+
+    }
+
+ */
+
+    @GetMapping("/provaseller")
+    public List<Seller> testSeller(){
+        User user = new User(12, "Daniele", "dp", "dan2@dan", "123sss");
+        Seller seller = new Seller(user, "via roma nuovo");
+        userRepository.save(user);
+        sellerRepository.save(seller);
+
+        System.out.println("USER REPOSITORY " + userRepository.findAll());
+        System.out.println("SELLER REPOSITORY " + sellerRepository.findAll());
+
+        return sellerRepository.findAll();
+        //System.out.println("Stampa da oggetto " + seller.toString());
     }
 
 
-
+    @GetMapping("/prova2")
+    public Seller prendiSeller(@RequestParam String email){
+        Optional<Seller> seller = sellerRepository.findByEmail(email);
+        return seller.get();
+    }
 }
