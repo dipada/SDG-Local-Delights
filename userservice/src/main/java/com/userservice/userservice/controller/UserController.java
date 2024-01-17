@@ -1,6 +1,7 @@
 package com.userservice.userservice.controller;
 
-import com.userservice.userservice.model.User;
+import com.userservice.userservice.model.Client;
+import com.userservice.userservice.model.Client;
 import com.userservice.userservice.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,8 +32,8 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid email supplied"),
             @ApiResponse(responseCode = "404", description = "User not found")})
     @GetMapping()
-    public ResponseEntity<Optional<User>> getUserByEmail(@RequestParam String email) {
-        Optional<User> user = userRepository.findUserByEmail(email);
+    public ResponseEntity<Optional<Client>> getUserByEmail(@RequestParam String email) {
+        Optional<Client> user = userRepository.findUserByEmail(email);
         if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -43,8 +44,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found all users")})
     @GetMapping("/all")
-    public ResponseEntity<Iterable<User>> getAllUsers() {
-        Iterable<User> users = userRepository.findAll();
+    public ResponseEntity<Iterable<Client>> getAllUsers() {
+        Iterable<Client> users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
 
@@ -53,9 +54,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User created successfully"),
             @ApiResponse(responseCode = "409", description = "Email already exists")})
     @PostMapping()
-    public ResponseEntity<String> addUser(@RequestBody @NotNull User user) {
+    public ResponseEntity<String> addUser(@RequestBody @NotNull Client user) {
         //TODO check if email already exists and return 409
-        Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
+        Optional<Client> userByEmail = userRepository.findUserByEmail(user.getEmail());
         if (userByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("email already exists");
         }

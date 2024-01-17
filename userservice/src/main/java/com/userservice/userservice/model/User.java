@@ -1,21 +1,16 @@
 package com.userservice.userservice.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.OneToOne;
 
-
-@Entity
-@Table(name = "_user")
-@Data
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @Column(name = "name")
-    private String name;
-
-    @Column(unique = true, name = "email")
     private String email;
+    private String password;
+    private String firstName;
+    private String lastName;
 
-   //TODO private UserType userType;
+    private String phoneNumber;
+
+    private Client clientDetails;
+    private Seller sellerDetails;
 }
