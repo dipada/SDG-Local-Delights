@@ -1,4 +1,4 @@
-package com.userservice.userservice.controller;
+//package com.userservice.userservice.controller;
 
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.Client;
@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-
+/*&
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
@@ -64,3 +64,6 @@ public class UserController {
         return ResponseEntity.ok("user added successfully");
     }
 }
+
+
+ */
