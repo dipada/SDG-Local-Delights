@@ -1,16 +1,15 @@
 package com.userservice.userservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.aspectj.lang.annotation.RequiredTypes;
 
 @Entity
 @Table(name = "_user")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class User {
 
     @Id
@@ -23,4 +22,13 @@ public class User {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+
+    public User(String email, String password, String firstName, String lastName, String phoneNumber) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+    }
+
 }

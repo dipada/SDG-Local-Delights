@@ -20,4 +20,9 @@ public class Client {
     private User user;
 
     private String shippingAddress;
+
+    public Client(User newUser, String shippingAddress) {
+        this.user = newUser;
+        this.shippingAddress = shippingAddress;
+    }
 }

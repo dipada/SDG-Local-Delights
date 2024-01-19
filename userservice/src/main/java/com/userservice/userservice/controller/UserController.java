@@ -1,69 +1,57 @@
-//package com.userservice.userservice.controller;
+package com.userservice.userservice.controller;
 
+import com.userservice.userservice.dto.ClientRequest;
+import com.userservice.userservice.dto.ClientResponse;
 import com.userservice.userservice.model.Client;
-import com.userservice.userservice.model.Client;
+import com.userservice.userservice.model.User;
+import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.UserRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
-/*&
+
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
 
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
-    protected UserController(UserRepository userRepository) {
+    protected UserController(UserRepository userRepository, ClientRepository clientRepository) {
         this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
     }
 
 
-    @Operation(summary = "Get user by email")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the user"),
-            @ApiResponse(responseCode = "400", description = "Invalid email supplied"),
-            @ApiResponse(responseCode = "404", description = "User not found")})
-    @GetMapping()
-    public ResponseEntity<Optional<Client>> getUserByEmail(@RequestParam String email) {
-        Optional<Client> user = userRepository.findUserByEmail(email);
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
+
+    // Post get update delete per client e seller
+
+    //crea un nuovo client con i dati passati nel body della classe Client
+    @PostMapping("/client")
+    public ResponseEntity<String> createClient(@RequestBody ClientRequest clientRequest){
+
+        // check if account exists
+
+        Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
+
+        if (user.isPresent()){
+            return ResponseEntity.badRequest().body("Email già presente nel database");
+        }else{
+            // create new client
+            CreateClient(clientRequest);
+            return ResponseEntity.ok("Cliente creato con successo");
         }
-        return ResponseEntity.ok(user);
     }
 
-    @Operation(summary = "Get all users")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found all users")})
-    @GetMapping("/all")
-    public ResponseEntity<Iterable<Client>> getAllUsers() {
-        Iterable<Client> users = userRepository.findAll();
-        return ResponseEntity.ok(users);
+private void CreateClient(ClientRequest clientRequest) {
+        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber());
+        userRepository.save(newUser);
+        Client newClient = new Client(newUser, clientRequest.getShippingAddress());
+        clientRepository.save(newClient);
     }
 
-    @Operation(summary = "Create new user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User created successfully"),
-            @ApiResponse(responseCode = "409", description = "Email already exists")})
-    @PostMapping()
-    public ResponseEntity<String> addUser(@RequestBody @NotNull Client user) {
-        //TODO check if email already exists and return 409
-        Optional<Client> userByEmail = userRepository.findUserByEmail(user.getEmail());
-        if (userByEmail.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("email already exists");
-        }
-        userRepository.save(user);
-        return ResponseEntity.ok("user added successfully");
-    }
 }
-
-
- */
