@@ -22,4 +22,9 @@ public class Seller {
     private User user;
 
     private String vat;
+
+    public Seller(User newUser, String vatNumber) {
+        this.user = newUser;
+        this.vat = vatNumber;
+    }
 }
