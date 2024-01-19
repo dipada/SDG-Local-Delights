@@ -1,14 +1,18 @@
 package com.userservice.userservice.controller;
 
 import com.userservice.userservice.dto.ClientRequest;
+import com.userservice.userservice.dto.ClientResponse;
 import com.userservice.userservice.dto.SellerRequest;
+import com.userservice.userservice.dto.SellerResponse;
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.Seller;
 import com.userservice.userservice.model.User;
 import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.SellerRepository;
 import com.userservice.userservice.repository.UserRepository;
-import org.jetbrains.annotations.Nullable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +35,17 @@ public class UserController {
         this.sellerRepository = sellerRepository;
     }
 
+    @Operation(summary = "Create a new client", description = "Create a new client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     @PostMapping("/client")
     public ResponseEntity<String> createClient(@RequestBody ClientRequest clientRequest){
 
         String response = validateRequest(clientRequest);
         if (!response.equals("ok")){
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.status(400).body(response);
         }
 
         // check if account exists
@@ -50,21 +59,26 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Client email già presente nel database");
             }else {
                 makeClient(clientRequest, user.get());
-                return ResponseEntity.ok("Cliente creato con successo");
+                return ResponseEntity.status(200).body("Client creato con successo");
             }
         }else{
             // create new client
             makeClient(clientRequest, makeNewUser(clientRequest));
-            return ResponseEntity.ok("Cliente creato con successo");
+            return ResponseEntity.status(200).body("Client creato con successo");
         }
     }
 
+    @Operation(summary = "Create a new seller", description = "Create a new seller")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     @PostMapping("/seller")
     public ResponseEntity<String> createSeller(@RequestBody SellerRequest sellerRequest){
 
         String response = validateRequest(sellerRequest);
         if (!response.equals("ok")){
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.status(400).body(response);
         }
 
         // check if account exists
@@ -78,12 +92,65 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Seller email già presente nel database");
             }else {
                 makeSeller(sellerRequest, user.get());
-                return ResponseEntity.ok("Seller creato con successo");
+                return ResponseEntity.status(200).body("Seller creato con successo");
             }
         }else{
             // create new seller
             makeSeller(sellerRequest, makeNewUser(sellerRequest));
-            return ResponseEntity.ok("Seller creato con successo");
+            return ResponseEntity.status(200).body("Seller creato con successo");
+        }
+    }
+
+    @Operation(summary = "Get client by email", description = "Get client by email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the client"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @GetMapping("/client/{email}")
+    public ResponseEntity<ClientResponse> getClient(@PathVariable String email){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            Optional<Client> client = clientRepository.findClientByUser(user.get());
+            if (client.isPresent()){
+                ClientResponse clientResponse = new ClientResponse();
+                clientResponse.setEmail(client.get().getUser().getEmail());
+                clientResponse.setFirstName(client.get().getUser().getFirstName());
+                clientResponse.setLastName(client.get().getUser().getLastName());
+                clientResponse.setPhoneNumber(client.get().getUser().getPhoneNumber());
+                clientResponse.setShippingAddress(client.get().getShippingAddress());
+                return ResponseEntity.status(200).body(clientResponse);
+            }else{
+                return ResponseEntity.status(404).body(null);
+            }
+        }else{
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
+
+    @Operation(summary = "Get client by email", description = "Get client by email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the client"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @GetMapping("/seller/{email}")
+    public ResponseEntity<SellerResponse> getSeller(@PathVariable String email){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            Optional<Seller> seller = sellerRepository.findSellerByUser(user.get());
+            if (seller.isPresent()){
+                SellerResponse sellerResponse = new SellerResponse();
+                sellerResponse.setEmail(seller.get().getUser().getEmail());
+                sellerResponse.setFirstName(seller.get().getUser().getFirstName());
+                sellerResponse.setLastName(seller.get().getUser().getLastName());
+                sellerResponse.setPhoneNumber(seller.get().getUser().getPhoneNumber());
+                sellerResponse.setVatNumber(seller.get().getVat());
+                return ResponseEntity.status(200).body(sellerResponse);
+            }else{
+                return ResponseEntity.status(404).body(null);
+            }
+        }else{
+            return ResponseEntity.status(404).body(null);
         }
     }
 
@@ -92,11 +159,10 @@ public class UserController {
                 "[a-zA-Z0-9_+&*-]+)*@" +
                 "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
                 "A-Z]{2,7}$";
-        return Pattern.compile(regexPattern)
+        return !Pattern.compile(regexPattern)
                 .matcher(emailAddress)
                 .matches();
     }
-
 
     private String validateRequest(SellerRequest sellerRequest){
 
@@ -131,7 +197,7 @@ public class UserController {
     }
 
     private String validateUserParams(ClientRequest clientRequest) {
-        if (!emailValidation(clientRequest.getEmail()) && clientRequest.getEmail() != null && !clientRequest.getEmail().isEmpty()) {
+        if (emailValidation(clientRequest.getEmail()) && clientRequest.getEmail() != null && !clientRequest.getEmail().isEmpty()) {
             return "Email non valida";
         }
 
@@ -155,7 +221,7 @@ public class UserController {
     }
 
     private String validateUserParams(SellerRequest sellerRequest) {
-        if (!emailValidation(sellerRequest.getEmail()) && sellerRequest.getEmail() != null && !sellerRequest.getEmail().isEmpty()) {
+        if (emailValidation(sellerRequest.getEmail()) && sellerRequest.getEmail() != null && !sellerRequest.getEmail().isEmpty()) {
             return "Email non valida";
         }
 

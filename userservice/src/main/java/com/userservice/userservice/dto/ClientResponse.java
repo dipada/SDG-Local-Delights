@@ -1,5 +1,8 @@
 package com.userservice.userservice.dto;
 
+import lombok.Data;
+
+@Data
 public class ClientResponse {
 
         private String email;
