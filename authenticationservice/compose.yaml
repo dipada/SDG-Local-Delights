@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  authenticationservice:
+    build: .
+    image: authenticationservice
+    container_name: authenticationservice_container
+    ports:
+      - '8080:8080'
+    networks:
+      - authenticationservice
+
+networks:
+  authenticationservice:
+    driver: bridge
