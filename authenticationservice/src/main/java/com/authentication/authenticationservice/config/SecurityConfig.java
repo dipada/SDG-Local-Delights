@@ -2,7 +2,6 @@ package com.authentication.authenticationservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,21 +42,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        return http
-                .authorizeHttpRequests(authorize -> {
-                    authorize
-                            .requestMatchers("/").permitAll();
-                    authorize.anyRequest().authenticated();
+         http
+
+                .authorizeHttpRequests((authorize) -> {
+                    authorize.requestMatchers("/", "/home").permitAll();
+                            authorize.anyRequest().authenticated();
                 })
-                .oauth2Login(oauth2 -> oauth2
-                        //.loginPage("/login")
-                        //.loginPage("http://localhost:8081/api/v1/user/seller/daniele@gmail.com")
-                        .defaultSuccessUrl("https://www.youtube.com/watch?v=KSXdqmCusmY&ab_channel=YellowFellow", true)
-                        //.successHandler((request, response, authentication) -> {
-                        //  response.sendRedirect("https://www.youtube.com/watch?v=KSXdqmCusmY&ab_channel=YellowFellow");
-                        //})
-                )
-        .build();
+
+            .oauth2Login(oauth2 -> oauth2
+                //.loginPage("/loginpage")
+                .defaultSuccessUrl("http://localhost:8080/successLogin", true)
+                .failureUrl("http://localhost:8080/failureLogin")
+        );
+       return http.build();
+
+
     }
 }
 
