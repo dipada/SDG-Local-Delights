@@ -7,6 +7,10 @@ import pastaImg from "@/assets/pasta.svg";
 import breadImg from "@/assets/bread.svg";
 import eggsImg from "@/assets/eggs.svg";
 import meatImg from "@/assets/meat.svg";
+import bellCrocierieImg from "@/assets/bell-concierge-solid.svg";
+import creditCardImg from "@/assets/credit-card-solid.svg";
+import locationDotImg from "@/assets/location-dot-solid.svg";
+import shoppingBagImg from "@/assets/shoppingBag.svg";
 
 </script>
 
@@ -27,6 +31,16 @@ import meatImg from "@/assets/meat.svg";
     <CardHome class="m-4" :image="meatImg" title="Meat"/>
   </div>
 </div>
+  <div class="flex-col justify-center mx-auto items-center">
+    <h2 class="py-10 text-3xl font-bold text-center text-green-800">How does it works</h2>
+
+    <div class="container flex flex-col md:flex-row justify-center mx-auto items-center">
+      <CardHome class="border-none shadow-none m-4" :image="locationDotImg" title="Select location" description="Choose the location where your food will be delivered"/>
+      <CardHome class="border-none shadow-none m-4" :image="bellCrocierieImg" title="Chose order" description="Choose your favourite products from all the options"/>
+      <CardHome class="border-none shadow-none m-4" :image="creditCardImg" title="Pay advanced" description="It's quick, safe, and simple. Select several methods of payment"/>
+      <CardHome class="border-none shadow-none m-4" :image="shoppingBagImg" title="Enjoy meal" description="Wait your order or pickup directly in the shop"/>
+    </div>
+  </div>
 </template>
 
 <style scoped>
