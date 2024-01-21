@@ -1,9 +1,11 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import HeaderHomeComponent from "@/components/HeaderHomeComponent.vue";
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+    <HeaderHomeComponent/>
 </template>
+
+<style scoped>
+
+</style>
