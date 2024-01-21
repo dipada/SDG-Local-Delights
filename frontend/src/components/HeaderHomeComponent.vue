@@ -1,8 +1,8 @@
 <template>
   <header class="bg-primary">
     <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-      <div class="flex lg:flex-1">
-        <a href="#" class=" max-w-18 -m-1.5 p-1.5 ">
+      <div class="flex lg:flex-1 justify-start">
+        <a href="#" class="-m-1.5 p-1.5 ">
           <sdg-logo/>
         </a>
       </div>
@@ -12,18 +12,15 @@
         </button>
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-        <!-- <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log ian <span aria-hidden="true">&rarr;</span></a> -->
-
         <router-link to="">
-          <button class="max-h-20 min-h-20 py-6 min-w-44 border-2 bg-primary items-center text-green-800 font-bold hover:bg-green-900 hover:text-primary rounded-lg border-secondary">Log in</button>
+          <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Log in</button>
         </router-link>
         <router-link to="">
-          <button class="ml-3 max-h-20 min-h-20 py-6 min-w-44 w-full items-center bg-secondary font-bold text-white hover:bg-green-900 rounded-lg">Sign in</button>
+          <button type="button" class="focus:outline-none text-white bg-secondary hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Sign In</button>
         </router-link>
-
       </div>
     </nav>
-      <SearchZip class="w-full -mb-8 flex justify-center z-10" />
+      <SearchZip class="w-full -mb-16 flex justify-center z-10" />
 
     <Dialog as="div" class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
       <div class="fixed inset-0 z-10" />
@@ -38,12 +35,12 @@
           </button>
         </div>
         <div class="mt-6">
-          <div class="-my-6 divide-y divide-gray-500/10 justify-center items-center">
+          <div class="divide-y divide-gray-500/10 justify-center items-center">
             <router-link to="">
-              <button class="mt-12 mb-4 py-6 w-full items-center bg-primary text-green-800 font-bold hover:bg-green-900 hover:text-primary rounded-lg border-secondary border-4">Log in</button>
+              <button type="button" class="w-full text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Log in</button>
             </router-link>
             <router-link to="">
-              <button class="mb-10 py-6 w-full items-center bg-secondary font-bold text-white hover:bg-green-900 rounded-lg">Sign in</button>
+              <button type="button" class="w-full focus:outline-none text-white bg-secondary hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Sign In</button>
             </router-link>
           </div>
         </div>
