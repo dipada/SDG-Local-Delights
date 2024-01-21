@@ -23,6 +23,8 @@
 
       </div>
     </nav>
+      <SearchZip class="w-full -mb-8 flex justify-center z-10" />
+
     <Dialog as="div" class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
       <div class="fixed inset-0 z-10" />
       <DialogPanel class="bg-primary rounded-b-3xl b fixed inset-y-0 right-0 z-10 w-full overflow-y-auto px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 max-h-fit min-w-full">
@@ -67,6 +69,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/vue/20/solid'
 import SdgLogo from "@/components/icons/sdgLogo.vue";
+import SearchZip from "@/components/SearchZip.vue";
 
 const products = [
   { name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon },
