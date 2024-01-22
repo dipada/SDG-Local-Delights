@@ -3,6 +3,8 @@ version: '3'
 services:
   frontend:
     build: .
+    container_name: frontend_container
     image: frontend
+    hostname: localhost
     ports:
-      - "8080:3004"
+      - "3004:8080"
