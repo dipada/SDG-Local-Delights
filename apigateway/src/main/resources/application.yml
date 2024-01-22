@@ -26,4 +26,4 @@ spring:
         - id: authenticationservice
           uri: lb://authenticationservice
           predicates:
-            - Path=/*/**
+            - Path=/auth/**
