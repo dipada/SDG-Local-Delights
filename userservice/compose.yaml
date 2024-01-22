@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres:
-    container_name: postgres_container_user
+    container_name: postgres_container_userservice
     image: 'postgres:latest'
     hostname: localhost
     environment:
