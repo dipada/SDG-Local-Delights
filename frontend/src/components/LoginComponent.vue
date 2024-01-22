@@ -33,7 +33,7 @@
         </div>
       </form>
       <div class="mt-4">
-        <button type="submit" class="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-secondary shadow-sm hover:bg-secondary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <button type="submit" class="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-secondary shadow-sm hover:bg-secondary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click="googleLogin">
           <img src="../assets/google.png" alt="google" class="w-5 h-5 me-2">
           Log in with Google
         </button>
@@ -43,7 +43,32 @@
   </div>
 </template>
 <script setup>
-import SdgLogo from "@/components/icons/sdgLogo.vue";
+import axios from 'axios';
+
+// Interceptor per le richieste
+axios.interceptors.request.use(request => {
+  console.log('Starting Request', JSON.stringify(request, null, 2));
+  return request;
+});
+
+// Interceptor per le risposte
+axios.interceptors.response.use(response => {
+  console.log('Response:', JSON.stringify(response, null, 2));
+  return response;
+});
+
+// Funzione per eseguire la chiamata GET
+const googleLogin = () => {
+  axios.get('http://localhost:8081/api/v1/user/client/' + 'dani@gmail.com')
+      .then(response => {
+        console.log('Risposta:', response);
+        console.log('Dati:', response.data);
+      })
+      .catch(error => {
+        console.error('Errore nella chiamata API:', error);
+      });
+};
+
 </script>
 <style scoped>
 .seperator h5 {
