@@ -44,7 +44,7 @@ public class SecurityConfig {
 
          http
                 .authorizeHttpRequests((authorize) -> {
-                    authorize.requestMatchers("/", "/api/v1/user/**").permitAll();
+                    authorize.requestMatchers("/", "/homr").permitAll();
                             authorize.anyRequest().authenticated();
                 })
 
@@ -54,8 +54,6 @@ public class SecurityConfig {
                 .failureUrl("http://localhost:8080/failureLogin")
         );
        return http.build();
-
-
     }
 }
 
