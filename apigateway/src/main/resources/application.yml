@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8085
 eureka:
   instance:
     hostname: localhost
@@ -12,9 +12,18 @@ eureka:
 
 spring:
   application:
-    api-gateway
+    name: api-gateway
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
+      routes:
+        - id: userservice
+          uri: lb://userservice
+          predicates:
+            - Path=/api/v1/user/**
+        - id: authenticationservice
+          uri: lb://authenticationservice
+          predicates:
+            - Path=/*/**

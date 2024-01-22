@@ -35,6 +35,11 @@ public class UserController {
         this.sellerRepository = sellerRepository;
     }
 
+    @GetMapping("/welcome")
+    public ResponseEntity<String> welcome() {
+        return ResponseEntity.ok("Welcome to the user service");
+    }
+
     @Operation(summary = "Create a new client", description = "Create a new client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client created successfully"),
