@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class AuthController {
 
     @GetMapping("/successLogin")

@@ -44,7 +44,7 @@ public class SecurityConfig {
 
          http
                 .authorizeHttpRequests((authorize) -> {
-                    authorize.requestMatchers("/", "/homr").permitAll();
+                    authorize.requestMatchers("/", "/home").permitAll();
                             authorize.anyRequest().authenticated();
                 })
 
