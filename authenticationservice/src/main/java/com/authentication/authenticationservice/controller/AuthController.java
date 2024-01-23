@@ -12,6 +12,7 @@ import java.util.Date;
 
 @RestController
 @CrossOrigin(origins = "*")
+@RequestMapping("/auth")
 public class AuthController {
 
     @GetMapping("/welcome")
