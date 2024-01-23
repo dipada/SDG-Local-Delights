@@ -12,6 +12,7 @@
         <module name="discoveryserver" />
         <module name="authenticationservice" />
         <module name="userservice" />
+        <module name="authtest" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,6 +23,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
+      <module name="authtest" options="-parameters" />
       <module name="demo" options="-parameters" />
       <module name="discoveryserver" options="-parameters" />
       <module name="userservice" options="-parameters" />

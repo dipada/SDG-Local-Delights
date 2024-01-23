@@ -11,8 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class AuthController {
+
+    @GetMapping("/welcome")
+    public ResponseEntity<String> welcome(){
+        return ResponseEntity.status(HttpStatus.OK).body("Benvenuto");
+    }
 
     @GetMapping("/successLogin")
     public ResponseEntity<String> successLogin(Authentication auth){
