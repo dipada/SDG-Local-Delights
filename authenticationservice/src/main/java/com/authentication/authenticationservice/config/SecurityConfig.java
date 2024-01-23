@@ -50,9 +50,9 @@ public class SecurityConfig {
                 })
 
             .oauth2Login(oauth2 -> oauth2
-                //.loginPage("/loginpage")
-                .defaultSuccessUrl("http://localhost:8080/successLogin", true)
-                .failureUrl("http://localhost:8080/failureLogin")
+                    .loginPage("/oauth2/authorization/google")
+                    .defaultSuccessUrl("http://localhost:8080/successLogin", true)
+                    .failureUrl("http://localhost:8080/failureLogin")
         );
        return http.build();
 
