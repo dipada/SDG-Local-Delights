@@ -10,6 +10,11 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/redirect/oauth',
+        name: 'redirect-oauth',
+        component: () => import('../views/RedirectOAuthView.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')
@@ -18,6 +23,28 @@ const router = createRouter({
       path: '/sign-up',
       name: 'sign-up',
       component: () => import('../views/SignUpView.vue')
+    },
+
+    {
+      path: '/client/home',
+        name: 'client-home',
+        component: () => import('../views/client/ClientHomeView.vue')
+    },
+    {
+      path: '/client/shops',
+        name: 'client-shops',
+        component: () => import('../views/client/ClientShopsView.vue')
+    },
+    {
+      path: '/client/shops/:id',
+        name: 'client-shop',
+        component: () => import('../views/client/ClientShopView.vue')
+    },
+
+    {
+      path: '/seller/home',
+      name: 'seller-home',
+      component: () => import('../views/seller/SellerHomeView.vue')
     },
     {
       path: '/about',
