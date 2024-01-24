@@ -4,9 +4,10 @@ import HeaderBase from "@/components/HeaderBase.vue";
 import AvatarComponent from "@/components/avatarComponent.vue";
 import {jwtDecode} from "jwt-decode";
 import CartButtonComponent from "@/components/cartButtonComponent.vue";
+import ClientHomeBodyComponent from "@/components/ClientHomeBodyComponent.vue";
 
 export default defineComponent({
-  components: {CartButtonComponent, HeaderBase, AvatarComponent },
+  components: {ClientHomeBodyComponent, CartButtonComponent, HeaderBase, AvatarComponent },
   data() {
     return {
       user: {
@@ -35,7 +36,7 @@ export default defineComponent({
     <template #nav>
       <cart-button-component/>
       <AvatarComponent :image-url="user.picture" :name="user.name"/>
-
     </template>
   </HeaderBase>
+  <client-home-body-component/>
 </template>
