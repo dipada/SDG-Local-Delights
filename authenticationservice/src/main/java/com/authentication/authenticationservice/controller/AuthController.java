@@ -34,7 +34,7 @@ public class AuthController {
                 .sign(Algorithm.HMAC256("secret"));
 
         if (redirectUri == null || redirectUri.isEmpty()) {
-            redirectUri = "http://localhost:5173/client/home";
+            redirectUri = "http://localhost:5173/redirect/oauth";
         }
 
         // redirect to the client with the token
