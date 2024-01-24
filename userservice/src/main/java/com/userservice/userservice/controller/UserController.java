@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -33,6 +34,11 @@ public class UserController {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.sellerRepository = sellerRepository;
+    }
+
+    @GetMapping("/welcome")
+    public ResponseEntity<String> welcome() {
+        return ResponseEntity.ok("Welcome to the user service");
     }
 
     @Operation(summary = "Create a new client", description = "Create a new client")

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="BUILD_PROCESS_HEAP_SIZE" value="2048" />
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="userservice" />
+        <module name="apigateway" />
+        <module name="discoveryserver" />
         <module name="authenticationservice" />
+        <module name="userservice" />
+        <module name="authtest" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -17,8 +21,11 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
+      <module name="authtest" options="-parameters" />
       <module name="demo" options="-parameters" />
+      <module name="discoveryserver" options="-parameters" />
       <module name="userservice" options="-parameters" />
     </option>
   </component>
