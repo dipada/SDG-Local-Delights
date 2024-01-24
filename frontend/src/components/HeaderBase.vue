@@ -6,6 +6,7 @@
           <sdg-logo/>
         </a>
       </div>
+      <slot name="nav"/>
     </nav>
   </header>
 </template>
