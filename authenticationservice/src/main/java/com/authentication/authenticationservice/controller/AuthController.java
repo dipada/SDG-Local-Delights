@@ -2,12 +2,15 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @RestController
@@ -15,13 +18,10 @@ import java.util.Date;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @GetMapping("/welcome")
-    public ResponseEntity<String> welcome(){
-        return ResponseEntity.status(HttpStatus.OK).body("Benvenuto");
-    }
-
-    @GetMapping("/successLogin")
-    public ResponseEntity<String> successLogin(Authentication auth){
+    // Entrypoint will be triggered by Spring Security when the user is not authenticated.
+    // This method is called when the user is successfully authenticated with Google.
+    @GetMapping("/google")
+    public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri){
         OAuth2User user = (OAuth2User) auth.getPrincipal();
 
         //make jwt token
@@ -33,24 +33,19 @@ public class AuthController {
                 .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
                 .sign(Algorithm.HMAC256("secret"));
 
+        if (redirectUri == null || redirectUri.isEmpty()) {
+            redirectUri = "http://localhost:5173/client/home";
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+        // redirect to the client with the token
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-
-    // test token decripting
-    @GetMapping("/testDecript")
-    public ResponseEntity<String> testDecript(@RequestParam String token){
-        String jwt = JWT.require(Algorithm.HMAC256("secret"))
-                .build()
-                .verify(token)
-                .getClaims().toString();
-        return ResponseEntity.status(HttpStatus.OK).body(jwt);
-    }
-
+    // This method is called when the user is not successfully authenticated
     @GetMapping("/failureLogin")
     public ResponseEntity<String> failureLogin(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login fallito");
     }
-
 }
