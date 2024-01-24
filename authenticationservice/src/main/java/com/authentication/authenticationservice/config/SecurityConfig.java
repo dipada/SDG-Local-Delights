@@ -57,8 +57,7 @@ public class SecurityConfig {
                     //.loginProcessingUrl("https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=779387750362-dt8b5nnpj0s13r3mi2qs13b6gal9ir7b.apps.googleusercontent.com&redirect_uri=http://localhost:8080/login/oauth2/code/google&scope=openid%20profile%20email&state=1")
                     .loginPage("/oauth2/authorization/google")
                 .defaultSuccessUrl("http://localhost:8080/auth/successLogin", true)
-                .failureUrl("http://localhost:8080/auth/failureLogin")
-
+                .failureUrl("http://localhost:8080/auth/failureLogin")                        
         );
        return http.build();
     }
