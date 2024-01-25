@@ -4,7 +4,7 @@
     <!-- <AvatarComponent :image-url="user.picture" :name="user.name"/> -->
     <img class="rounded w-36 h-36" :src="user.picture" alt="Extra large avatar">
     {{user.email}}
-  <user-profile-body-component />
+  <user-profile-body-component :email=user.email :full_name="user.name"/>
   <stacked-list-component/>
   </div>
 </template>
