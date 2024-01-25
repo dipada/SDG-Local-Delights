@@ -1,6 +1,8 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import Footer from "@/components/Footer.vue";
+import 'leaflet/dist/leaflet.css';
+
 </script>
 
 <template>

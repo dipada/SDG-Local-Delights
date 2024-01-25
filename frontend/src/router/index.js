@@ -67,6 +67,11 @@ const router = createRouter({
             meta: {requiresAuth: true}
         },
         {
+            path: '/client/map',
+            name: 'client-map',
+            component: () => import('../views/client/MapShopsView.vue'),
+        },
+        {
             path: '/about',
             name: 'about',
             // route level code-splitting
