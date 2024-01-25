@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 import axios from "axios";
 
 export default {
@@ -17,20 +17,19 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['saveUserInfo']), // Aggiunge saveUserInfo dallo store Vuex
+    ...mapActions(['saveUserInfo']),
   },
   async created() {
     const token = this.$route.query.token;
     if (token) {
-      this.saveUserInfo(token); // Salva il token e le informazioni dell'utente nello store Vuex
+      this.saveUserInfo(token);
 
-      // Imposta l'interceptor per aggiungere il token alle richieste future
+      // set the default authorization header
       axios.interceptors.request.use(config => {
         config.headers.Authorization = `Bearer ${token}`;
         return config;
       });
 
-      // Attesa di 5 secondi prima del reindirizzamento
       setTimeout(() => {
         this.isLoading = false;
         this.$router.push('/client/home');
@@ -38,7 +37,6 @@ export default {
     } else {
       console.log('No token found');
       this.isLoading = false;
-      // Gestire il caso in cui il token non sia disponibile
     }
   },
 };
@@ -47,6 +45,6 @@ export default {
 <style>
 .spinner-border {
   border-color: transparent;
-  border-top-color: #588157; /* Usa il colore che preferisci */
+  border-top-color: #588157;
 }
 </style>

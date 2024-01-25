@@ -53,5 +53,11 @@ export default createStore({
         isAuthenticated(state) {
             return !!state.userToken;
         },
+        getUserToken(state) {
+            return state.userToken;
+        },
+        getUserInfo(state) {
+            return state.userInfo;
+        },
     },
 });
