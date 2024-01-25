@@ -15,6 +15,11 @@ const router = createRouter({
         component: () => import('../views/RedirectOAuthView.vue')
     },
     {
+      path: '/client/profile',
+        name: 'client-profile',
+        component: () => import('../views/client/ClientProfileView.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')
