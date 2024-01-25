@@ -4,6 +4,7 @@
 
 <script>
 import L from 'leaflet';
+import router from '@/router'; // Assicurati che il percorso sia corretto
 
 export default {
   name: 'MapShopsView',
@@ -12,28 +13,40 @@ export default {
   },
   methods: {
     initMap() {
-      const map = L.map('map').setView([45.0703, 7.6869], 13); // Coordinate centrali di Torino
+      const map = L.map('map').setView([45.0703, 7.6869], 13);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
 
-      // Aggiunta dei marker
       const markers = [
-        { lat: 45.074512, lng: 7.694419, name: 'Negozio A' },
-        { lat: 45.067255, lng: 7.682489, name: 'Negozio B' },
-        { lat: 45.071123, lng: 7.678255, name: 'Negozio C' },
-        { lat: 45.076233, lng: 7.689877, name: 'Negozio D' },
-        { lat: 45.073200, lng: 7.678900, name: 'Negozio E' },
+        {id: 1, lat: 45.074512, lng: 7.694419, name: 'Negozio A', image: 'https://www.grupposmau.com/wp-content/uploads/2021/07/arredare-negozio-abbigliamento.jpg'},
+        {id: 2, lat: 45.067255, lng: 7.682489, name: 'Negozio B', image: 'https://flawless.life/wp-content/uploads/2020/08/Le-Boutique-Chic-di-Torino-cover.jpg'},
+        // Altri negozi...
       ];
 
       markers.forEach(marker => {
+        const popupContent = `
+          <div class="w-60">
+            <b><a href="#" onclick="event.preventDefault(); routerPush(${marker.id})">${marker.name}</a></b>
+            <br>
+            <img src="${marker.image}" alt="${marker.name}" style="width:300px; height:auto;">
+          </div>
+        `;
+
         L.marker([marker.lat, marker.lng])
             .addTo(map)
-            .bindPopup(marker.name);
+            .bindPopup(popupContent);
       });
+
+      window.routerPush = (id) => {
+        router.push(`/client/shop/${id}`);
+      };
     }
+  },
+  beforeDestroy() {
+    delete window.routerPush;
   }
 };
 </script>
