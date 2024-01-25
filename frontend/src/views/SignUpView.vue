@@ -1,9 +1,10 @@
 <script setup>
 
+import SignupFormBase from "@/components/SignupFormBase.vue";
 </script>
 
 <template>
-  <h1>SignUp</h1>
+  <signup-form-base/>
 </template>
 
 <style scoped>

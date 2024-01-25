@@ -7,40 +7,34 @@
 </template>
 
 <script>
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import {mapActions} from 'vuex';
+import axios from "axios";
 
 export default {
   data() {
     return {
       isLoading: true,
-      user: null
     };
+  },
+  methods: {
+    ...mapActions(['saveUserInfo']), // Aggiunge saveUserInfo dallo store Vuex
   },
   async created() {
     const token = this.$route.query.token;
     if (token) {
-      localStorage.setItem('userToken', token);
-      try {
-        this.user = jwtDecode(token);
-        console.log('Decoded JWT:', this.user);
+      this.saveUserInfo(token); // Salva il token e le informazioni dell'utente nello store Vuex
 
-        // Imposta l'interceptor per aggiungere il token alle richieste future
-        axios.interceptors.request.use(config => {
-          config.headers.Authorization = `Bearer ${token}`;
-          return config;
-        });
+      // Imposta l'interceptor per aggiungere il token alle richieste future
+      axios.interceptors.request.use(config => {
+        config.headers.Authorization = `Bearer ${token}`;
+        return config;
+      });
 
-        // Attesa di 5 secondi prima del reindirizzamento
-        setTimeout(() => {
-          this.isLoading = false;
-          this.$router.push('/client/home');
-        }, 5000);
-      } catch (e) {
-        console.error('Error decoding token:', e);
+      // Attesa di 5 secondi prima del reindirizzamento
+      setTimeout(() => {
         this.isLoading = false;
-        // Gestire l'errore di decodifica del token
-      }
+        this.$router.push('/client/home');
+      }, 5000);
     } else {
       console.log('No token found');
       this.isLoading = false;
