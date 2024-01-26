@@ -46,6 +46,7 @@ public class ProductController {
         product.setImage(productRequest.getImage());
         product.setPrice(productRequest.getPrice());
         product.setStock(productRequest.getStock());
+        product.setShopId(productRequest.getShopId());
 
         productRepository.save(product);
 

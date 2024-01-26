@@ -1,5 +1,6 @@
 package com.product.productservice.controller;
 
+import com.product.productservice.model.Product;
 import com.product.productservice.rabbitMQ.ProductDetails;
 import com.product.productservice.repository.ProductRepository;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -25,6 +26,18 @@ public class RabbitMQReceiver {
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void reciveProductDetails(ProductDetails productDetails) {
+        Product product = new Product();
+        product.setName(productDetails.getName());
+        product.setDescription(productDetails.getDescription());
+        product.setCategory(productDetails.getCategory());
+        product.setBrand(productDetails.getBrand());
+        product.setPrice(productDetails.getPrice());
+        product.setStock(productDetails.getStock());
+        product.setImage(productDetails.getImage());
+        product.setShopId(productDetails.getShopId());
+
+        productRepository.save(product);
+
         System.out.println("Received Product Details " + productDetails);
     }
 

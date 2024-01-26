@@ -13,4 +13,5 @@ public class ProductRequest {
     private Double price;
     private Integer stock;
 
+
 }

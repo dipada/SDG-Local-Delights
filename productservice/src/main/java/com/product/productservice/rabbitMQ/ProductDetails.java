@@ -17,3 +17,10 @@ public class ProductDetails implements Serializable {
     private Long shopId;
 
 }
+
+
+
+
+
+
+
