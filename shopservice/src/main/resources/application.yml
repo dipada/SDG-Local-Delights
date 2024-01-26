@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: shopservice
+  rabbitmq:
+    host: localhost
+    password: guest
+    port: 15672
+    username: guest
+    exchange: product.exchange
+    queue: product.queue
+    routingkey: product.routingkey
+server:
+  port: 8082
+
+
+
