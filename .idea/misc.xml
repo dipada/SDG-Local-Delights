@@ -10,8 +10,6 @@
         <option value="$PROJECT_DIR$/apigateway/pom.xml" />
         <option value="$PROJECT_DIR$/discoveryserver/pom.xml" />
         <option value="$PROJECT_DIR$/authtest/pom.xml" />
-        <option value="$PROJECT_DIR$/productservice/pom.xml" />
-        <option value="$PROJECT_DIR$/shopservice/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
