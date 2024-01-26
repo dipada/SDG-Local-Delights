@@ -1,6 +1,20 @@
 version: '3'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672" # Porta per accedere alla console di management
+      - "5672:5672"   # Porta per connessioni client e comunicazione tra servizi
+    networks:
+      - apigateway_net
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: data-rabbitmq
+        target: /var/lib/rabbitmq
+
   gateway:
     container_name: apigateway
     build: ./apigateway
@@ -13,6 +27,8 @@ services:
       - discovery-server
       - userservice
       - authenticationservice
+      - shopservice
+      - productservice
     networks:
       - apigateway_net
 
@@ -44,6 +60,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
       - spring.profiles.active=docker
+
   postgres:
     container_name: postgres_container_userservice
     image: 'postgres:latest'
@@ -76,6 +93,8 @@ services:
       - postgres
     networks:
       - userservice
+      - shopservice
+      - productservice
 
   authenticationservice:
     build: ./authenticationservice
@@ -92,13 +111,103 @@ services:
       - authenticationservice
       - apigateway_net
 
+  shopservice:
+    build: ./shopservice
+    image: shopservice
+    container_name: shopservice_container
+    ports:
+      - '8082:8082'
+    depends_on:
+      - postgres_shop
+      - discovery-server
+      - rabbitmq
+    networks:
+      - shopservice
+      - apigateway_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_shop:5432/sdgshops
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+      - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+
+  postgres_shop:
+    container_name: postgres_container_shopservice
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgshops
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5433:5432'
+    volumes:
+      - shop-db-data:/var/lib/postgresql/data
+    networks:
+      - shopservice
+    restart: unless-stopped
+
+  productservice:
+    build: ./productservice
+    image: productservice
+    container_name: productservice_container
+    ports:
+      - '8083:8083'
+    depends_on:
+      - postgres_product
+      - discovery-server
+      - rabbitmq
+      - shopservice
+    networks:
+      - productservice
+      - apigateway_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_product:5432/sdgproducts
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+      - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+
+
+  postgres_product:
+    container_name: postgres_container_product
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgproducts
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5439:5432'
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    networks:
+      - productservice
+    restart: unless-stopped
+
+
 volumes:
   db-data:
   pgadmin-data:
+  shop-db-data:
+  product-db-data:
+  data-rabbitmq:
+
+
 networks:
   userservice:
     driver: bridge
   authenticationservice:
     driver: bridge
   apigateway_net:
+    driver: bridge
+  shopservice:
+    driver: bridge
+  productservice:
     driver: bridge
