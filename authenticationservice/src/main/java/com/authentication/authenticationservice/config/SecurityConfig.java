@@ -21,7 +21,7 @@ public class SecurityConfig {
                     .loginPage("/oauth2/authorization/google")
                     .defaultSuccessUrl("/auth/google", true)
                 .failureUrl("/auth/failureLogin")
-        );
+        ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/auth/logout"));
        return http.build();
     }
 }
