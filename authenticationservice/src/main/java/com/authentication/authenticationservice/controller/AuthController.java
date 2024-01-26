@@ -25,16 +25,11 @@ public class AuthController {
     // Entrypoint will be triggered by Spring Security when the user is not authenticated.
     // This method is called when the user is successfully authenticated with Google.
     @GetMapping("/google")
-    public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri){
+    public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri) {
         OAuth2User user = (OAuth2User) auth.getPrincipal();
 
         //make jwt token
-        String token = JWT.create()
-                .withSubject(user.getAttribute("email"))
-                .withClaim("name",(String) user.getAttribute("given_name"))
-                .withClaim("surname",(String) user.getAttribute("family_name"))
-                .withClaim("picture",(String) user.getAttribute("picture"))
-                .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
+        String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
                 .sign(Algorithm.HMAC256("secret"));
 
         if (redirectUri == null || redirectUri.isEmpty()) {
@@ -49,7 +44,7 @@ public class AuthController {
 
     // This method is called when the user is not successfully authenticated
     @GetMapping("/failureLogin")
-    public ResponseEntity<String> failureLogin(){
+    public ResponseEntity<String> failureLogin() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login fallito");
     }
 
