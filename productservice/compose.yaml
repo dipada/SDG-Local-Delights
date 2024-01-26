@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672" # Porta per accedere alla console di management
+      - "5672:5672"   # Porta per connessioni client e comunicazione tra servizi
+    networks:
+      - productservice
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: data-rabbitmq
+        target: /var/lib/rabbitmq
+  postgres:
+    container_name: postgres_container_product
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgproducts
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5439:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - productservice
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: 'dpage/pgadmin4'
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 50
+    ports:
+      - "5050:50"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - productservice
+
+  productservice:
+    build: .
+    image: productservice
+    container_name: productservice_container
+    ports:
+      - '8083:8083'
+    depends_on:
+      - postgres
+    networks:
+      - productservice
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sdgproducts
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+volumes:
+  db-data:
+  pgadmin-data:
+  data-rabbitmq:
+
+networks:
+  productservice:
+    driver: bridge
