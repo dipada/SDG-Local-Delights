@@ -1,5 +1,6 @@
 package com.product.productservice.controller;
 
+import com.product.productservice.rabbitMQ.ProductDetails;
 import com.product.productservice.repository.ProductRepository;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -9,12 +10,22 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableRabbit
 public class RabbitMQReceiver {
+
     @Autowired
     ProductRepository productRepository;
 
+    /*
     @RabbitListener(queues = "${queue.name}")
     public void receiveMessage(String message) {
         System.out.println("Received <" + message + ">");
+    }
+
+     */
+
+
+    @RabbitListener(queues = "${spring.rabbitmq.queue}")
+    public void reciveProductDetails(ProductDetails productDetails) {
+        System.out.println("Received Product Details " + productDetails);
     }
 
 
@@ -36,4 +47,6 @@ public class RabbitMQReceiver {
     }
 
      */
+
+
 }

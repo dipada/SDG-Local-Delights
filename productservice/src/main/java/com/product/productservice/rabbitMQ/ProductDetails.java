@@ -14,5 +14,6 @@ public class ProductDetails implements Serializable {
     private Double price;
     private Integer stock;
     private String sellerEmail;
+    private Long shopId;
 
 }

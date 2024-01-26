@@ -1,24 +1,25 @@
 package com.shop.shopservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.shopservice.dto.ShopRequest;
 import com.shop.shopservice.model.Shop;
 import com.shop.shopservice.rabbitMQ.ProductDetails;
+import com.shop.shopservice.rabbitMQ.RabbitMQSender;
 import com.shop.shopservice.repository.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/shop")
 public class ShopController {
     private final ShopRepository shopRepository;
+
     @Autowired
     private RabbitMQSender rabbitMQSender;
+
 
     private ObjectMapper objectMapper;
 
@@ -95,7 +96,16 @@ public class ShopController {
 
     }
 
+    // @PostMapping("/{shopId}" , value = "productdetails")
+    @PostMapping("/addProduct/{shopId}")
+    public String publishProductDetails(@RequestBody ProductDetails productDetails, @PathVariable Long shopId) {
+        rabbitMQSender.sendAddProductRequest(productDetails, shopId);
+        return "Product add request sent successfully";
+    }
 
+
+
+    /*
     @PostMapping("/addProduct/{shopId}")
     public ResponseEntity<String> addProduct(@PathVariable Long shopId, @RequestBody ProductDetails productDetails) throws JsonProcessingException {
         Optional<Shop> shop = shopRepository.findByIdAndSellerEmail(shopId, productDetails.getSellerEmail());
@@ -107,13 +117,19 @@ public class ShopController {
         }
     }
 
+     */
 
+
+
+    /*
     @GetMapping("/testRabbit")
     public ResponseEntity<String> testRabbit() {
 
         rabbitMQSender.send("sono lo shop service");
         return ResponseEntity.status(200).body("Product add request sent successfully");
     }
+
+     */
 
 
 }

@@ -1,6 +1,6 @@
 package com.shop.shopservice.rabbitMQ;
 
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -11,21 +11,29 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-        @Value("${queue.name}")
-        private String message;
+        @Value("${spring.rabbitmq.host}")
+        String host;
+
+        @Value("${spring.rabbitmq.username}")
+        String username;
+
+        @Value("${spring.rabbitmq.password}")
+        String password;
 
         @Bean
-        public Queue queue() {
-                return new Queue(message, true);
+        CachingConnectionFactory connectionFactory() {
+                CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
+                cachingConnectionFactory.setUsername(username);
+                cachingConnectionFactory.setPassword(password);
+                return cachingConnectionFactory;
         }
-
         @Bean
         public MessageConverter jsonMessageConverter() {
                 return new Jackson2JsonMessageConverter();
         }
 
         @Bean
-        public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
+        public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
                 final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
                 rabbitTemplate.setMessageConverter(jsonMessageConverter());
                 return rabbitTemplate;
