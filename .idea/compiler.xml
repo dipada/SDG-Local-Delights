@@ -9,10 +9,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="apigateway" />
-        <module name="discoveryserver" />
-        <module name="authenticationservice" />
         <module name="userservice" />
         <module name="authtest" />
+        <module name="productservice" />
+        <module name="discoveryserver" />
+        <module name="shopservice" />
+        <module name="authenticationservice" />
       </profile>
     </annotationProcessing>
   </component>
@@ -21,6 +23,8 @@
       <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
       <module name="discoveryserver" options="-parameters" />
+      <module name="productservice" options="-parameters" />
+      <module name="shopservice" options="-parameters" />
       <module name="userservice" options="-parameters" />
     </option>
   </component>
