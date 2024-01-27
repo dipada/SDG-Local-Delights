@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1/user")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserRepository userRepository;

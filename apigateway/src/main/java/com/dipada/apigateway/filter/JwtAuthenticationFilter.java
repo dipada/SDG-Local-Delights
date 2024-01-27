@@ -27,8 +27,10 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         try {
+            System.out.println("FILTRO JWT + " + exchange.getRequest().getHeaders());
             // Estrai il token JWT dall'header Authorization
             String token = extractJwtFromRequest(exchange.getRequest());
+            System.out.println("TOKEN UTENTE: " + token);
 
             // Se il token non è presente, rispondi con UNAUTHORIZED
             if (token == null) {

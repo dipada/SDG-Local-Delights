@@ -27,3 +27,17 @@ spring:
           uri: lb://authenticationservice
           predicates:
             - Path=/auth/**
+      globalcors:
+        cors-configurations:
+            '[/**]':
+                allowedOrigins:
+                - "*"
+                allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                allowedHeaders:
+                - "*"
+                allowCredentials: false
+                maxAge: 3600
