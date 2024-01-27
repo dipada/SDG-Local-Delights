@@ -11,14 +11,12 @@
         <module name="apigateway" />
         <module name="userservice" />
         <module name="authtest" />
+        <module name="productservice" />
         <module name="discoveryserver" />
+        <module name="shopservice" />
         <module name="authenticationservice" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="productservice" target="21" />
-      <module name="shopservice" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
