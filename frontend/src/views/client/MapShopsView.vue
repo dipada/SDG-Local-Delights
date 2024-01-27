@@ -4,12 +4,37 @@
 
 <script>
 import L from 'leaflet';
-import router from '@/router'; // Assicurati che il percorso sia corretto
+import router from '@/router';
+import axios from "axios"; // Assicurati che il percorso sia corretto
 
 export default {
   name: 'MapShopsView',
-  mounted() {
-    this.initMap();
+  data() {
+    return {
+      markers: []
+    };
+  },
+  created() {
+    axios.get("http://localhost:8082/shop/all")
+        .then(response => {
+          console.log(response.data);
+          this.markers = response.data.map(shop => {
+            return {
+              id: shop.id,
+              lat: shop.latitude,
+              lng: shop.longitude,
+              name: shop.name,
+              image: shop.imageUrl
+            };
+          });
+
+          console.log(this.markers);
+
+          this.initMap();
+        })
+        .catch(error => {
+          console.log("Errore " + error);
+        });
   },
   methods: {
     initMap() {
@@ -20,13 +45,13 @@ export default {
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
 
-      const markers = [
-        {id: 1, lat: 45.074512, lng: 7.694419, name: 'Negozio A', image: 'https://www.grupposmau.com/wp-content/uploads/2021/07/arredare-negozio-abbigliamento.jpg'},
-        {id: 2, lat: 45.067255, lng: 7.682489, name: 'Negozio B', image: 'https://flawless.life/wp-content/uploads/2020/08/Le-Boutique-Chic-di-Torino-cover.jpg'},
+      const markers2 = [
+        //{id: 1, lat: 45.074512, lng: 7.694419, name: 'Negozio A', image: 'https://www.grupposmau.com/wp-content/uploads/2021/07/arredare-negozio-abbigliamento.jpg'},
+        //{id: 2, lat: 45.067255, lng: 7.682489, name: 'Negozio B', image: 'https://flawless.life/wp-content/uploads/2020/08/Le-Boutique-Chic-di-Torino-cover.jpg'},
         // Altri negozi...
       ];
 
-      markers.forEach(marker => {
+      this.markers.forEach(marker => {
         const popupContent = `
           <div class="w-60">
             <b><a href="#" onclick="event.preventDefault(); routerPush(${marker.id})">${marker.name}</a></b>

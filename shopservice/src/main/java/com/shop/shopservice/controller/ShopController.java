@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shop")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ShopController {
     private final ShopRepository shopRepository;
 
@@ -41,6 +42,9 @@ public class ShopController {
         shop.setPhoneNumber(shopRequest.getPhoneNumber());
         shop.setEmail(shopRequest.getEmail());
         shop.setSellerEmail(shopRequest.getSellerEmail());
+        shop.setLatitude(shopRequest.getLatitude());
+        shop.setLongitude(shopRequest.getLongitude());
+        shop.setImageUrl(shopRequest.getImageUrl());
 
         shopRepository.save(shop);
 
@@ -62,6 +66,7 @@ public class ShopController {
         shop.setPhoneNumber(shopRequest.getPhoneNumber());
         shop.setEmail(shopRequest.getEmail());
         shop.setSellerEmail(shopRequest.getSellerEmail());
+        //TODO aggiungere latitude e longitude e imageUrl
 
         shopRepository.save(shop);
 

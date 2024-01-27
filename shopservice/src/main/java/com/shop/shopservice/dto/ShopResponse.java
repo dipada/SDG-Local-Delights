@@ -12,4 +12,7 @@ public class ShopResponse {
     private String phoneNumber;
     private String email;
     private String sellerEmail;
+    private String longitude;
+    private String latitude;
+    private String imageUrl;
 }
