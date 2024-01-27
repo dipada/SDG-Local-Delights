@@ -10,8 +10,6 @@ Get-ChildItem -Directory | Where-Object { $_.Name -notlike ".*" } | ForEach-Obje
     Pop-Location
 }
 
-# Aspetta che tutti i processi in background (jobs) siano completati
 Get-Job | Wait-Job
 
-# Stampa "Done" alla fine
 Write-Host "Done"
