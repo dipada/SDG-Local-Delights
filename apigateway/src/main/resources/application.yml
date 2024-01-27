@@ -27,6 +27,11 @@ spring:
           uri: lb://authenticationservice
           predicates:
             - Path=/auth/**
+        - id: shopservice
+          uri: lb://shopservice
+          predicates:
+            - Path=/shop/**
+
       globalcors:
         cors-configurations:
             '[/**]':

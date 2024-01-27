@@ -5,7 +5,14 @@
 <script>
 import L from 'leaflet';
 import router from '@/router';
-import axios from "axios"; // Assicurati che il percorso sia corretto
+import axios from "axios";
+import store from "@/store/index.js"; // Assicurati che il percorso sia corretto
+
+// set the default authorization header
+//axios.interceptors.request.use(config => {
+ // config.headers.Authorization = `Bearer ${store.getters.getUserToken}`;
+ // return config;
+//});
 
 export default {
   name: 'MapShopsView',
@@ -15,7 +22,13 @@ export default {
     };
   },
   created() {
-    axios.get("http://localhost:8082/shop/all")
+    axios.get("http://localhost:8085/shop/all",{
+      headers: {
+        'Authorization': 'Bearer ' + store.getters.getUserToken,
+        'Accept': '*/*'
+        // Nota: Non è necessario impostare l'header 'Host' e 'Connection' in axios, verranno gestiti automaticamente
+      },
+    })
         .then(response => {
           console.log(response.data);
           this.markers = response.data.map(shop => {

@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shop")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ShopController {
     private final ShopRepository shopRepository;
 

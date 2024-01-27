@@ -114,7 +114,7 @@ services:
   shopservice:
     build: ./shopservice
     image: shopservice
-    container_name: shopservice_container
+    container_name: shopservice
     ports:
       - '8082:8082'
     depends_on:
