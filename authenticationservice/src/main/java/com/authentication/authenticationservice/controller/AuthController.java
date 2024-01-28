@@ -2,6 +2,9 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +27,10 @@ public class AuthController {
 
     // Entrypoint will be triggered by Spring Security when the user is not authenticated.
     // This method is called when the user is successfully authenticated with Google.
+    @Operation(summary = "Login with Google")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client with the token"),
+    })
     @GetMapping("/google")
     public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri) {
         OAuth2User user = (OAuth2User) auth.getPrincipal();
@@ -43,27 +50,19 @@ public class AuthController {
     }
 
     // This method is called when the user is not successfully authenticated
+    @Operation(summary = "Login failed")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Login failed"),
+    })
     @GetMapping("/failureLogin")
     public ResponseEntity<String> failureLogin() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login fallito");
     }
 
-    @GetMapping("/logoutaaaa")
-    public ResponseEntity<String> logoutaa(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, null);
-        // TODO jwt blacklist or invalidation
-
-
-         String redirectUri = "http://localhost:5173/";
-
-
-        // redirect to the client with the token
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8));
-        return new ResponseEntity<>(headers, HttpStatus.OK);
-        //return ResponseEntity.ok().build();
-    }
-
+    @Operation(summary = "Logout")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+    })
     @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, null);
