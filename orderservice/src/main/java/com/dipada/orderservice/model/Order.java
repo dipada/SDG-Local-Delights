@@ -23,4 +23,6 @@ public class Order {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> productIds;
 
+    private OrderStatus orderStatus;
+
 }
