@@ -192,12 +192,52 @@ services:
     restart: unless-stopped
 
 
+  postgres_payment:
+    container_name: paymentservice_container
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgpayments
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5435:5432'
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+    networks:
+      - paymentservice_net
+    restart: unless-stopped
+
+  paymentservice:
+    build: ./paymentservice
+    image: paymentservice
+    container_name: paymentservice
+    ports:
+      - '8084:8084'
+    depends_on:
+      - postgres_payment
+      - discovery-server
+      - rabbitmq
+    networks:
+      - paymentservice_net
+      - apigateway_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_payment:5432/sdgpayments
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+      - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+
 volumes:
   db-data:
   pgadmin-data:
   shop-db-data:
   product-db-data:
   data-rabbitmq:
+  payment-db-data:
 
 
 networks:
@@ -210,4 +250,6 @@ networks:
   shopservice:
     driver: bridge
   productservice:
+    driver: bridge
+  paymentservice_net:
     driver: bridge
