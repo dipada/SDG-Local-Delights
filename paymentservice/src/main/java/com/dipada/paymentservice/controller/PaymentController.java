@@ -3,6 +3,9 @@ package com.dipada.paymentservice.controller;
 import com.dipada.paymentservice.dto.PaymentRequest;
 import com.dipada.paymentservice.model.Wallet;
 import com.dipada.paymentservice.repository.WalletRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,11 @@ public class PaymentController {
         this.walletRepository = walletRepository;
     }
 
+    @Operation(summary = "Make a topup to a wallet")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "TopUp successful"),
+            @ApiResponse(responseCode = "404", description = "Wallet not found"),
+    })
     @PostMapping("/topup")
     public ResponseEntity<String> makeTopUp(@RequestBody PaymentRequest paymentRequest) {
         Optional<Wallet> wallet = walletRepository.findWalletByEmail(paymentRequest.getEmail());
@@ -35,12 +43,22 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.OK).body("TopUp successful");
     }
 
+    @Operation(summary = "Create a wallet")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Wallet created"),
+    })
     @PostMapping("/create-wallet")
     public ResponseEntity<String> createWallet(@RequestBody PaymentRequest paymentRequest) {
         walletRepository.save(new Wallet(paymentRequest.getEmail()));
         return ResponseEntity.status(HttpStatus.OK).body("Wallet created");
     }
 
+    @Operation(summary = "Make a withdraw from a wallet")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Payment successful"),
+            @ApiResponse(responseCode = "404", description = "Wallet not found"),
+            @ApiResponse(responseCode = "400", description = "Not enough money"),
+    })
     @PostMapping("/withdraw")
     public ResponseEntity<String> makeWithdraw(@RequestBody PaymentRequest paymentRequest) {
         Optional<Wallet> wallet = walletRepository.findWalletByEmail(paymentRequest.getEmail());
