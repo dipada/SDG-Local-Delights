@@ -1,13 +1,13 @@
-package com.dipada.paymentservicve;
+package com.dipada.paymentservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PaymentservicveApplication {
+public class PaymentserviceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PaymentservicveApplication.class, args);
+        SpringApplication.run(PaymentserviceApplication.class, args);
     }
 
 }

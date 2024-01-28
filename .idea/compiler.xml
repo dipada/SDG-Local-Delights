@@ -15,7 +15,7 @@
         <module name="discoveryserver" />
         <module name="shopservice" />
         <module name="authenticationservice" />
-        <module name="paymentservicve" />
+        <module name="paymentservice" />
       </profile>
     </annotationProcessing>
   </component>
@@ -24,7 +24,7 @@
       <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
       <module name="discoveryserver" options="-parameters" />
-      <module name="paymentservicve" options="-parameters" />
+      <module name="paymentservice" options="-parameters" />
       <module name="productservice" options="-parameters" />
       <module name="shopservice" options="-parameters" />
       <module name="userservice" options="-parameters" />

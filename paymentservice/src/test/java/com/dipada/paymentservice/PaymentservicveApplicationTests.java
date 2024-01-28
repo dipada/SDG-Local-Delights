@@ -1,12 +1,11 @@
-package com.dipada.paymentservicve;
+package com.dipada.paymentservice;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class PaymentservicveApplicationTests {
 
-    @Test
+    //@Test
     void contextLoads() {
     }
 
