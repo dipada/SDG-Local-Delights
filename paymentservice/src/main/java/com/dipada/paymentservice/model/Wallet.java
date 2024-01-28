@@ -1,18 +1,18 @@
 package com.dipada.paymentservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Table(name = "_wallet")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Wallet {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Column(unique = true)

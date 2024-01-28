@@ -30,11 +30,12 @@ public class PaymentController {
 
         synchronized (wallet.get()) {
             wallet.get().setBalance(wallet.get().getBalance() + paymentRequest.getAmount());
+            walletRepository.save(wallet.get());
         }
         return ResponseEntity.status(HttpStatus.OK).body("TopUp successful");
     }
 
-    @PostMapping("/create-wallet}")
+    @PostMapping("/create-wallet")
     public ResponseEntity<String> createWallet(@RequestBody PaymentRequest paymentRequest) {
         walletRepository.save(new Wallet(paymentRequest.getEmail()));
         return ResponseEntity.status(HttpStatus.OK).body("Wallet created");
@@ -53,6 +54,7 @@ public class PaymentController {
             }
 
             wallet.get().setBalance(wallet.get().getBalance() - paymentRequest.getAmount());
+            walletRepository.save(wallet.get());
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("Payment successful");
