@@ -1,4 +1,6 @@
-FROM ubuntu:latest
+FROM openjdk:21-jdk
 LABEL authors="dan"
-
-ENTRYPOINT ["top", "-b"]
+ARG JAR_FILE=target/*.jar
+COPY ./target/*.jar app.jar
+EXPOSE 8086
+ENTRYPOINT ["java", "-jar", "/app.jar"]
