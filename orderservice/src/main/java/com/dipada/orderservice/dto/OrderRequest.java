@@ -8,5 +8,5 @@ import java.util.List;
 public class OrderRequest {
     private String userEmail;
     private Long shopId;
-    private List<Long> productId;
+    private List<Long> listOfProductIds;
 }

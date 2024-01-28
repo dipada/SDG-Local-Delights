@@ -21,7 +21,7 @@ public class Order {
     private Long shopId;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Long> productIds;
+    private List<Long> listOfProductsIds;
 
     private OrderStatus orderStatus;
 
