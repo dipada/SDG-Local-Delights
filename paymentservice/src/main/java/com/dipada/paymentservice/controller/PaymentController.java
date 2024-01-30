@@ -77,4 +77,17 @@ public class PaymentController {
 
         return ResponseEntity.status(HttpStatus.OK).body("Payment successful");
     }
+
+    @Operation(summary = "Get wallet balance")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Balance retrieved"),
+            @ApiResponse(responseCode = "404", description = "Wallet not found"),
+    })
+    @GetMapping("/balance/{email}")
+    public ResponseEntity<String> getBalance(@PathVariable String email) {
+        Optional<Wallet> wallet = walletRepository.findWalletByEmail(email);
+        return wallet.map(value -> ResponseEntity.status(HttpStatus.OK).body("Balance: " + value.getBalance())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Wallet not found"));
+
+    }
 }
+

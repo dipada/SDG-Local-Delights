@@ -2,6 +2,8 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.authentication.authenticationservice.model.UserDetails;
+import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,6 +26,12 @@ import java.util.Date;
 @CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthController {
+
+    private final RabbitMQSender rabbitMQSender;
+
+    public AuthController(RabbitMQSender rabbitMQSender) {
+        this.rabbitMQSender = rabbitMQSender;
+    }
 
     // Entrypoint will be triggered by Spring Security when the user is not authenticated.
     // This method is called when the user is successfully authenticated with Google.
@@ -48,6 +56,46 @@ public class AuthController {
         headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
+
+    //signup without google
+    /*
+    @Operation(summary = "Signup without Google")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
+    })
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@RequestBody UserDetails userDetails){
+        //manda un messaggio via rabbit a user service per creare l'utente
+        //rabbitMQSender.sendAddUserRequest(userDetails);
+
+        //se l'utente è stato creato con successo rimanda a login
+        //altrimenti rimanda a signup con un messaggio di errore
+        //TODO: gestire il caso in cui l'utente esiste già
+        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+    }
+
+     */
+
+    // Entrypoint for signup page
+    @Operation(summary = "Signup")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+    })
+    @GetMapping("/signup")
+    public ResponseEntity<String> signup(@RequestParam(name = "redirect_uri", required = false) String redirectUri, @RequestBody UserDetails userDetails) {
+        //manda un messaggio via rabbit a user service per creare l'utente
+        rabbitMQSender.sendAddUserRequest(userDetails);
+        if (redirectUri == null || redirectUri.isEmpty()) {
+            redirectUri = "http://localhost:5173/login";
+        }
+
+        // redirect to the client
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUri));
+        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+    }
+
+
 
     // This method is called when the user is not successfully authenticated
     @Operation(summary = "Login failed")

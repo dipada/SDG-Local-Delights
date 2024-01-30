@@ -17,17 +17,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-         http
-                .authorizeHttpRequests((authorize) -> {
-                    authorize.requestMatchers("/").permitAll();
-                            authorize.anyRequest().authenticated();
+
+        http
+                .authorizeHttpRequests(authorize -> {
+                    authorize
+                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin").permitAll()
+                            .anyRequest().authenticated();
                 })
-            .oauth2Login(oauth2 -> oauth2
-                    .loginPage("/oauth2/authorization/google")
-                    .defaultSuccessUrl("/auth/google", true)
-                .failureUrl("/auth/failureLogin")
-        ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/auth/logout"));
-       return http.build();
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/google")
+                        .defaultSuccessUrl("/auth/google", true)
+                        .failureUrl("/auth/failureLogin")
+                ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/auth/logout"));
+        return http.build();
     }
 }
 

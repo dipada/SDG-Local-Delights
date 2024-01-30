@@ -123,6 +123,7 @@ public class UserController {
                 clientResponse.setLastName(client.get().getUser().getLastName());
                 clientResponse.setPhoneNumber(client.get().getUser().getPhoneNumber());
                 clientResponse.setShippingAddress(client.get().getShippingAddress());
+                clientResponse.setPicture(client.get().getUser().getPicture());
                 return ResponseEntity.status(200).body(clientResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -150,6 +151,7 @@ public class UserController {
                 sellerResponse.setLastName(seller.get().getUser().getLastName());
                 sellerResponse.setPhoneNumber(seller.get().getUser().getPhoneNumber());
                 sellerResponse.setVatNumber(seller.get().getVat());
+                sellerResponse.setPicture(seller.get().getUser().getPicture());
                 return ResponseEntity.status(200).body(sellerResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -262,14 +264,16 @@ public class UserController {
     }
 
     private User makeNewUser(ClientRequest clientRequest) {
-        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber());
+        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture());
         userRepository.save(newUser);
         return newUser;
     }
 
     private User makeNewUser(SellerRequest sellerRequest) {
-        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber());
+        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture());
         userRepository.save(newUser);
         return newUser;
     }
+
+
 }

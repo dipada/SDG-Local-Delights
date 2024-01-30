@@ -50,6 +50,8 @@ services:
     depends_on:
       - postgres
       - discovery-server
+      - rabbitmq
+      - authenticationservice
     networks:
       - userservice
       - apigateway_net
@@ -60,6 +62,8 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
       - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
 
   postgres:
     container_name: postgres_container_userservice
@@ -103,13 +107,17 @@ services:
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
       - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
     ports:
       - '8080:8080'
     depends_on:
       - discovery-server
+      - rabbitmq
     networks:
       - authenticationservice
       - apigateway_net
+
 
   shopservice:
     build: ./shopservice

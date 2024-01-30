@@ -9,6 +9,7 @@ public class SellerResponse {
     private String email;
     private String firstName;
     private String lastName;
+    private String picture;
     private String phoneNumber;
     private String vatNumber;
 
