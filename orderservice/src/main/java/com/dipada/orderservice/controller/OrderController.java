@@ -1,6 +1,8 @@
 package com.dipada.orderservice.controller;
 
+import com.dipada.orderservice.RabbitMQ.RabbitMQSender;
 import com.dipada.orderservice.dto.OrderRequest;
+import com.dipada.orderservice.dto.ShopDetails;
 import com.dipada.orderservice.model.Order;
 import com.dipada.orderservice.model.OrderStatus;
 import com.dipada.orderservice.repository.OrderRepository;
@@ -19,10 +21,15 @@ import java.util.List;
 public class OrderController {
 
     private final OrderRepository orderRepository;
+    private final ShopServiceClient shopServiceClient;
+
+    private final RabbitMQSender rabbitMQSender;
 
     @Autowired
-    protected OrderController(OrderRepository orderRepository) {
+    protected OrderController(OrderRepository orderRepository, ShopServiceClient shopServiceClient, RabbitMQSender rabbitMQSender) {
         this.orderRepository = orderRepository;
+        this.shopServiceClient = shopServiceClient;
+        this.rabbitMQSender = rabbitMQSender;
     }
 
 
@@ -58,13 +65,26 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order request");
         }
 
+        //TODO check if products exist, or check in frontend
+
+        //recupero dettagli negozio dell'ordine
+        ShopDetails shopDetails = shopServiceClient.getShopDetails(orderRequest.getShopId());
+
+        System.out.println("ShopDetails recived from OrderService: " + shopDetails);
+
+
         Order order = new Order();
         order.setUserEmail(orderRequest.getUserEmail());
         order.setShopId(orderRequest.getShopId());
+        order.setShopName(shopDetails.getName());
+        order.setShopAddress(shopDetails.getAddress());
+        order.setShopEmail(shopDetails.getEmail());
         order.setListOfProductsIds(orderRequest.getListOfProductIds());
         order.setOrderStatus(OrderStatus.PENDING); //At creation, the order is pending
 
         orderRepository.save(order);
+
+        rabbitMQSender.sendOrder(order);
 
         return ResponseEntity.status(HttpStatus.OK).body("Order created successfully");
     }

@@ -19,6 +19,10 @@ public class Order {
 
     private String userEmail;
     private Long shopId;
+    private String shopName;
+    private String shopAddress;
+    private String shopEmail;
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> listOfProductsIds;

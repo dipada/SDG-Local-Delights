@@ -1,6 +1,7 @@
 package com.shop.shopservice.controller;
 
 import com.shop.shopservice.dto.ShopRequest;
+import com.shop.shopservice.dto.ShopResponse;
 import com.shop.shopservice.model.Shop;
 import com.shop.shopservice.rabbitMQ.ProductDetails;
 import com.shop.shopservice.rabbitMQ.RabbitMQSender;
@@ -111,6 +112,26 @@ public class ShopController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(shops);
 
+    }
+
+    @GetMapping("/details/{shopId}")
+    public ResponseEntity<ShopResponse> getShopDetails(@PathVariable Long shopId) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        if (shop.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        ShopResponse shopResponse = new ShopResponse();
+        shopResponse.setId(shop.get().getId());
+        shopResponse.setName(shop.get().getName());
+        shopResponse.setDescription(shop.get().getDescription());
+        shopResponse.setAddress(shop.get().getAddress());
+        shopResponse.setPhoneNumber(shop.get().getPhoneNumber());
+        shopResponse.setEmail(shop.get().getEmail());
+        shopResponse.setSellerEmail(shop.get().getSellerEmail());
+        shopResponse.setLatitude(shop.get().getLatitude());
+        shopResponse.setLongitude(shop.get().getLongitude());
+        shopResponse.setImageUrl(shop.get().getImageUrl());
+        return ResponseEntity.status(HttpStatus.OK).body(shopResponse);
     }
 
     @Operation(summary = "Add a new product to a shop")

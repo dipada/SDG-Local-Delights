@@ -1,6 +1,14 @@
 spring:
   application:
     name: orderservice
+  rabbitmq:
+    host: localhost
+    password: guest
+    port: 15672
+    username: guest
+    exchange: order.exchange
+    queue: order.queue
+    routingkey: order.routingkey
 server:
   port: 8086
 
@@ -11,3 +19,6 @@ eureka:
     register-with-eureka: true
     refresh:
       enable: true
+
+shopservice:
+  url: http://shopservice:8082
