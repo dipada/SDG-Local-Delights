@@ -67,9 +67,9 @@ export default {
       this.markers.forEach(marker => {
         const popupContent = `
           <div class="w-60">
-            <b><a href="#" onclick="event.preventDefault(); routerPush(${marker.id})">${marker.name}</a></b>
+            <a href="#" onclick="event.preventDefault(); routerPush(${marker.id})"><b>${marker.name}</b>
             <br>
-            <img src="${marker.image}" alt="${marker.name}" style="width:300px; height:auto;">
+            <img src="${marker.image}" alt="${marker.name}" style="width:300px; height:auto;"></a>
           </div>
         `;
 
