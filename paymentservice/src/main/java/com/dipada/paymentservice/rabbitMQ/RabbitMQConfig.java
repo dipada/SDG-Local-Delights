@@ -1,4 +1,4 @@
-package com.userservice.userservice.rabbitMQ;
+package com.dipada.paymentservice.rabbitMQ;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -19,7 +19,7 @@ public class RabbitMQConfig {
     private String host;
     @Bean
     public Queue queue() {
-        return new Queue("userQueue", true);
+        return new Queue("userQueueWallet", true);
     }
 
     @Bean

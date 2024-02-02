@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -22,26 +23,14 @@ import java.util.regex.Pattern;
 
 @Component
 @EnableRabbit
-public class RabbitMQReceiver {
 
+public class RabbitMQReceiver{
+    @Autowired
     UserRepository userRepository;
+    @Autowired
     ClientRepository clientRepository;
 
-    public RabbitMQReceiver(UserRepository userRepository, ClientRepository clientRepository) {
-        this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
-    }
-
-
-    @Operation(summary = "Receive user details from auth service")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User created"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "500", description = "Internal server error"),
-    })
-
-    @RabbitListener(queues = "${spring.rabbitmq.queue}", ackMode = "MANUAL") //Questo ti dà la flessibilità di decidere se un messaggio è stato elaborato correttamente o meno.
-                                                                // Puoi decidere di riconsegnare il messaggio alla coda (requeue) se si verifica un errore temporaneo, o di scartarlo (o inviarlo a una dead-letter queue) se si tratta di un errore permanente.
+    @RabbitListener(queues = "userQueue")
     public void receiveUserDetails(@Payload UserDetails userDetails) {
 
 
@@ -92,25 +81,6 @@ public class RabbitMQReceiver {
         }
     }
 
-
-
-    /*
-    @RabbitListener(queues = "${queue.name}")
-    public void addProductFromShop(ProductDetails productDetails, Long shopId) {
-        Product product = new Product();
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setCategory(productDetails.getCategory());
-        product.setBrand(productDetails.getBrand());
-        product.setPrice(productDetails.getPrice());
-        product.setStock(productDetails.getStock());
-        product.setImage(productDetails.getImage());
-
-        productRepository.save(product);
-        System.out.println("Received < add product >");
-    }
-
-     */
     private String validateRequest(ClientRequest clientRequest) {
 
         // user params
