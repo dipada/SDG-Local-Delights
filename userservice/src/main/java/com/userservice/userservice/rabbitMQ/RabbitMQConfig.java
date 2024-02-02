@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,10 @@ public class RabbitMQConfig {
     public Queue queue() {
         return new Queue("userQueue", true);
     }
+
+    @Bean
+    @Qualifier("queue")
+    Queue queueWallet() { return new Queue("userQueueWallet", true);}
 
     @Bean
     public ConnectionFactory connectionFactory() {

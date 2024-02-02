@@ -27,11 +27,6 @@ public class RabbitMQConfig {
         }
 
         @Bean
-        public Queue queue2() {
-                return new Queue("userQueueWallet", true);
-        }
-
-        @Bean
         CachingConnectionFactory connectionFactory() {
                 CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
                 cachingConnectionFactory.setUsername(username);

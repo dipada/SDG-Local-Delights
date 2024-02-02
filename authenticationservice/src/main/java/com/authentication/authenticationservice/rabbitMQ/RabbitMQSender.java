@@ -18,20 +18,15 @@ public class RabbitMQSender{
     @Autowired
     private final Queue userQueue;
 
-    @Qualifier("queue2")
-    @Autowired
-    private final Queue userQueueWallet;
 
-    public RabbitMQSender(RabbitTemplate rabbitTemplate, @Qualifier("queue") Queue userQueue, @Qualifier("queue2") Queue userQueueWallet){
+    public RabbitMQSender(RabbitTemplate rabbitTemplate, @Qualifier("queue") Queue userQueue){
         this.rabbitTemplate = rabbitTemplate;
         this.userQueue = userQueue;
-        this.userQueueWallet = userQueueWallet;
     }
 
     public void sendAddUserRequest(UserDetails userDetails){
         System.out.println("Send msg = " + userDetails + " to queue " + userQueue.getName());
         rabbitTemplate.convertAndSend(this.userQueue.getName(), userDetails);
-        rabbitTemplate.convertAndSend(this.userQueueWallet.getName(), userDetails);
     }
 
 

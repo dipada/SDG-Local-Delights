@@ -17,8 +17,9 @@ public class RabbitMQConfig {
     private String password;
     @Value("${spring.rabbitmq.host}")
     private String host;
+
     @Bean
-    public Queue queue() {
+    public Queue queueWallet() {
         return new Queue("userQueueWallet", true);
     }
 

@@ -2,6 +2,7 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.authentication.authenticationservice.dto.LoginRequest;
 import com.authentication.authenticationservice.model.UserDetails;
 import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -32,6 +37,7 @@ public class AuthController {
     public AuthController(RabbitMQSender rabbitMQSender) {
         this.rabbitMQSender = rabbitMQSender;
     }
+
 
     // Entrypoint will be triggered by Spring Security when the user is not authenticated.
     // This method is called when the user is successfully authenticated with Google.
@@ -50,6 +56,15 @@ public class AuthController {
         if (redirectUri == null || redirectUri.isEmpty()) {
             redirectUri = "http://localhost:5173/redirect/oauth";
         }
+        //send a message to the user service to create the user
+        UserDetails userDetails = new UserDetails();
+        userDetails.setEmail(user.getAttribute("email"));
+        userDetails.setName(user.getAttribute("given_name"));
+        userDetails.setSurname(user.getAttribute("family_name"));
+        userDetails.setPicture(user.getAttribute("picture"));
+        userDetails.setGoogleAccount(true);
+
+        rabbitMQSender.sendAddUserRequest(userDetails);
 
         // redirect to the client with the token
         HttpHeaders headers = new HttpHeaders();
@@ -57,24 +72,6 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    //signup without google
-    /*
-    @Operation(summary = "Signup without Google")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserDetails userDetails){
-        //manda un messaggio via rabbit a user service per creare l'utente
-        //rabbitMQSender.sendAddUserRequest(userDetails);
-
-        //se l'utente è stato creato con successo rimanda a login
-        //altrimenti rimanda a signup con un messaggio di errore
-        //TODO: gestire il caso in cui l'utente esiste già
-        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
-    }
-
-     */
 
     // Entrypoint for signup page
     @Operation(summary = "Signup")
@@ -82,19 +79,18 @@ public class AuthController {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
     })
     @GetMapping("/signup")
-    public ResponseEntity<String> signup(@RequestParam(name = "redirect_uri", required = false) String redirectUri, @RequestBody UserDetails userDetails) {
+    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
         //manda un messaggio via rabbit a user service per creare l'utente
+        userDetails.setGoogleAccount(false);
         rabbitMQSender.sendAddUserRequest(userDetails);
-        if (redirectUri == null || redirectUri.isEmpty()) {
-            redirectUri = "http://localhost:5173/login";
-        }
+
+        String redirectUri = "http://localhost:5173/login";
 
         // redirect to the client
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(redirectUri));
         return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
     }
-
 
 
     // This method is called when the user is not successfully authenticated

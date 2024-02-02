@@ -1,7 +1,7 @@
 package com.dipada.paymentservice.rabbitMQ;
 
 import com.dipada.paymentservice.dto.PaymentRequest;
-import com.dipada.paymentservice.model.UserDetails;
+import com.dipada.paymentservice.model.ClientRequest;
 import com.dipada.paymentservice.model.Wallet;
 import com.dipada.paymentservice.repository.WalletRepository;
 import org.apache.catalina.User;
@@ -22,10 +22,10 @@ public class RabbitMQReceiver{
     WalletRepository walletRepository;
 
     @RabbitListener(queues = "userQueueWallet")
-    public void receiveUserDetails(UserDetails userDetails) {
-        System.out.println("Received <" + userDetails + ">");
+    public void receiveUserDetails(ClientRequest clientRequest) {
+        System.out.println("Received <" + clientRequest + ">");
         try {
-            walletRepository.save(new Wallet(userDetails.getEmail()));
+            walletRepository.save(new Wallet(clientRequest.getEmail()));
             System.out.println("Wallet created");
         } catch (Exception e) {
             System.out.println(e);

@@ -16,5 +16,6 @@ public class UserDetails {
     private String picture;
     private String phoneNumber;
     private String shippingAddress;
+    private Boolean googleAccount;
 
 }

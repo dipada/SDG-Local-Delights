@@ -7,6 +7,7 @@ import com.userservice.userservice.dto.SellerResponse;
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.Seller;
 import com.userservice.userservice.model.User;
+import com.userservice.userservice.rabbitMQ.RabbitMQSender;
 import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.SellerRepository;
 import com.userservice.userservice.repository.UserRepository;
@@ -28,17 +29,22 @@ public class UserController {
     private final ClientRepository clientRepository;
     private final SellerRepository sellerRepository;
 
+
+    private final RabbitMQSender rabbitMQSender;
+
     @Autowired
-    protected UserController(UserRepository userRepository, ClientRepository clientRepository, SellerRepository sellerRepository) {
+    protected UserController(UserRepository userRepository, ClientRepository clientRepository, SellerRepository sellerRepository, RabbitMQSender rabbitMQSender) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.sellerRepository = sellerRepository;
+        this.rabbitMQSender = rabbitMQSender;
     }
 
     @GetMapping("/welcome")
     public ResponseEntity<String> welcome() {
         return ResponseEntity.ok("Welcome to the user service");
     }
+
 
     @Operation(summary = "Create a new client", description = "Create a new client")
     @ApiResponses(value = {
@@ -64,11 +70,13 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Client email già presente nel database");
             }else {
                 makeClient(clientRequest, user.get());
+                rabbitMQSender.sendAddUserWallet(clientRequest);
                 return ResponseEntity.status(200).body("Client creato con successo");
             }
         }else{
             // create new client
             makeClient(clientRequest, makeNewUser(clientRequest));
+            rabbitMQSender.sendAddUserWallet(clientRequest);
             return ResponseEntity.status(200).body("Client creato con successo");
         }
     }
@@ -124,6 +132,8 @@ public class UserController {
                 clientResponse.setPhoneNumber(client.get().getUser().getPhoneNumber());
                 clientResponse.setShippingAddress(client.get().getShippingAddress());
                 clientResponse.setPicture(client.get().getUser().getPicture());
+                clientResponse.setGoogleAccount(client.get().getUser().getGoogleAccount());
+
                 return ResponseEntity.status(200).body(clientResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -152,6 +162,8 @@ public class UserController {
                 sellerResponse.setPhoneNumber(seller.get().getUser().getPhoneNumber());
                 sellerResponse.setVatNumber(seller.get().getVat());
                 sellerResponse.setPicture(seller.get().getUser().getPicture());
+                sellerResponse.setGoogleAccount(seller.get().getUser().getGoogleAccount());
+
                 return ResponseEntity.status(200).body(sellerResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -264,13 +276,13 @@ public class UserController {
     }
 
     private User makeNewUser(ClientRequest clientRequest) {
-        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture());
+        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture(), clientRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
     }
 
     private User makeNewUser(SellerRequest sellerRequest) {
-        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture());
+        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture(), sellerRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
     }

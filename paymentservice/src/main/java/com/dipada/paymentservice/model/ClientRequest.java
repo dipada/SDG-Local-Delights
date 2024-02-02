@@ -1,17 +1,17 @@
-package com.userservice.userservice.dto;
+package com.dipada.paymentservice.model;
 
-import lombok.Builder;
+
 import lombok.Data;
 
 @Data
-public class SellerResponse {
+public class ClientRequest {
 
     private String email;
+    private String password;
     private String firstName;
     private String lastName;
-    private String picture;
     private String phoneNumber;
-    private String vatNumber;
+    private String shippingAddress;
+    private String picture;
     private Boolean googleAccount;
-
 }

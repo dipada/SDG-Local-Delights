@@ -11,4 +11,5 @@ public class ClientResponse {
         private String phoneNumber;
         private String shippingAddress;
         private String picture;
+        private Boolean googleAccount;
 }

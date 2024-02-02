@@ -30,6 +30,13 @@ public class RabbitMQReceiver{
     @Autowired
     ClientRepository clientRepository;
 
+    @Autowired
+    private final RabbitMQSender rabbitMQSender;
+
+    public RabbitMQReceiver(RabbitMQSender rabbitMQSender) {
+        this.rabbitMQSender = rabbitMQSender;
+    }
+
     @RabbitListener(queues = "userQueue")
     public void receiveUserDetails(@Payload UserDetails userDetails) {
 
@@ -45,19 +52,31 @@ public class RabbitMQReceiver{
             clientRequest.setPhoneNumber(userDetails.getPhoneNumber());
             clientRequest.setShippingAddress(userDetails.getShippingAddress());
             clientRequest.setPicture(userDetails.getPicture());
+            clientRequest.setGoogleAccount(userDetails.getGoogleAccount());
 
-            String response = validateRequest(clientRequest);
+            if (!clientRequest.getGoogleAccount()){
+                String response = validateRequest(clientRequest);
 
-            if (!response.equals("ok")){
+                if (!response.equals("ok")){
 
-                System.out.println(response);
-                return;
+                    System.out.println(response);
+                    return;
+                }
             }
+
 
             // check if account exists
             Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
 
             if (user.isPresent()){
+                //check if is a google account
+                System.out.println("User google account "+ user.get().getGoogleAccount() + "request google account "+ clientRequest.getGoogleAccount());
+                if (user.get().getGoogleAccount() && !clientRequest.getGoogleAccount()){
+                    System.out.println("Account google già presente nel database, associare l'account al tuo account google per accedere");
+                    //aggiorna l'account con i nuovi dati
+                    updateUser(user.get(), clientRequest);
+                    return;
+                }
                 //TOOD check if is a client or a seller
                 // if is a seller make new client else return bad request
                 Optional<Client> client = clientRepository.findClientByUser(user.get());
@@ -72,6 +91,7 @@ public class RabbitMQReceiver{
             }else{
                 // create new client
                 makeClient(clientRequest, makeNewUser(clientRequest));
+                rabbitMQSender.sendAddUserWallet(clientRequest);  //invio messaggio per creare wallet dello user
                 System.out.println("Client creato con successo");
                 return;
             }
@@ -138,9 +158,15 @@ public class RabbitMQReceiver{
     }
 
     private User makeNewUser(ClientRequest clientRequest) {
-        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture());
+        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture(), clientRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
+    }
+
+    private void updateUser(User user, ClientRequest clientRequest) {
+        user.setPassword(clientRequest.getPassword());
+        user.setPhoneNumber(clientRequest.getPhoneNumber());
+        userRepository.save(user);
     }
 
 }
