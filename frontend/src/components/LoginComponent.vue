@@ -57,53 +57,12 @@ axios.interceptors.response.use(response => {
   return response;
 });
 
-const googleLogin3 = () => {
-  // Effettua una chiamata GET al backend
-  axios.get('http://localhost:8080/')
-      .then(response => {
-        // Il backend dovrebbe reindirizzare l'utente a Google per l'autenticazione,
-        // quindi non è necessario fare nulla qui con la risposta
-        console.log('Risposta:', response);
-      })
-      .catch(error => {
-        console.error('Errore nella chiamata API:', error);
-      });
-};
-
 const googleLogin= () => {
   const oauthUrl = `http://localhost:8080/login`;
   console.log(encodeURIComponent(window.location.href))
   console.log(window.location.href)
   window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
   //window.location.href = oauthUrl;
-};
-
-
-
-const googleLogin132 = () => {
-  const oauthUrl = `http://localhost:8080/?url=${encodeURIComponent(window.location.href)}`;
-  window.location.href = oauthUrl;
-};
-
-
-// Questo potrebbe essere il metodo per gestire il reindirizzamento di ritorno con il token JWT
-const handleAuthRedirect = (token) => {
-  // Salva il token JWT e gestisci l'accesso dell'utente
-  localStorage.setItem('jwtToken', token);
-  // Reindirizza l'utente all'interno della tua applicazione Vue
-  this.$router.push('/homepage');
-};
-
-// Funzione per eseguire la chiamata GET
-const googleLogin2 = () => {
-  axios.get('http://localhost:8081/api/v1/user/client/' + 'dani@gmail.com')
-      .then(response => {
-        console.log('Risposta:', response);
-        console.log('Dati:', response.data);
-      })
-      .catch(error => {
-        console.error('Errore nella chiamata API:', error);
-      });
 };
 
 </script>
