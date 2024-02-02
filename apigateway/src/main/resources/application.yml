@@ -27,3 +27,26 @@ spring:
           uri: lb://authenticationservice
           predicates:
             - Path=/auth/**
+        - id: shopservice
+          uri: lb://shopservice
+          predicates:
+            - Path=/shop/**
+        - id: paymentservice
+          uri: lb://paymentservice
+          predicates:
+            - Path=/payment/**
+
+      globalcors:
+        cors-configurations:
+            '[/**]':
+                allowedOrigins:
+                - "*"
+                allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                allowedHeaders:
+                - "*"
+                allowCredentials: false
+                maxAge: 3600

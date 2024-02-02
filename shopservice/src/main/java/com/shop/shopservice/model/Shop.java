@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Shop {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
@@ -22,6 +22,9 @@ public class Shop {
     private String address;
     private String phoneNumber;
     private String email;
+    private String longitude;
+    private String latitude;
+    private String imageUrl;
 
     // Relazione con Seller
     @Column(nullable = false)

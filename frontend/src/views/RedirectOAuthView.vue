@@ -25,10 +25,10 @@ export default {
       this.saveUserInfo(token);
 
       // set the default authorization header
-      axios.interceptors.request.use(config => {
-        config.headers.Authorization = `Bearer ${token}`;
-        return config;
-      });
+      //axios.interceptors.request.use(config => {
+       // config.headers.Authorization = `Bearer ${token}`;
+        //return config;
+      //});
 
       setTimeout(() => {
         this.isLoading = false;

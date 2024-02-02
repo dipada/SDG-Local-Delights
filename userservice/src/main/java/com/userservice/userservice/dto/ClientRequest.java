@@ -12,4 +12,5 @@ public class ClientRequest {
     private String lastName;
     private String phoneNumber;
     private String shippingAddress;
+    private String picture;
 }

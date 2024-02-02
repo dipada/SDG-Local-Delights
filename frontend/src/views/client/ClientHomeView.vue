@@ -11,6 +11,9 @@
   <div class="flex-col justify-center items-center mx-auto mt-20 min-w-full">
     <client-home-body-component/>
   </div>
+
+  <MapShopsView/>
+
   <div class="flex-col justify-center mx-auto items-center">
     <h2 class="py-10 text-3xl font-bold text-center text-green-800">Maybe you can find:</h2>
 
@@ -42,9 +45,11 @@ import pastaImg from "@/assets/pasta.svg";
 import breadImg from "@/assets/bread.svg";
 import eggsImg from "@/assets/eggs.svg";
 import meatImg from "@/assets/meat.svg";
+import MapShopsView from "@/views/client/MapShopsView.vue";
 
 export default defineComponent({
   components: {
+    MapShopsView,
     CardHome,
     LogoutButtonComponent, ClientHomeBodyComponent, CartButtonComponent, HeaderBase, AvatarComponent},
   computed: {

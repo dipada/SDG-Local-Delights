@@ -22,13 +22,15 @@ public class User {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String picture;
 
-    public User(String email, String password, String firstName, String lastName, String phoneNumber) {
+    public User(String email, String password, String firstName, String lastName, String phoneNumber, String picture) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.picture = picture;
     }
 
 }

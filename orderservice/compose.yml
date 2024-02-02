@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres_container_orderservice
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgorders
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5432:5432'
+    volumes:
+      - orders-db-data:/var/lib/postgresql/data
+    networks:
+      - order_net
+    restart: unless-stopped
+
+  orderservice:
+    build: .
+    image: orderservice
+    container_name: orderservice_container
+    ports:
+      - '8086:8086'
+    depends_on:
+      - postgres
+    networks:
+      - order_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sdgorders
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+volumes:
+  orders-db-data:
+networks:
+  order_net:
+    driver: bridge

@@ -93,16 +93,18 @@ router.beforeEach((to, from, next) => {
     }
 });
 
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response && error.response.status === 401) {
-            store.dispatch('logoutUser'); // user logout
-            router.push({name: 'login'}); // redirect to login page
-        }
-        return Promise.reject(error);
-    }
-);
+//axios.interceptors.response.use(
+  //  response => response,
+   // error => {
+    //    if (error.response && error.response.status === 401) {
+     //       store.dispatch('logoutUser'); // user logout
+      //      router.push({name: 'login'}); // redirect to login page
+       // }
+       // return Promise.reject(error);
+   // }
+//);
+
+
 
 
 export default router

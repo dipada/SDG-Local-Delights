@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgres_payment:
+    container_name: postgres_container_paymentservice
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgpayments
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5432:5432'
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+    networks:
+      - paymentservice_net
+    restart: unless-stopped
+
+  paymentservice:
+    build: .
+    image: paymentservice
+    container_name: paymentservice_container
+    ports:
+      - '8084:8084'
+    depends_on:
+      - postgres_payment
+    networks:
+      - paymentservice_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_payment:5432/sdgpayments
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+volumes:
+  payment-db-data:
+networks:
+  paymentservice_net:
+    driver: bridge
