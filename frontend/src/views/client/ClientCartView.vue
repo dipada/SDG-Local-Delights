@@ -160,7 +160,13 @@ export default {
     decrementQuantity(item) {
       if (item.quantity > 1) {
         item.quantity--;
+      } else {
+        this.removeCartItem(item);
       }
+    },
+
+    removeCartItem(item) {
+      this.cartItems = this.cartItems.filter(cartItem => cartItem !== item);
     }
   }
 }
