@@ -59,6 +59,11 @@ const router = createRouter({
             component: () => import('../views/client/ClientShopView.vue'),
             meta: {requiresAuth: true}
         },
+        {
+            path: '/client/cart',
+            name: 'client-cart',
+            component: () => import('../views/client/ClientCartView.vue'),
+        },
 
         {
             path: '/seller/home',
