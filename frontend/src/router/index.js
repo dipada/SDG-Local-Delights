@@ -75,6 +75,11 @@ const router = createRouter({
             name: 'client-map',
             component: () => import('../views/client/MapShopsView.vue'),
         },
+        {
+            path: '/seller/shop',
+            name: 'seller-shop',
+            component: () => import('../views/seller/ShopView.vue'),
+        },
     ]
 });
 
