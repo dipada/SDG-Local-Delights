@@ -12,6 +12,7 @@
     <client-home-body-component/>
   </div>
 
+  <br/>
   <MapShopsView/>
 
   <div class="flex-col justify-center mx-auto items-center">
