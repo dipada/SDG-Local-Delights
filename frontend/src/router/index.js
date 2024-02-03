@@ -1,7 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
 import store from "@/store/index.js";
-import axios from "axios";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,13 +47,13 @@ const router = createRouter({
             meta: {requiresAuth: true}
         },
         {
-            path: '/client/shops',
+            path: '/client/shops', // list of shops view
             name: 'client-shops',
             component: () => import('../views/client/ClientShopsView.vue'),
             meta: {requiresAuth: true}
         },
         {
-            path: '/client/shops/:id',
+            path: '/client/shop', // single shop view
             name: 'client-shop',
             component: () => import('../views/client/ClientShopView.vue'),
             meta: {requiresAuth: true}
@@ -76,14 +75,6 @@ const router = createRouter({
             name: 'client-map',
             component: () => import('../views/client/MapShopsView.vue'),
         },
-        {
-            path: '/about',
-            name: 'about',
-            // route level code-splitting
-            // this generates a separate chunk (About.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            // component: () => import('../views/AboutView.vue')
-        }
     ]
 });
 
@@ -97,19 +88,5 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-
-//axios.interceptors.response.use(
-  //  response => response,
-   // error => {
-    //    if (error.response && error.response.status === 401) {
-     //       store.dispatch('logoutUser'); // user logout
-      //      router.push({name: 'login'}); // redirect to login page
-       // }
-       // return Promise.reject(error);
-   // }
-//);
-
-
-
 
 export default router
