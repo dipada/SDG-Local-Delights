@@ -2,7 +2,12 @@
 import { RouterLink, RouterView } from 'vue-router'
 import Footer from "@/components/Footer.vue";
 import 'leaflet/dist/leaflet.css';
+import store from "@/store/index.js";
 
+const token = localStorage.getItem('userToken'); // XSS vulnerability, use httpOnly cookies in production
+if (token) {
+  store.dispatch('saveUserInfo', token);
+}
 </script>
 
 <template>

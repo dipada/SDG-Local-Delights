@@ -1,17 +1,15 @@
 <script>
-
-import router from "@/router/index.js";
-import axios from "axios";
+import store from "@/store/index.js";
 
 export default {
   name: "LogoutButtonComponent",
   methods: {
     logoutUser() {
+      store.dispatch('logoutUser')
       window.location.href = 'http://localhost:8080/auth/logout' //+ encodeURIComponent("http://localhost:5173/");
     }
   }
 }
-
 </script>
 
 <template>

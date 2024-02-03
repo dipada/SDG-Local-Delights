@@ -36,6 +36,7 @@ export default createStore({
 
         saveUserInfo({ commit }, token) {
             if (token) {
+                localStorage.setItem('userToken', token); // XSS vulnerability, use httpOnly cookies in production
                 commit('setUserToken', token);
                 try {
                     const decoded = jwtDecode(token);
@@ -55,6 +56,7 @@ export default createStore({
             }
         },
         logoutUser({ commit }) {
+            localStorage.removeItem('userToken'); // XSS vulnerability, use httpOnly cookies in production
             commit('clearUserInfo');
         },
 
