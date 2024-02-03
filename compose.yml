@@ -161,7 +161,7 @@ services:
   productservice:
     build: ./productservice
     image: productservice
-    container_name: productservice_container
+    container_name: productservice
     ports:
       - '8083:8083'
     depends_on:
