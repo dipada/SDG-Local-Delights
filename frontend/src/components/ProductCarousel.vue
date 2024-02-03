@@ -51,7 +51,7 @@ export default {
       // Qui puoi aggiungere dati aggiuntivi o metodi specifici del componente
       items: [
         {
-          id: 1,
+          id: 12,
           name: 'Fotocamera Reflex Digitale',
           imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Smart_ForTwo_-_Flickr_-_mick_-_Lumix.jpg/2560px-Smart_ForTwo_-_Flickr_-_mick_-_Lumix.jpg',
           price: '899.00€',
@@ -883,7 +883,6 @@ export default {
     addToCart(productId) {
       console.log('Product added to cart:', productId);
       this.$store.commit('addProductToCart', productId);
-      //this.$store.commit('cart/addProduct', productId);
     }
   },
 };
