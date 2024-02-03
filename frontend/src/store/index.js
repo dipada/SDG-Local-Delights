@@ -11,8 +11,13 @@ export default createStore({
             surname: null,
             picture: null,
         },
+        shopId: null,
     },
     mutations: {
+        setShopId(state, shopId) {
+            state.shopId = shopId;
+        },
+
         setUserToken(state, token) {
             state.userToken = token;
         },
@@ -25,6 +30,10 @@ export default createStore({
         }
     },
     actions: {
+        saveShopId({ commit }, shopId) {
+            commit('setShopId', shopId);
+        },
+
         saveUserInfo({ commit }, token) {
             if (token) {
                 commit('setUserToken', token);
@@ -47,7 +56,8 @@ export default createStore({
         },
         logoutUser({ commit }) {
             commit('clearUserInfo');
-        }
+        },
+
     },
     getters: {
         isAuthenticated(state) {
@@ -58,6 +68,9 @@ export default createStore({
         },
         getUserInfo(state) {
             return state.userInfo;
+        },
+        getShopId(state) {
+            return state.shopId;
         },
     },
 });
