@@ -1,16 +1,13 @@
 <template>
-  <div>
-    <h1 class="text-black">Negozio ID: {{ shopId }}</h1>
-  </div>
-
-  <HeaderBase/>
+  <HeaderBase class="sticky top-0 z-50">
+    <template #nav>
+      <CartButtonComponent/>
+    </template>
+  </HeaderBase>
 
   <ShopTopContentComponent :shopInfo="shopInfo"/>
 
-
-
   <ProductCarousel/>
-
 </template>
 
 <script>
@@ -21,10 +18,11 @@ import axios from "axios";
 import store from "@/store/index.js";
 import router from "@/router/index.js";
 import ShopTopContentComponent from "@/components/ShopTopContentComponent.vue";
+import CartButtonComponent from "@/components/cartButtonComponent.vue";
 
 export default {
   name: 'ClientShopView',
-  components: {ShopTopContentComponent, ProductCarousel, HeaderBase},
+  components: {CartButtonComponent, ShopTopContentComponent, ProductCarousel, HeaderBase},
   data() {
     return {
       shopInfo: null,
