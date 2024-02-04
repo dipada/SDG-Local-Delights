@@ -23,6 +23,10 @@ public class Order {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> listOfProductsIds;
 
+    private Double amount;
+
     private OrderStatus orderStatus;
+
+    private String timestamp;
 
 }

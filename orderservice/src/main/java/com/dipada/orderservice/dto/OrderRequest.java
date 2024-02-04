@@ -9,4 +9,5 @@ public class OrderRequest {
     private String userEmail;
     private Long shopId;
     private List<Long> listOfProductIds;
+    private Double amount;
 }

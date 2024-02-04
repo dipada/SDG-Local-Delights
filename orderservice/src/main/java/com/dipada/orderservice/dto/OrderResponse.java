@@ -12,4 +12,5 @@ public class OrderResponse {
     private Long shopId;
     private List<Long> listOfProductIds;
     private OrderStatus orderStatus;
+    private Double amount;
 }
