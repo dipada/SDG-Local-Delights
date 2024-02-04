@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "_shops")
+@Table(name = "_shops", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"longitude", "latitude"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +24,10 @@ public class Shop {
     private String address;
     private String phoneNumber;
     private String email;
+    //longitudine e latitudine devono essere univoche in coppia
+    @Column(name="longitude")
     private String longitude;
+    @Column(name="latitude")
     private String latitude;
     private String imageUrl;
 
