@@ -23,7 +23,7 @@ public class Shop {
     private String description;
     private String address;
     private String phoneNumber;
-    private String email;
+    private String shopEmail;
     //longitudine e latitudine devono essere univoche in coppia
     @Column(name="longitude")
     private String longitude;
