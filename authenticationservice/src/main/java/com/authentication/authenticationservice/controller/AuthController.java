@@ -78,7 +78,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
     })
-    @GetMapping("/signup")
+    @PostMapping("/signup")
     public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
         //manda un messaggio via rabbit a user service per creare l'utente
         userDetails.setGoogleAccount(false);
