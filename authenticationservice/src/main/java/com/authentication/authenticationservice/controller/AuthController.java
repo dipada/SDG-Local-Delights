@@ -2,8 +2,6 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.authentication.authenticationservice.dto.ClientResponse;
-import com.authentication.authenticationservice.dto.LoginRequest;
 import com.authentication.authenticationservice.model.UserDetails;
 import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,8 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -84,6 +79,8 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
         //manda un messaggio via rabbit a user service per creare l'utente
+        // TODO fare controlli su body
+        // TODO se è valorizzato userDetails.getGoogleAccount skippare
         userDetails.setGoogleAccount(false);
         rabbitMQSender.sendAddUserRequest(userDetails);
 
