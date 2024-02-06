@@ -129,6 +129,7 @@ public class UserController {
                 clientResponse.setEmail(client.get().getUser().getEmail());
                 clientResponse.setFirstName(client.get().getUser().getFirstName());
                 clientResponse.setLastName(client.get().getUser().getLastName());
+                //clientResponse.setPassword(client.get().getUser().getPassword());
                 clientResponse.setPhoneNumber(client.get().getUser().getPhoneNumber());
                 clientResponse.setShippingAddress(client.get().getShippingAddress());
                 clientResponse.setPicture(client.get().getUser().getPicture());
@@ -144,9 +145,9 @@ public class UserController {
     }
 
 
-    @Operation(summary = "Get client by email", description = "Get client by email")
+    @Operation(summary = "Get seller by email", description = "Get seller by email")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the client"),
+            @ApiResponse(responseCode = "200", description = "Found the seller"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping("/seller/{email}")

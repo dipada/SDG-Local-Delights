@@ -19,4 +19,6 @@ eureka:
     register-with-eureka: true
     refresh:
       enable: true
+userservice:
+  url: http://userservice:8081
 

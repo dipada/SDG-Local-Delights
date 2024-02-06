@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin").permitAll()
+                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin", "/auth/login").permitAll()
                             .anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> oauth2
