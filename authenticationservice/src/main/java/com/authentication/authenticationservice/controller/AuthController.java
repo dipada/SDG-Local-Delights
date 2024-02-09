@@ -35,10 +35,13 @@ public class AuthController {
     private final RabbitMQSender rabbitMQSender;
 
     // RestTemplate per effettuare chiamate HTTP ad altri microservizi
-   // private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    public AuthController(RabbitMQSender rabbitMQSender) {
+
+    @Autowired
+    public AuthController(RabbitMQSender rabbitMQSender, RestTemplate restTemplate) {
         this.rabbitMQSender = rabbitMQSender;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -95,45 +98,46 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
     }
 
-    /*
+
     @Value("${userservice.url}")
     String userServiceUrl;
-    //login request
     @Operation(summary = "Login")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "500", description = "An error occurred"),
     })
     @PostMapping("/login")
-    public ResponseEntity<String> login (@RequestBody LoginRequest loginRequest) {
-        //check if user exists and if the password is correct and
-        //rest request to user to get the user
-        RestTemplate restTemplate = new RestTemplate();
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        // URL di UserService per la verifica dell'utente
+        String verifyUrl = userServiceUrl+"/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
+        System.out.println("URL A CUI HO MANDATO LA RICHIESTA VERIFY USER: "+verifyUrl);
 
-        String redirectUri = "http://localhost:5173/";
+        try {
+            // Invia richiesta a UserService per verificare l'utente
+            ResponseEntity<String> response = restTemplate.getForEntity(verifyUrl, String.class);
 
+            if (response.getStatusCode() == HttpStatus.OK) {
+                System.out.println("CREDENZIALI VALIDE");
+                String redirectUri = "http://localhost:5173/";
+                // Se UserService verifica l'utente, genera JWT token
+                String token = JWT.create()
+                        .withSubject(loginRequest.getEmail())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // 10 minuti di validità
+                        .sign(Algorithm.HMAC256("secret")); // Utilizza una chiave segreta più sicura in un ambiente reale
 
-        ResponseEntity<ClientResponse> response = restTemplate.getForEntity(
-                userServiceUrl + "/client/" + loginRequest.getEmail(),
-                ClientResponse.class
-        );
-
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            //make jwt token
-            String token = JWT.create().withSubject(response.getBody().getEmail()).withClaim("name", response.getBody().getFirstName()).withClaim("surname", response.getBody().getLastName()).withClaim("picture", response.getBody().getPicture()).withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
-                    .sign(Algorithm.HMAC256("secret"));
-
-            //deve eseguire le stesse operazioni del login con google ma con i dati del client response
-
-            // redirect to the client with the token
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
-            return new ResponseEntity<>(headers, HttpStatus.FOUND);
-        }else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            } else {
+                // Credenziali non valide
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } catch (Exception e) {
+            // Gestisci errori di connessione o altri errori
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
-
-     */
 
 
     // This method is called when the user is not successfully authenticated

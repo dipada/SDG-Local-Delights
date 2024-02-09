@@ -174,6 +174,38 @@ public class UserController {
         }
     }
 
+    @GetMapping("user/{email}")
+    public ResponseEntity<User> getUser(@PathVariable String email){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            return ResponseEntity.status(200).body(user.get());
+        }else{
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
+
+    //endpoint to verify if the user is registered with email and password
+    @Operation(summary = "Verify user", description = "Verify user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User verified"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String password){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            if (user.get().getPassword().equals(password)){
+                return ResponseEntity.status(200).body("User verified");
+            }else{
+                return ResponseEntity.status(404).body("User password not valid");
+            }
+        }else{
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
+
     private boolean emailValidation(String emailAddress) {
         String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\." +
                 "[a-zA-Z0-9_+&*-]+)*@" +
