@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Percorso alla directory contenente i file YAML
-DIRECTORY="./k8s"
+# set color
+YELLOW='\033[1;33m'
+# reset color
+NC='\033[0m'
 
-# Applica tutti i file YAML nella directory specificata
+DIRECTORY="."
+
 for FILE in $DIRECTORY/*.yaml; do
-    echo "Applicando $FILE..."
+    echo -e "${YELLOW}Applying $FILE...${NC}"
     kubectl apply -f $FILE
 done
 
-echo "Tutte le risorse sono state create."
+echo -e "${YELLOW}All files have been applied.${NC}"

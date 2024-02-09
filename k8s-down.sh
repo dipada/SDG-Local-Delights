@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Percorso alla directory contenente i file YAML
-DIRECTORY="./k8s"
+# set color
+YELLOW='\033[1;33m'
+# reset color
+NC='\033[0m'
 
-# Elimina tutte le risorse definite nei file YAML
+DIRECTORY="."
+
 for FILE in $DIRECTORY/*.yaml; do
-    echo "Eliminando le risorse definite in $FILE..."
+    echo -e "${YELLOW}Deleting resource in $FILE...${NC}"
     kubectl delete -f $FILE
 done
 
-echo "Tutte le risorse sono state eliminate."
+echo -e "${YELLOW}All files have been deleted.${NC}"

@@ -1,13 +1,18 @@
 #!/bin/bash
 
-echo "Elenca tutti i pods..."
+# Set color
+YELLOW='\033[1;33m'
+# Reset color
+NC='\033[0m'
+
+echo -e "${YELLOW}Pods${NC}"
 kubectl get pods
 
-echo "Elenca tutti i servizi..."
+echo -e "${YELLOW}Services${NC}"
 kubectl get svc
 
-echo "Elenca tutti i deployments..."
+echo -e "${YELLOW}Deployments${NC}"
 kubectl get deployments
 
-echo "Elenca tutti i PersistentVolumeClaims..."
+echo -e "${YELLOW}Persistent Volume Claims${NC}"
 kubectl get pvc
