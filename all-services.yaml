@@ -110,7 +110,7 @@ metadata:
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: postgres-order
-  name: postgres_order
+  name: postgres-order
 spec:
   ports:
     - name: "5436"
@@ -127,7 +127,7 @@ metadata:
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: postgres-payment
-  name: postgres_payment
+  name: postgres-payment
 spec:
   ports:
     - name: "5435"
@@ -144,7 +144,7 @@ metadata:
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: postgres-product
-  name: postgres_product
+  name: postgres-product
 spec:
   ports:
     - name: "5439"
@@ -178,7 +178,7 @@ metadata:
     kompose.version: 1.32.0 (765fde254)
   labels:
     io.kompose.service: postgres-shop
-  name: postgres_shop
+  name: postgres-shop
 spec:
   ports:
     - name: "5433"

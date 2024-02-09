@@ -138,7 +138,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: admin
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres_order:5432/sdgorders
+              value: jdbc:postgresql://postgres-order:5432/sdgorders
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
@@ -188,7 +188,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: admin
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres_payment:5432/sdgpayments
+              value: jdbc:postgresql://postgres-payment:5432/sdgpayments
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
@@ -533,7 +533,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: admin
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres_product:5432/sdgproducts
+              value: jdbc:postgresql://postgres-product:5432/sdgproducts
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
@@ -627,7 +627,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: admin
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres_shop:5432/sdgshops
+              value: jdbc:postgresql://postgres-shop:5432/sdgshops
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
