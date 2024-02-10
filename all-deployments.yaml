@@ -34,7 +34,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: authenticationservice
+          image: dipada/authenticationservice
           name: authenticationservice
           ports:
             - containerPort: 8080
@@ -66,7 +66,7 @@ spec:
         io.kompose.service: discovery-server
     spec:
       containers:
-        - image: discoveryserver
+        - image: dipada/discoveryserver
           name: discoveryserver
           ports:
             - containerPort: 8761
@@ -101,7 +101,7 @@ spec:
         - env:
             - name: eureka.client.serviceUrl.defaultZone
               value: http://discovery-server:8761/eureka/
-          image: apigateway
+          image: dipada/apigateway
           name: apigateway
           ports:
             - containerPort: 8085
@@ -151,7 +151,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: orderservice
+          image: dipada/orderservice
           name: orderservice
           ports:
             - containerPort: 8086
@@ -201,7 +201,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: paymentservice
+          image: dipada/paymentservice
           name: paymentservice
           ports:
             - containerPort: 8084
@@ -546,7 +546,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: productservice
+          image: dipada/productservice
           name: productservice
           ports:
             - containerPort: 8083
@@ -640,7 +640,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: shopservice
+          image: dipada/shopservice
           name: shopservice
           ports:
             - containerPort: 8082
@@ -690,7 +690,7 @@ spec:
               value: rabbitmq
             - name: spring.rabbitmq.port
               value: "5672"
-          image: userservice
+          image: dipada/userservice
           name: userservice
           ports:
             - containerPort: 8081
