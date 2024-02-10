@@ -5,7 +5,13 @@ DOCKER_USERNAME="dipada"
 
 # List of images to build and push. Format: "image_name:directory"
 IMAGES=(
+    "apigateway:./apigateway"
     "authenticationservice:./authenticationservice"
+    "discoveryserver:./discoveryserver"
+    "orderservice:./orderservice"
+    "paymentservice:./paymentservice"
+    "productservice:./productservice"
+    "shopservice:./shopservice"
     "userservice:./userservice"
 )
 
