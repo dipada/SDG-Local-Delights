@@ -18,7 +18,7 @@ services:
   gateway:
     container_name: apigateway
     build: ./apigateway
-    image: apigateway
+    image: dipada/apigateway
     environment:
         - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     ports:
@@ -35,7 +35,7 @@ services:
   discovery-server:
     container_name: discoveryserver
     build: ./discoveryserver
-    image: discoveryserver
+    image: dipada/discoveryserver
     ports:
       - '8761:8761'
     networks:
@@ -102,7 +102,7 @@ services:
 
   authenticationservice:
     build: ./authenticationservice
-    image: authenticationservice
+    image: dipada/authenticationservice
     container_name: authenticationservice
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
@@ -121,7 +121,7 @@ services:
 
   shopservice:
     build: ./shopservice
-    image: shopservice
+    image: dipada/shopservice
     container_name: shopservice
     ports:
       - '8082:8082'
@@ -160,7 +160,7 @@ services:
 
   productservice:
     build: ./productservice
-    image: productservice
+    image: dipada/productservice
     container_name: productservice
     ports:
       - '8083:8083'
@@ -218,7 +218,7 @@ services:
 
   paymentservice:
     build: ./paymentservice
-    image: paymentservice
+    image: dipada/paymentservice
     container_name: paymentservice
     ports:
       - '8084:8084'
@@ -257,7 +257,7 @@ services:
 
   orderservice:
     build: ./orderservice
-    image: orderservice
+    image: dipada/orderservice
     container_name: orderservice
     ports:
       - '8086:8086'
