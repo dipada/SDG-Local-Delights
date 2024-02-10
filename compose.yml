@@ -43,7 +43,7 @@ services:
 
   userservice:
     build: ./userservice
-    image: userservice
+    image: dipada/userservice
     container_name: userservice
     ports:
       - '8081:8081'
