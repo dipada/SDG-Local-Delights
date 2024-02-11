@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 # Set color
 YELLOW='\033[1;33m'
