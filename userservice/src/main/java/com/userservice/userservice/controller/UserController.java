@@ -7,6 +7,7 @@ import com.userservice.userservice.dto.SellerResponse;
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.Seller;
 import com.userservice.userservice.model.User;
+import com.userservice.userservice.model.UserDetails;
 import com.userservice.userservice.rabbitMQ.RabbitMQSender;
 import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.SellerRepository;
@@ -45,6 +46,66 @@ public class UserController {
         return ResponseEntity.ok("Welcome to the user service");
     }
 
+    @PostMapping("/createUser")
+    public ResponseEntity<String> createUser(@RequestBody UserDetails userDetails) {
+        System.out.println("Received <" + userDetails + ">");
+        try {
+            ClientRequest clientRequest = new ClientRequest();
+            clientRequest.setEmail(userDetails.getEmail());
+            clientRequest.setPassword(userDetails.getPassword());
+            clientRequest.setFirstName(userDetails.getName());
+            clientRequest.setLastName(userDetails.getSurname());
+            clientRequest.setPhoneNumber(userDetails.getPhoneNumber());
+            clientRequest.setShippingAddress(userDetails.getShippingAddress());
+            clientRequest.setPicture(userDetails.getPicture());
+            clientRequest.setGoogleAccount(userDetails.getGoogleAccount());
+
+            if (!clientRequest.getGoogleAccount()){
+                String response = validateRequest(clientRequest);
+
+                if (!response.equals("ok")){
+
+                    System.out.println(response);
+                    return ResponseEntity.status(400).body(response);
+                }
+            }
+
+
+            // check if account exists
+            Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
+
+            if (user.isPresent()){
+                //check if is a google account
+                System.out.println("User google account "+ user.get().getGoogleAccount() + "request google account "+ clientRequest.getGoogleAccount());
+                if (user.get().getGoogleAccount() && !clientRequest.getGoogleAccount()){
+                    System.out.println("Account google già presente nel database, associare l'account al tuo account google per accedere");
+                    //aggiorna l'account con i nuovi dati
+                    updateUser(user.get(), clientRequest);
+                    return ResponseEntity.status(200).body("Account aggiornato con successo");
+                }
+                //TOOD check if is a client or a seller
+                // if is a seller make new client else return bad request
+                Optional<Client> client = clientRepository.findClientByUser(user.get());
+                if (client.isPresent()) {
+                    System.out.println("Client email già presente nel database");
+                    return ResponseEntity.badRequest().body("Client email già presente nel database");
+                }else {
+                    makeClient(clientRequest, user.get());
+                    System.out.println("Client creato con successo");
+                    return ResponseEntity.status(200).body("Client creato con successo");
+                }
+            }else{
+                // create new client
+                makeClient(clientRequest, makeNewUser(clientRequest));
+                rabbitMQSender.sendAddUserWallet(clientRequest);  //invio messaggio per creare wallet dello user
+                System.out.println("Client creato con successo");
+                return ResponseEntity.status(200).body("Client creato con successo");
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
 
     @Operation(summary = "Create a new client", description = "Create a new client")
     @ApiResponses(value = {
@@ -318,6 +379,12 @@ public class UserController {
         User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture(), sellerRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
+    }
+
+    private void updateUser(User user, ClientRequest clientRequest) {
+        user.setPassword(clientRequest.getPassword());
+        user.setPhoneNumber(clientRequest.getPhoneNumber());
+        userRepository.save(user);
     }
 
 
