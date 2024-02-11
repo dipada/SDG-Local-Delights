@@ -10,10 +10,12 @@ metadata:
     io.kompose.service: authenticationservice
   name: authenticationservice
 spec:
+  type: NodePort
   ports:
     - name: "8080"
       port: 8080
       targetPort: 8080
+      nodePort: 30080
   selector:
     io.kompose.service: authenticationservice
 ---
@@ -41,13 +43,34 @@ metadata:
     kompose.cmd: kompose convert -f compose.yml
     kompose.version: 1.32.0 (765fde254)
   labels:
+    io.kompose.service: frontend
+  name: frontend
+spec:
+  type: NodePort
+  ports:
+    - name: "5173"
+      port: 5173
+      targetPort: 8080
+      nodePort: 30073
+  selector:
+    io.kompose.service: frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f compose.yml
+    kompose.version: 1.32.0 (765fde254)
+  labels:
     io.kompose.service: gateway
   name: gateway
 spec:
+  type: NodePort
   ports:
     - name: "8085"
       port: 8085
       targetPort: 8085
+      nodePort: 30085
   selector:
     io.kompose.service: gateway
 ---
@@ -214,6 +237,7 @@ metadata:
     io.kompose.service: rabbitmq
   name: rabbitmq
 spec:
+  type: NodePort
   ports:
     - name: "15672"
       port: 15672
