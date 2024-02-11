@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 # dockerhub username
 DOCKER_USERNAME="dipada"
@@ -13,6 +13,7 @@ IMAGES=(
     "productservice:./productservice"
     "shopservice:./shopservice"
     "userservice:./userservice"
+    "frontend:./frontend"
 )
 
 # Loop through each image

@@ -61,7 +61,8 @@ const googleLogin= () => {
   const oauthUrl = `http://localhost:8080/login`;
   console.log(encodeURIComponent(window.location.href))
   console.log(window.location.href)
-  window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
+  //window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
+  window.location.href = 'http://localhost:30080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:30073/redirect/oauth");
   //window.location.href = oauthUrl;
 };
 

@@ -9,6 +9,13 @@ export default defineConfig({
     vue(),
   ],
   server:{
+    proxy:{
+      'localhost:8085/*':{
+        target:'http://localhost:30085',
+        changeOrigin:true,
+        secure:false
+      }
+    },
     watch:{
       usePolling:true
     },
