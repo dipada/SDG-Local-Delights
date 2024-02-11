@@ -16,7 +16,7 @@ export default {
     };
   },
   created() {
-    axios.get("http://localhost:8085/shop/all", {
+    axios.get("/apigateway/shop/all", {
       headers: {
         'Authorization': 'Bearer ' + store.getters.getUserToken,
         'Accept': '*/*'

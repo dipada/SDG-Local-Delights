@@ -50,7 +50,7 @@ spec:
   ports:
     - name: "5173"
       port: 5173
-      targetPort: 8080
+      targetPort: 5173
       nodePort: 30073
   selector:
     io.kompose.service: frontend

@@ -188,7 +188,7 @@ export default {
     async fetchCartItemsDetails() {
       try {
         const requests = this.cartItems.map(item =>
-            axios.get(`http://localhost:8085/product/get/${item.id}`, {
+            axios.get(`/apigateway/product/get/${item.id}`, {
               headers: {
                 'Authorization': 'Bearer ' + store.getters.getUserToken,
                 'Accept': '*/*'

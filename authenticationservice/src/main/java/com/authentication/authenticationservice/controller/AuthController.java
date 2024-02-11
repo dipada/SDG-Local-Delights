@@ -117,7 +117,8 @@ public class AuthController {
         new SecurityContextLogoutHandler().logout(request, response, null);
         // TODO: jwt blacklist or invalidation
 
-        String redirectUri = "http://localhost:5173/";
+        //String redirectUri = "http://localhost:5173/";
+        String redirectUri = "http://localhost:30073/";
 
         // redirect to the client
         HttpHeaders headers = new HttpHeaders();

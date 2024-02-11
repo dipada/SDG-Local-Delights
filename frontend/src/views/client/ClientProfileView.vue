@@ -82,7 +82,7 @@ export default defineComponent({
 
     fetchOrderDetails() {
       console.log(this.userInfo.email);
-      axios.get(`http://localhost:8085/api/v1/order/get-all-orders/${this.userInfo.email}`, {
+      axios.get(`/apigateway/api/v1/order/get-all-orders/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
@@ -102,7 +102,7 @@ export default defineComponent({
     },
 
     getOrderDetails(userOrders) {
-      return axios.get(`http://localhost:8085/shop/get/${userOrders.shopId}`, {
+      return axios.get(`/apigateway/shop/get/${userOrders.shopId}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'

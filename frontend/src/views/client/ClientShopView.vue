@@ -39,7 +39,7 @@ export default {
   methods: {
     fetchShopInfo() {
       if (this.shopId) {
-        axios.get(`http://localhost:8085/shop/get/${this.shopId}`, {
+        axios.get(`/apigateway/shop/get/${this.shopId}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*'

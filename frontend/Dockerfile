@@ -1,26 +1,9 @@
-# Utilizza l'ultima immagine di Node come base
-FROM node:latest
+FROM node:lts-alpine
 
-# Imposta la directory di lavoro nel container
-WORKDIR .
-
-# Copia il file package.json e package-lock.json (se esiste) nella directory di lavoro del container
-COPY package*.json ./
-
-# Installa le dipendenze del progetto
-RUN npm install --force
-
-# Copia il resto dei file del progetto nella directory di lavoro del container
+WORKDIR /frontend
 COPY . .
 
-# Costruisci l'applicazione per la produzione usando Vite
-RUN npm run build
+RUN npm cache clean --force
+RUN npm install --force
 
-# Installa http-server per servire l'applicazione costruita
-RUN npm install -g http-server
-
-# Espone la porta 8080 sul container
-EXPOSE 8080
-
-# Serve l'applicazione dalla directory 'dist' utilizzando http-server
-CMD [ "http-server", "dist", "-p", "8080" ]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
