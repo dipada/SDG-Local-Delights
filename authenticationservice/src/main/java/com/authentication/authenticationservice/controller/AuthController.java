@@ -104,32 +104,28 @@ public class AuthController {
 
     @Value("${userservice.url}")
     String userServiceUrl;
+
     @Operation(summary = "Signup")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
     })
     @PostMapping("/signup")
-    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
+    public ResponseEntity<String> signup(@RequestBody UserDetails userDetails) {
         String redirectUri;
         //manda un messaggio via rabbit a user service per creare l'utente
         userDetails.setGoogleAccount(false);
-        String verifyUrl = userServiceUrl+"/api/v1/user/createUser";
+        String verifyUrl = userServiceUrl + "/api/v1/user/createUser";
         //rest request to user service to singup
-        try {
-            ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("User created successfully");
-                redirectUri = "http://localhost:5173/login";
-            } else {
-                // Credenziali non valide
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid request");
-            }
-        } catch (Exception e) {
-            // Gestisci errori di connessione o altri errori
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+
+        ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            // Credenziali non valide
+            return ResponseEntity.status(response.getStatusCode()).body("Invalid request");
         }
         //rabbitMQSender.sendAddUserRequest(userDetails);
 
+        System.out.println("User created successfully");
+        redirectUri = "http://localhost:5173/login";
         // redirect to the client
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(redirectUri));
@@ -144,35 +140,31 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "An error occurred"),
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         // URL di UserService per la verifica dell'utente
-        String verifyUrl = userServiceUrl+"/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
-        System.out.println("URL A CUI HO MANDATO LA RICHIESTA VERIFY USER: "+verifyUrl);
+        String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
+        System.out.println("URL A CUI HO MANDATO LA RICHIESTA VERIFY USER: " + verifyUrl);
 
-        try {
-            // Invia richiesta a UserService per verificare l'utente
-            ResponseEntity<String> response = restTemplate.getForEntity(verifyUrl, String.class);
+        // Invia richiesta a UserService per verificare l'utente
+        ResponseEntity<String> response = restTemplate.getForEntity(verifyUrl, String.class);
+        System.out.println("response: " + response);
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("CREDENZIALI VALIDE");
-                String redirectUri = "http://localhost:5173/";
-                // Se UserService verifica l'utente, genera JWT token
-                String token = JWT.create()
-                        .withSubject(loginRequest.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // 10 minuti di validità
-                        .sign(Algorithm.HMAC256("secret")); // Utilizza una chiave segreta più sicura in un ambiente reale
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
-                return new ResponseEntity<>(headers, HttpStatus.FOUND);
-            } else {
-                // Credenziali non valide
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-            }
-        } catch (Exception e) {
-            // Gestisci errori di connessione o altri errori
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        if (response.getStatusCode() != HttpStatus.OK) {
+            // Credenziali non valide
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
+        System.out.println("CREDENZIALI VALIDE");
+        String redirectUri = "http://localhost:5173/";
+        // Se UserService verifica l'utente, genera JWT token
+        String token = JWT.create()
+                .withSubject(loginRequest.getEmail())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // 10 minuti di validità
+                .sign(Algorithm.HMAC256("secret")); // Utilizza una chiave segreta più sicura in un ambiente reale
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
+        return ResponseEntity.status(HttpStatus.FOUND).body("found");
+        // return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
 

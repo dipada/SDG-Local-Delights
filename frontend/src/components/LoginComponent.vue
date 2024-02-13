@@ -9,7 +9,8 @@
         <div>
           <label for="email" class="block text-sm font-medium leading-6 text-green-800">Email address</label>
           <div class="mt-2">
-            <input id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6" />
+            <input id="email" name="email" type="email" autocomplete="email" required=""
+                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"/>
           </div>
         </div>
 
@@ -21,19 +22,25 @@
             </div>
           </div>
           <div class="mt-2">
-            <input id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6" />
+            <input id="password" name="password" type="password" autocomplete="current-password" required=""
+                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"/>
           </div>
         </div>
 
         <div>
-          <button type="submit" class="flex w-full justify-center rounded-md bg-secondary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
+          <button type="submit"
+                  class="flex w-full justify-center rounded-md bg-secondary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  @click="customLogin">Login
+          </button>
         </div>
         <div class="seperator">
           <h5><span>oppure</span></h5>
         </div>
       </form>
       <div class="mt-4">
-        <button type="submit" class="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-secondary shadow-sm hover:bg-secondary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click="googleLogin">
+        <button type="submit"
+                class="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-secondary shadow-sm hover:bg-secondary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                @click="googleLogin">
           <img src="../assets/google.png" alt="google" class="w-5 h-5 me-2">
           Log in with Google
         </button>
@@ -44,6 +51,7 @@
 </template>
 <script setup>
 import axios from 'axios';
+import {data} from "autoprefixer";
 
 // Interceptor per le richieste
 axios.interceptors.request.use(request => {
@@ -57,13 +65,21 @@ axios.interceptors.response.use(response => {
   return response;
 });
 
-const googleLogin= () => {
+const googleLogin = () => {
   const oauthUrl = `http://localhost:8080/login`;
   console.log(encodeURIComponent(window.location.href))
   console.log(window.location.href)
   window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
   //window.location.href = oauthUrl;
 };
+
+const customLogin = () => {
+  axios.post('http://localhost:8080/auth/login', {email: "sofi.s@sofi.com", password: "so"}).then((response) => {
+    console.log("questa e' la risposta ", JSON.stringify(response))
+  }).catch((e) => {
+    console.log("errore: " + e)
+  });
+}
 
 </script>
 <style scoped>
