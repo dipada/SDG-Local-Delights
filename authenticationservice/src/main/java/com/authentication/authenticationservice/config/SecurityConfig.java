@@ -22,14 +22,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin", "/auth/login").permitAll()
+                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin", "/auth/login", "/auth/logout").permitAll()
                             .anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/oauth2/authorization/google")
                         .defaultSuccessUrl("/auth/google", true)
                         .failureUrl("/auth/failureLogin")
-                ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("/auth/logout"));
+                ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("http://localhost:5173/"));
         return http.build();
     }
 }
