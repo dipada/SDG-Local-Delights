@@ -29,11 +29,7 @@ public class SecurityConfig {
                         .loginPage("/oauth2/authorization/google")
                         .defaultSuccessUrl("/auth/google", true)
                         .failureUrl("/auth/failureLogin")
-                ).logout(logout -> logout.logoutUrl("/auth/logout").logoutSuccessUrl("http://localhost:5173/"));
+                ).logout(logout -> logout.logoutUrl("/auth/logout/entry").logoutSuccessUrl("/auth/logout"));
         return http.build();
     }
 }
-
-
-
-
