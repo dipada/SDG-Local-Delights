@@ -1,29 +1,33 @@
 package com.authentication.authenticationservice.rabbitMQ;
 
 import com.authentication.authenticationservice.model.UserDetails;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 
+
 @Component
-public class RabbitMQSender {
+public class RabbitMQSender{
+    @Autowired
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-    @Value("${spring.rabbitmq.routingkey}")
-    private String routingkey;
+    @Qualifier("queue")
     @Autowired
-    public RabbitMQSender(RabbitTemplate rabbitTemplate) {
+    private final Queue userQueue;
+
+
+    public RabbitMQSender(RabbitTemplate rabbitTemplate, @Qualifier("queue") Queue userQueue){
         this.rabbitTemplate = rabbitTemplate;
+        this.userQueue = userQueue;
     }
 
-
-    public void sendAddUserRequest(UserDetails userDetails) {
-        System.out.println("Send msg = " + userDetails + " to routingkey" + routingkey + " exchange " + exchange);
-        rabbitTemplate.convertAndSend(exchange, routingkey, userDetails);
+    public void sendAddUserRequest(UserDetails userDetails){
+        System.out.println("Send msg = " + userDetails + " to queue " + userQueue.getName());
+        rabbitTemplate.convertAndSend(this.userQueue.getName(), userDetails);
     }
+
 
 }

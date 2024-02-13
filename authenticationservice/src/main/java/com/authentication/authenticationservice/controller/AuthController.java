@@ -2,6 +2,8 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.authentication.authenticationservice.dto.ClientResponse;
+import com.authentication.authenticationservice.dto.LoginRequest;
 import com.authentication.authenticationservice.model.UserDetails;
 import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -29,9 +34,16 @@ public class AuthController {
 
     private final RabbitMQSender rabbitMQSender;
 
-    public AuthController(RabbitMQSender rabbitMQSender) {
+    // RestTemplate per effettuare chiamate HTTP ad altri microservizi
+    private final RestTemplate restTemplate;
+
+
+    @Autowired
+    public AuthController(RabbitMQSender rabbitMQSender, RestTemplate restTemplate) {
         this.rabbitMQSender = rabbitMQSender;
+        this.restTemplate = restTemplate;
     }
+
 
     // Entrypoint will be triggered by Spring Security when the user is not authenticated.
     // This method is called when the user is successfully authenticated with Google.
@@ -50,6 +62,15 @@ public class AuthController {
         if (redirectUri == null || redirectUri.isEmpty()) {
             redirectUri = "http://localhost:5173/redirect/oauth";
         }
+        //send a message to the user service to create the user
+        UserDetails userDetails = new UserDetails();
+        userDetails.setEmail(user.getAttribute("email"));
+        userDetails.setName(user.getAttribute("given_name"));
+        userDetails.setSurname(user.getAttribute("family_name"));
+        userDetails.setPicture(user.getAttribute("picture"));
+        userDetails.setGoogleAccount(true);
+
+        rabbitMQSender.sendAddUserRequest(userDetails);
 
         // redirect to the client with the token
         HttpHeaders headers = new HttpHeaders();
@@ -57,37 +78,20 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    //signup without google
-    /*
-    @Operation(summary = "Signup without Google")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserDetails userDetails){
-        //manda un messaggio via rabbit a user service per creare l'utente
-        //rabbitMQSender.sendAddUserRequest(userDetails);
-
-        //se l'utente è stato creato con successo rimanda a login
-        //altrimenti rimanda a signup con un messaggio di errore
-        //TODO: gestire il caso in cui l'utente esiste già
-        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
-    }
-
-     */
 
     // Entrypoint for signup page
+    /*
     @Operation(summary = "Signup")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
     })
-    @GetMapping("/signup")
-    public ResponseEntity<String> signup(@RequestParam(name = "redirect_uri", required = false) String redirectUri, @RequestBody UserDetails userDetails) {
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
         //manda un messaggio via rabbit a user service per creare l'utente
+        userDetails.setGoogleAccount(false);
         rabbitMQSender.sendAddUserRequest(userDetails);
-        if (redirectUri == null || redirectUri.isEmpty()) {
-            redirectUri = "http://localhost:5173/login";
-        }
+
+        String redirectUri = "http://localhost:5173/login";
 
         // redirect to the client
         HttpHeaders headers = new HttpHeaders();
@@ -95,6 +99,80 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
     }
 
+     */
+
+    @Value("${userservice.url}")
+    String userServiceUrl;
+    @Operation(summary = "Signup")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+    })
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
+        String redirectUri;
+        //manda un messaggio via rabbit a user service per creare l'utente
+        userDetails.setGoogleAccount(false);
+        String verifyUrl = userServiceUrl+"/api/v1/user/createUser";
+        //rest request to user service to singup
+        try {
+            ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                System.out.println("User created successfully");
+                redirectUri = "http://localhost:5173/login";
+            } else {
+                // Credenziali non valide
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid request");
+            }
+        } catch (Exception e) {
+            // Gestisci errori di connessione o altri errori
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+        //rabbitMQSender.sendAddUserRequest(userDetails);
+
+        // redirect to the client
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUri));
+        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+    }
+
+
+    @Operation(summary = "Login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "500", description = "An error occurred"),
+    })
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        // URL di UserService per la verifica dell'utente
+        String verifyUrl = userServiceUrl+"/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
+        System.out.println("URL A CUI HO MANDATO LA RICHIESTA VERIFY USER: "+verifyUrl);
+
+        try {
+            // Invia richiesta a UserService per verificare l'utente
+            ResponseEntity<String> response = restTemplate.getForEntity(verifyUrl, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                System.out.println("CREDENZIALI VALIDE");
+                String redirectUri = "http://localhost:5173/";
+                // Se UserService verifica l'utente, genera JWT token
+                String token = JWT.create()
+                        .withSubject(loginRequest.getEmail())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // 10 minuti di validità
+                        .sign(Algorithm.HMAC256("secret")); // Utilizza una chiave segreta più sicura in un ambiente reale
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            } else {
+                // Credenziali non valide
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } catch (Exception e) {
+            // Gestisci errori di connessione o altri errori
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
 
 
     // This method is called when the user is not successfully authenticated

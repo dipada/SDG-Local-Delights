@@ -7,6 +7,8 @@ import com.userservice.userservice.dto.SellerResponse;
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.Seller;
 import com.userservice.userservice.model.User;
+import com.userservice.userservice.model.UserDetails;
+import com.userservice.userservice.rabbitMQ.RabbitMQSender;
 import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.SellerRepository;
 import com.userservice.userservice.repository.UserRepository;
@@ -28,16 +30,81 @@ public class UserController {
     private final ClientRepository clientRepository;
     private final SellerRepository sellerRepository;
 
+
+    private final RabbitMQSender rabbitMQSender;
+
     @Autowired
-    protected UserController(UserRepository userRepository, ClientRepository clientRepository, SellerRepository sellerRepository) {
+    protected UserController(UserRepository userRepository, ClientRepository clientRepository, SellerRepository sellerRepository, RabbitMQSender rabbitMQSender) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.sellerRepository = sellerRepository;
+        this.rabbitMQSender = rabbitMQSender;
     }
 
     @GetMapping("/welcome")
     public ResponseEntity<String> welcome() {
         return ResponseEntity.ok("Welcome to the user service");
+    }
+
+    @PostMapping("/createUser")
+    public ResponseEntity<String> createUser(@RequestBody UserDetails userDetails) {
+        System.out.println("Received <" + userDetails + ">");
+        try {
+            ClientRequest clientRequest = new ClientRequest();
+            clientRequest.setEmail(userDetails.getEmail());
+            clientRequest.setPassword(userDetails.getPassword());
+            clientRequest.setFirstName(userDetails.getName());
+            clientRequest.setLastName(userDetails.getSurname());
+            clientRequest.setPhoneNumber(userDetails.getPhoneNumber());
+            clientRequest.setShippingAddress(userDetails.getShippingAddress());
+            clientRequest.setPicture(userDetails.getPicture());
+            clientRequest.setGoogleAccount(userDetails.getGoogleAccount());
+
+            if (!clientRequest.getGoogleAccount()){
+                String response = validateRequest(clientRequest);
+
+                if (!response.equals("ok")){
+
+                    System.out.println(response);
+                    return ResponseEntity.status(400).body(response);
+                }
+            }
+
+
+            // check if account exists
+            Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
+
+            if (user.isPresent()){
+                //check if is a google account
+                System.out.println("User google account "+ user.get().getGoogleAccount() + "request google account "+ clientRequest.getGoogleAccount());
+                if (user.get().getGoogleAccount() && !clientRequest.getGoogleAccount()){
+                    System.out.println("Account google già presente nel database, associare l'account al tuo account google per accedere");
+                    //aggiorna l'account con i nuovi dati
+                    updateUser(user.get(), clientRequest);
+                    return ResponseEntity.status(200).body("Account aggiornato con successo");
+                }
+                //TOOD check if is a client or a seller
+                // if is a seller make new client else return bad request
+                Optional<Client> client = clientRepository.findClientByUser(user.get());
+                if (client.isPresent()) {
+                    System.out.println("Client email già presente nel database");
+                    return ResponseEntity.badRequest().body("Client email già presente nel database");
+                }else {
+                    makeClient(clientRequest, user.get());
+                    System.out.println("Client creato con successo");
+                    return ResponseEntity.status(200).body("Client creato con successo");
+                }
+            }else{
+                // create new client
+                makeClient(clientRequest, makeNewUser(clientRequest));
+                rabbitMQSender.sendAddUserWallet(clientRequest);  //invio messaggio per creare wallet dello user
+                System.out.println("Client creato con successo");
+                return ResponseEntity.status(200).body("Client creato con successo");
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Create a new client", description = "Create a new client")
@@ -64,11 +131,13 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Client email già presente nel database");
             }else {
                 makeClient(clientRequest, user.get());
+                rabbitMQSender.sendAddUserWallet(clientRequest);
                 return ResponseEntity.status(200).body("Client creato con successo");
             }
         }else{
             // create new client
             makeClient(clientRequest, makeNewUser(clientRequest));
+            rabbitMQSender.sendAddUserWallet(clientRequest);
             return ResponseEntity.status(200).body("Client creato con successo");
         }
     }
@@ -121,9 +190,12 @@ public class UserController {
                 clientResponse.setEmail(client.get().getUser().getEmail());
                 clientResponse.setFirstName(client.get().getUser().getFirstName());
                 clientResponse.setLastName(client.get().getUser().getLastName());
+                //clientResponse.setPassword(client.get().getUser().getPassword());
                 clientResponse.setPhoneNumber(client.get().getUser().getPhoneNumber());
                 clientResponse.setShippingAddress(client.get().getShippingAddress());
                 clientResponse.setPicture(client.get().getUser().getPicture());
+                clientResponse.setGoogleAccount(client.get().getUser().getGoogleAccount());
+
                 return ResponseEntity.status(200).body(clientResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -134,9 +206,9 @@ public class UserController {
     }
 
 
-    @Operation(summary = "Get client by email", description = "Get client by email")
+    @Operation(summary = "Get seller by email", description = "Get seller by email")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the client"),
+            @ApiResponse(responseCode = "200", description = "Found the seller"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping("/seller/{email}")
@@ -152,6 +224,8 @@ public class UserController {
                 sellerResponse.setPhoneNumber(seller.get().getUser().getPhoneNumber());
                 sellerResponse.setVatNumber(seller.get().getVat());
                 sellerResponse.setPicture(seller.get().getUser().getPicture());
+                sellerResponse.setGoogleAccount(seller.get().getUser().getGoogleAccount());
+
                 return ResponseEntity.status(200).body(sellerResponse);
             }else{
                 return ResponseEntity.status(404).body(null);
@@ -160,6 +234,38 @@ public class UserController {
             return ResponseEntity.status(404).body(null);
         }
     }
+
+    @GetMapping("user/{email}")
+    public ResponseEntity<User> getUser(@PathVariable String email){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            return ResponseEntity.status(200).body(user.get());
+        }else{
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
+
+    //endpoint to verify if the user is registered with email and password
+    @Operation(summary = "Verify user", description = "Verify user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User verified"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String password){
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isPresent()){
+            if (user.get().getPassword().equals(password)){
+                return ResponseEntity.status(200).body("User verified");
+            }else{
+                return ResponseEntity.status(404).body("User password not valid");
+            }
+        }else{
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
 
     private boolean emailValidation(String emailAddress) {
         String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\." +
@@ -264,15 +370,21 @@ public class UserController {
     }
 
     private User makeNewUser(ClientRequest clientRequest) {
-        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture());
+        User newUser = new User(clientRequest.getEmail(), clientRequest.getPassword(), clientRequest.getFirstName(), clientRequest.getLastName(), clientRequest.getPhoneNumber(), clientRequest.getPicture(), clientRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
     }
 
     private User makeNewUser(SellerRequest sellerRequest) {
-        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture());
+        User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture(), sellerRequest.getGoogleAccount());
         userRepository.save(newUser);
         return newUser;
+    }
+
+    private void updateUser(User user, ClientRequest clientRequest) {
+        user.setPassword(clientRequest.getPassword());
+        user.setPhoneNumber(clientRequest.getPhoneNumber());
+        userRepository.save(user);
     }
 
 
