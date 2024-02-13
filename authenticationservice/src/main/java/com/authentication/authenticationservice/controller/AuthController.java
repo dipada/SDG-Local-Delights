@@ -80,6 +80,7 @@ public class AuthController {
 
 
     // Entrypoint for signup page
+    /*
     @Operation(summary = "Signup")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
@@ -98,9 +99,43 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
     }
 
+     */
 
     @Value("${userservice.url}")
     String userServiceUrl;
+    @Operation(summary = "Signup")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+    })
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
+        String redirectUri;
+        //manda un messaggio via rabbit a user service per creare l'utente
+        userDetails.setGoogleAccount(false);
+        String verifyUrl = userServiceUrl+"/api/v1/user/createUser";
+        //rest request to user service to singup
+        try {
+            ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                System.out.println("User created successfully");
+                redirectUri = "http://localhost:5173/login";
+            } else {
+                // Credenziali non valide
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid request");
+            }
+        } catch (Exception e) {
+            // Gestisci errori di connessione o altri errori
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+        //rabbitMQSender.sendAddUserRequest(userDetails);
+
+        // redirect to the client
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUri));
+        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+    }
+
+
     @Operation(summary = "Login")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "Redirect to the client"),
