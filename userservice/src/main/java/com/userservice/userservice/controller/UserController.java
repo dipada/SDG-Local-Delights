@@ -63,10 +63,10 @@ public class UserController {
             clientRequest.setPicture(userDetails.getPicture());
             clientRequest.setGoogleAccount(userDetails.getGoogleAccount());
 
-            if (!clientRequest.getGoogleAccount()){
+            if (!clientRequest.getGoogleAccount()) {
                 String response = validateRequest(clientRequest);
 
-                if (!response.equals("ok")){
+                if (!response.equals("ok")) {
 
                     System.out.println(response);
                     return ResponseEntity.status(400).body(response);
@@ -77,10 +77,10 @@ public class UserController {
             // check if account exists
             Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
 
-            if (user.isPresent()){
+            if (user.isPresent()) {
                 //check if is a google account
-                System.out.println("User google account "+ user.get().getGoogleAccount() + "request google account "+ clientRequest.getGoogleAccount());
-                if (user.get().getGoogleAccount() && !clientRequest.getGoogleAccount()){
+                System.out.println("User google account " + user.get().getGoogleAccount() + "request google account " + clientRequest.getGoogleAccount());
+                if (user.get().getGoogleAccount() && !clientRequest.getGoogleAccount()) {
                     System.out.println("Account google già presente nel database, associare l'account al tuo account google per accedere");
                     //aggiorna l'account con i nuovi dati
                     updateUser(user.get(), clientRequest);
@@ -92,19 +92,19 @@ public class UserController {
                 if (client.isPresent()) {
                     System.out.println("Client email già presente nel database");
                     return ResponseEntity.badRequest().body("Client email già presente nel database");
-                }else {
+                } else {
                     makeClient(clientRequest, user.get());
                     System.out.println("Client creato con successo");
                     return ResponseEntity.status(200).body("Client creato con successo");
                 }
-            }else{
+            } else {
                 // create new client
                 makeClient(clientRequest, makeNewUser(clientRequest));
                 rabbitMQSender.sendAddUserWallet(clientRequest);  //invio messaggio per creare wallet dello user
                 System.out.println("Client creato con successo");
                 return ResponseEntity.status(200).body("Client creato con successo");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(400).body(e.getMessage());
         }
@@ -116,28 +116,28 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     @PostMapping("/client")
-    public ResponseEntity<String> createClient(@RequestBody ClientRequest clientRequest){
+    public ResponseEntity<String> createClient(@RequestBody ClientRequest clientRequest) {
 
         String response = validateRequest(clientRequest);
-        if (!response.equals("ok")){
+        if (!response.equals("ok")) {
             return ResponseEntity.status(400).body(response);
         }
 
         // check if account exists
         Optional<User> user = userRepository.findUserByEmail(clientRequest.getEmail());
 
-        if (user.isPresent()){
+        if (user.isPresent()) {
             //TOOD check if is a client or a seller
             // if is a seller make new client else return bad request
             Optional<Client> client = clientRepository.findClientByUser(user.get());
             if (client.isPresent()) {
                 return ResponseEntity.badRequest().body("Client email già presente nel database");
-            }else {
+            } else {
                 makeClient(clientRequest, user.get());
                 rabbitMQSender.sendAddUserWallet(clientRequest);
                 return ResponseEntity.status(200).body("Client creato con successo");
             }
-        }else{
+        } else {
             // create new client
             makeClient(clientRequest, makeNewUser(clientRequest));
             rabbitMQSender.sendAddUserWallet(clientRequest);
@@ -151,27 +151,27 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     @PostMapping("/seller")
-    public ResponseEntity<String> createSeller(@RequestBody SellerRequest sellerRequest){
+    public ResponseEntity<String> createSeller(@RequestBody SellerRequest sellerRequest) {
 
         String response = validateRequest(sellerRequest);
-        if (!response.equals("ok")){
+        if (!response.equals("ok")) {
             return ResponseEntity.status(400).body(response);
         }
 
         // check if account exists
         Optional<User> user = userRepository.findUserByEmail(sellerRequest.getEmail());
 
-        if (user.isPresent()){
+        if (user.isPresent()) {
             //TOOD check if is a client or a seller
             // if is a seller make new client else return bad request
             Optional<Seller> seller = sellerRepository.findSellerByUser(user.get());
             if (seller.isPresent()) {
                 return ResponseEntity.badRequest().body("Seller email già presente nel database");
-            }else {
+            } else {
                 makeSeller(sellerRequest, user.get());
                 return ResponseEntity.status(200).body("Seller creato con successo");
             }
-        }else{
+        } else {
             // create new seller
             makeSeller(sellerRequest, makeNewUser(sellerRequest));
             return ResponseEntity.status(200).body("Seller creato con successo");
@@ -184,13 +184,13 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping("/client/{emailE}")
-    public ResponseEntity<ClientResponse> getClient(@PathVariable String emailE){
+    public ResponseEntity<ClientResponse> getClient(@PathVariable String emailE) {
         final String email = URLDecoder.decode(emailE, StandardCharsets.UTF_8);
 
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()){
+        if (user.isPresent()) {
             Optional<Client> client = clientRepository.findClientByUser(user.get());
-            if (client.isPresent()){
+            if (client.isPresent()) {
                 ClientResponse clientResponse = new ClientResponse();
                 clientResponse.setEmail(client.get().getUser().getEmail());
                 clientResponse.setFirstName(client.get().getUser().getFirstName());
@@ -201,12 +201,12 @@ public class UserController {
                 clientResponse.setPicture(client.get().getUser().getPicture());
                 clientResponse.setGoogleAccount(client.get().getUser().getGoogleAccount());
 
-                return ResponseEntity.status(200).body(clientResponse);
-            }else{
-                return ResponseEntity.status(404).body(null);
+                return ResponseEntity.status(HttpStatus.OK).body(clientResponse);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-        }else{
-            return ResponseEntity.status(404).body(null);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -217,11 +217,11 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping("/seller/{email}")
-    public ResponseEntity<SellerResponse> getSeller(@PathVariable String email){
+    public ResponseEntity<SellerResponse> getSeller(@PathVariable String email) {
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()){
+        if (user.isPresent()) {
             Optional<Seller> seller = sellerRepository.findSellerByUser(user.get());
-            if (seller.isPresent()){
+            if (seller.isPresent()) {
                 SellerResponse sellerResponse = new SellerResponse();
                 sellerResponse.setEmail(seller.get().getUser().getEmail());
                 sellerResponse.setFirstName(seller.get().getUser().getFirstName());
@@ -232,20 +232,20 @@ public class UserController {
                 sellerResponse.setGoogleAccount(seller.get().getUser().getGoogleAccount());
 
                 return ResponseEntity.status(200).body(sellerResponse);
-            }else{
+            } else {
                 return ResponseEntity.status(404).body(null);
             }
-        }else{
+        } else {
             return ResponseEntity.status(404).body(null);
         }
     }
 
     @GetMapping("user/{email}")
-    public ResponseEntity<User> getUser(@PathVariable String email){
+    public ResponseEntity<User> getUser(@PathVariable String email) {
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isPresent()){
+        if (user.isPresent()) {
             return ResponseEntity.status(200).body(user.get());
-        }else{
+        } else {
             return ResponseEntity.status(404).body(null);
         }
     }
@@ -255,23 +255,27 @@ public class UserController {
     @Operation(summary = "Verify user", description = "Verify user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User verified"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "406", description = "Email associated with a google account"),
     })
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String password){
+    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String password) {
 
         final String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
         final String decodedPassword = URLDecoder.decode(password, StandardCharsets.UTF_8);
 
         Optional<User> user = userRepository.findUserByEmail(decodedEmail);
-        if (user.isPresent()){
-            if (user.get().getPassword().equals(decodedPassword)){
-                return ResponseEntity.status(HttpStatus.OK).body("User verified");
-            }else{
+        if (user.isPresent()) {
+            if (user.get().getGoogleAccount()) { // if is a google account getPassword will do an NPE
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("This email is associated with a google account, please login with google account");
+            } else {
+                if (user.get().getPassword().equals(decodedPassword)) {
+                    return ResponseEntity.status(HttpStatus.OK).body("User verified");
+                }
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User password not valid");
             }
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User password not valid");
         }
     }
 
@@ -286,7 +290,7 @@ public class UserController {
                 .matches();
     }
 
-    private String validateRequest(SellerRequest sellerRequest){
+    private String validateRequest(SellerRequest sellerRequest) {
 
         // user params
         String response = validateUserParams(sellerRequest);
