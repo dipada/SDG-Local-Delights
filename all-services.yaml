@@ -237,7 +237,6 @@ metadata:
     io.kompose.service: rabbitmq
   name: rabbitmq
 spec:
-  type: NodePort
   ports:
     - name: "15672"
       port: 15672
