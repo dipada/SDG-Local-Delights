@@ -1,20 +1,14 @@
 package com.userservice.userservice.rabbitMQ;
 
-import com.userservice.userservice.controller.UserController;
 import com.userservice.userservice.dto.ClientRequest;
 import com.userservice.userservice.model.Client;
 import com.userservice.userservice.model.User;
 import com.userservice.userservice.model.UserDetails;
 import com.userservice.userservice.repository.ClientRepository;
 import com.userservice.userservice.repository.UserRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -47,8 +41,8 @@ public class RabbitMQReceiver{
             ClientRequest clientRequest = new ClientRequest();
             clientRequest.setEmail(userDetails.getEmail());
             clientRequest.setPassword(userDetails.getPassword());
-            clientRequest.setFirstName(userDetails.getName());
-            clientRequest.setLastName(userDetails.getSurname());
+            clientRequest.setFirstName(userDetails.getFirstName());
+            clientRequest.setLastName(userDetails.getLastName());
             clientRequest.setPhoneNumber(userDetails.getPhoneNumber());
             clientRequest.setShippingAddress(userDetails.getShippingAddress());
             clientRequest.setPicture(userDetails.getPicture());

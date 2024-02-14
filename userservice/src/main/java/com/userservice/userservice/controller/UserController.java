@@ -93,8 +93,8 @@ public class UserController {
     ClientRequest clientRequest = new ClientRequest();
     clientRequest.setEmail(userDetails.getEmail());
     clientRequest.setPassword(userDetails.getPassword());
-    clientRequest.setFirstName(userDetails.getName());
-    clientRequest.setLastName(userDetails.getSurname());
+    clientRequest.setFirstName(userDetails.getFirstName());
+    clientRequest.setLastName(userDetails.getLastName());
     clientRequest.setPhoneNumber(userDetails.getPhoneNumber());
     clientRequest.setShippingAddress(userDetails.getShippingAddress());
     clientRequest.setPicture(userDetails.getPicture());

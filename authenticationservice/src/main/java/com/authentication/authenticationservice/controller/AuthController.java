@@ -34,10 +34,9 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final String SECRETKEY = "secret";
+    private static final long TOKEN_EXP = 600000; // 10 minute
+    private final String SECRET_KEY = "secret";
     private final RabbitMQSender rabbitMQSender;
-
-    // RestTemplate per effettuare chiamate HTTP ad altri microservizi
     private final RestTemplate restTemplate;
 
 
@@ -59,8 +58,8 @@ public class AuthController {
         OAuth2User user = (OAuth2User) auth.getPrincipal();
 
         //make jwt token
-        String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
-                .sign(Algorithm.HMAC256(SECRETKEY));
+        String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
+                .sign(Algorithm.HMAC256(SECRET_KEY));
 
         if (redirectUri == null || redirectUri.isEmpty()) {
             redirectUri = "http://localhost:5173/redirect/oauth";
@@ -81,56 +80,24 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-
-    // Entrypoint for signup page
-    /*
-    @Operation(summary = "Signup")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup (@RequestBody UserDetails userDetails) {
-        //manda un messaggio via rabbit a user service per creare l'utente
-        userDetails.setGoogleAccount(false);
-        rabbitMQSender.sendAddUserRequest(userDetails);
-
-        String redirectUri = "http://localhost:5173/login";
-
-        // redirect to the client
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(redirectUri));
-        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
-    }
-
-     */
-
     @Value("${userservice.url}")
     String userServiceUrl;
 
     @Operation(summary = "Signup")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+            @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
     })
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody UserDetails userDetails) {
-        String redirectUri;
-        //manda un messaggio via rabbit a user service per creare l'utente
         userDetails.setGoogleAccount(false);
-        String verifyUrl = userServiceUrl + "/api/v1/user/createUser";
-        //rest request to user service to singup
+        final String verifyUrl = userServiceUrl + "/api/v1/user/createUser";
 
         ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
         if (response.getStatusCode() != HttpStatus.OK) {
-            // Credenziali non valide
             return ResponseEntity.status(response.getStatusCode()).body("Invalid request");
         }
-        //rabbitMQSender.sendAddUserRequest(userDetails);
 
-        System.out.println("User created successfully");
-        redirectUri = "http://localhost:5173/login";
-        // redirect to the client
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(redirectUri));
         return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
     }
 
@@ -161,19 +128,14 @@ public class AuthController {
             if (response.getBody() == null) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
             }
-
-            System.out.println("User info received successfully");
-            System.out.println(response.getBody());
-
-
             // Generate JWT token
             String token = JWT.create()
                     .withSubject(loginRequest.getEmail())
                     .withClaim("name", response.getBody().getFirstName() != null ? response.getBody().getFirstName() : "")
                     .withClaim("surname", response.getBody().getLastName() != null ? response.getBody().getLastName() : "")
                     .withClaim("picture", response.getBody().getPicture() != null ? response.getBody().getPicture() : "")
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 600000))
-                    .sign(Algorithm.HMAC256(SECRETKEY));
+                    .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
+                    .sign(Algorithm.HMAC256(SECRET_KEY));
 
             Map<String,String> body = new HashMap<>();
             body.put("token", token);
@@ -195,7 +157,7 @@ public class AuthController {
     })
     @GetMapping("/failureLogin")
     public ResponseEntity<String> failureLogin() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login fallito");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
     }
 
     @Operation(summary = "Logout")
