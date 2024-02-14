@@ -183,8 +183,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Found the client"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    @GetMapping("/client/{email}")
-    public ResponseEntity<ClientResponse> getClient(@PathVariable String email){
+    @GetMapping("/client/{emailE}")
+    public ResponseEntity<ClientResponse> getClient(@PathVariable String emailE){
+        final String email = URLDecoder.decode(emailE, StandardCharsets.UTF_8);
+
         Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isPresent()){
             Optional<Client> client = clientRepository.findClientByUser(user.get());
