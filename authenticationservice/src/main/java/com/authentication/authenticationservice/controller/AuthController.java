@@ -34,146 +34,154 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private static final long TOKEN_EXP = 600000; // 10 minute
-    private final String SECRET_KEY = "secret";
-    private final RabbitMQSender rabbitMQSender;
-    private final RestTemplate restTemplate;
+  private static final long TOKEN_EXP = 600000; // 10 minute
+  private final String SECRET_KEY = "secret";
+  private final RabbitMQSender rabbitMQSender;
+  private final RestTemplate restTemplate;
 
 
-    @Autowired
-    public AuthController(RabbitMQSender rabbitMQSender, RestTemplate restTemplate) {
-        this.rabbitMQSender = rabbitMQSender;
-        this.restTemplate = restTemplate;
+  @Autowired
+  public AuthController(RabbitMQSender rabbitMQSender, RestTemplate restTemplate) {
+    this.rabbitMQSender = rabbitMQSender;
+    this.restTemplate = restTemplate;
+  }
+
+
+  // Entrypoint will be triggered by Spring Security when the user is not authenticated.
+  // This method is called when the user is successfully authenticated with Google.
+  @Operation(summary = "Login with Google")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "302", description = "Redirect to the client with the token"),
+  })
+  @GetMapping("/google")
+  public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri) {
+    OAuth2User user = (OAuth2User) auth.getPrincipal();
+
+    //make jwt token
+    String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
+            .sign(Algorithm.HMAC256(SECRET_KEY));
+
+    if (redirectUri == null || redirectUri.isEmpty()) {
+      redirectUri = "http://localhost:5173/redirect/oauth";
     }
+    //send a message to the user service to create the user
+    UserDetails userDetails = new UserDetails();
+    userDetails.setEmail(user.getAttribute("email"));
+    userDetails.setFirstName(user.getAttribute("given_name"));
+    userDetails.setLastName(user.getAttribute("family_name"));
+    userDetails.setPicture(user.getAttribute("picture"));
+    userDetails.setGoogleAccount(true);
 
+    rabbitMQSender.sendAddUserRequest(userDetails);
 
-    // Entrypoint will be triggered by Spring Security when the user is not authenticated.
-    // This method is called when the user is successfully authenticated with Google.
-    @Operation(summary = "Login with Google")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirect to the client with the token"),
-    })
-    @GetMapping("/google")
-    public ResponseEntity<String> successLogin(Authentication auth, @RequestParam(name = "redirect_uri", required = false) String redirectUri) {
-        OAuth2User user = (OAuth2User) auth.getPrincipal();
+    // redirect to the client with the token
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
 
-        //make jwt token
-        String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
-                .sign(Algorithm.HMAC256(SECRET_KEY));
+  @Value("${userservice.url}")
+  String userServiceUrl;
 
-        if (redirectUri == null || redirectUri.isEmpty()) {
-            redirectUri = "http://localhost:5173/redirect/oauth";
-        }
-        //send a message to the user service to create the user
-        UserDetails userDetails = new UserDetails();
-        userDetails.setEmail(user.getAttribute("email"));
-        userDetails.setFirstName(user.getAttribute("given_name"));
-        userDetails.setLastName(user.getAttribute("family_name"));
-        userDetails.setPicture(user.getAttribute("picture"));
-        userDetails.setGoogleAccount(true);
+  @Operation(summary = "Signup")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
+          @ApiResponse(responseCode = "400", description = "Invalid request"),
+  })
+  @PostMapping("/signup")
+  public ResponseEntity<String> signup(@RequestBody UserDetails userDetails) {
+    userDetails.setGoogleAccount(false);
+    final String verifyUrl = userServiceUrl + "/api/v1/user/createUser";
 
-        rabbitMQSender.sendAddUserRequest(userDetails);
+    try {
+      RestTemplate restTemplate = new RestTemplate();
+      HttpStatusCode responseStatusCode = restTemplate.postForEntity(verifyUrl, userDetails, String.class).getStatusCode();
 
-        // redirect to the client with the token
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+      if (responseStatusCode != HttpStatus.OK) {
+        return ResponseEntity.status(responseStatusCode).body("Invalid request");
+      }
+      return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+
+    } catch (HttpClientErrorException e) {
+      return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
     }
+  }
 
-    @Value("${userservice.url}")
-    String userServiceUrl;
 
-    @Operation(summary = "Signup")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User add request sent successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserDetails userDetails) {
-        userDetails.setGoogleAccount(false);
-        final String verifyUrl = userServiceUrl + "/api/v1/user/createUser";
+  @Operation(summary = "Login")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Login successful"),
+          @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+          @ApiResponse(responseCode = "500", description = "An error occurred"),
+  })
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        ResponseEntity<ClientResponse> response = restTemplate.postForEntity(verifyUrl, userDetails, ClientResponse.class);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return ResponseEntity.status(response.getStatusCode()).body("Invalid request");
-        }
+    final String emailEncoded = URLEncoder.encode(loginRequest.getEmail(), StandardCharsets.UTF_8);
+    final String passwordEncoded = URLEncoder.encode(loginRequest.getPassword(), StandardCharsets.UTF_8);
 
-        return ResponseEntity.status(HttpStatus.OK).body("User add request sent successfully");
+    final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + emailEncoded + "&password=" + passwordEncoded;
+    try {
+      RestTemplate restTemplate = new RestTemplate();
+      HttpStatusCode responseStatusCode = restTemplate.getForEntity(verifyUrl, String.class).getStatusCode();
+      if (responseStatusCode != HttpStatus.OK) {
+        return ResponseEntity.status(responseStatusCode).body("Invalid credentials");
+      }
+
+      final String userInfoUrl = userServiceUrl + "/api/v1/user/client/" + loginRequest.getEmail();
+      ResponseEntity<UserDetails> response = restTemplate.getForEntity(userInfoUrl, UserDetails.class);
+
+      if (response.getBody() == null) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
+      }
+      // Generate JWT token
+      String token = JWT.create()
+              .withSubject(loginRequest.getEmail())
+              .withClaim("name", response.getBody().getFirstName() != null ? response.getBody().getFirstName() : "")
+              .withClaim("surname", response.getBody().getLastName() != null ? response.getBody().getLastName() : "")
+              .withClaim("picture", response.getBody().getPicture() != null ? response.getBody().getPicture() : "")
+              .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
+              .sign(Algorithm.HMAC256(SECRET_KEY));
+
+      Map<String, String> body = new HashMap<>();
+      body.put("token", token);
+
+      return ResponseEntity.status(HttpStatus.OK).body(body);
+
+    } catch (HttpClientErrorException e) {
+      return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
     }
+  }
 
 
-    @Operation(summary = "Login")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-            @ApiResponse(responseCode = "500", description = "An error occurred"),
-    })
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+  // This method is called when the user is not successfully authenticated
+  @Operation(summary = "Login failed")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "401", description = "Login failed"),
+  })
+  @GetMapping("/failureLogin")
+  public ResponseEntity<String> failureLogin() {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
+  }
 
-        final String emailEncoded = URLEncoder.encode(loginRequest.getEmail(), StandardCharsets.UTF_8);
-        final String passwordEncoded = URLEncoder.encode(loginRequest.getPassword(), StandardCharsets.UTF_8);
+  @Operation(summary = "Logout")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+  })
+  @GetMapping("/logout")
+  public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    new SecurityContextLogoutHandler().logout(request, response, null);
+    // TODO: jwt blacklist or invalidation
 
-        final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + emailEncoded + "&password=" + passwordEncoded;
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpStatusCode responseStatusCode = restTemplate.getForEntity(verifyUrl, String.class).getStatusCode();
-            if (responseStatusCode != HttpStatus.OK) {
-                return ResponseEntity.status(responseStatusCode).body("Invalid credentials");
-            }
+    String redirectUri = "http://localhost:5173/";
 
-            final String userInfoUrl = userServiceUrl + "/api/v1/user/client/" + loginRequest.getEmail();
-            ResponseEntity<UserDetails> response = restTemplate.getForEntity(userInfoUrl, UserDetails.class);
-
-            if (response.getBody() == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
-            }
-            // Generate JWT token
-            String token = JWT.create()
-                    .withSubject(loginRequest.getEmail())
-                    .withClaim("name", response.getBody().getFirstName() != null ? response.getBody().getFirstName() : "")
-                    .withClaim("surname", response.getBody().getLastName() != null ? response.getBody().getLastName() : "")
-                    .withClaim("picture", response.getBody().getPicture() != null ? response.getBody().getPicture() : "")
-                    .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXP))
-                    .sign(Algorithm.HMAC256(SECRET_KEY));
-
-            Map<String,String> body = new HashMap<>();
-            body.put("token", token);
-
-            return ResponseEntity.status(HttpStatus.OK).body(body);
-
-        } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
-        }
-    }
-
-
-    // This method is called when the user is not successfully authenticated
-    @Operation(summary = "Login failed")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "401", description = "Login failed"),
-    })
-    @GetMapping("/failureLogin")
-    public ResponseEntity<String> failureLogin() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
-    }
-
-    @Operation(summary = "Logout")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
-    })
-    @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, null);
-        // TODO: jwt blacklist or invalidation
-
-        String redirectUri = "http://localhost:5173/";
-
-        // redirect to the client
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(redirectUri));
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
-    }
+    // redirect to the client
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(URI.create(redirectUri));
+    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+  }
 }
