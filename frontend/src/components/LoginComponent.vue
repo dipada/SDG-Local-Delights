@@ -5,11 +5,11 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="#" method="POST">
+      <form @submit.prevent="customLogin" class="space-y-6" action="" method="POST">
         <div>
           <label for="email" class="block text-sm font-medium leading-6 text-green-800">Email address</label>
           <div class="mt-2">
-            <input id="email" name="email" type="email" autocomplete="email" required=""
+            <input v-model="email" id="email" name="email" type="email" autocomplete="email" required=""
                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"/>
           </div>
         </div>
@@ -22,15 +22,18 @@
             </div>
           </div>
           <div class="mt-2">
-            <input id="password" name="password" type="password" autocomplete="current-password" required=""
+            <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required=""
                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"/>
+          </div>
+          <div v-if="loginError" class="mt-2 text-sm text-red-600">
+            {{ loginErrorMessage }}
           </div>
         </div>
 
         <div>
           <button type="submit"
                   class="flex w-full justify-center rounded-md bg-secondary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  @click="customLogin">Login
+                  @submit="customLogin">Login
           </button>
         </div>
         <div class="seperator">
@@ -49,9 +52,10 @@
     </div>
   </div>
 </template>
-<script setup>
+
+<script>
 import axios from 'axios';
-import {data} from "autoprefixer";
+import {mapActions} from "vuex";
 
 // Interceptor per le richieste
 axios.interceptors.request.use(request => {
@@ -73,15 +77,64 @@ const googleLogin = () => {
   //window.location.href = oauthUrl;
 };
 
-const customLogin = () => {
-  axios.post('http://localhost:8080/auth/login', {email: "sofi.s@sofi.com", password: "so"}).then((response) => {
-    console.log("questa e' la risposta ", JSON.stringify(response))
-  }).catch((e) => {
-    console.log("errore: " + e)
-  });
-}
+export default {
+  name: "LoginComponent",
 
+  data() {
+    return {
+      email: "",
+      password: "",
+      loginError: false,
+      loginErrorMessage: ""
+    }
+  },
+
+  methods: {
+
+    ...mapActions(['saveUserInfo']),
+
+    googleLogin(){
+      window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
+    },
+
+    customLogin() {
+
+      if (this.email === "" || this.password === "") {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      axios.post('http://localhost:8080/auth/login', {
+            email: this.email,
+            password: this.password
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': '*/*'
+            }
+          }
+      ).then(response => {
+        this.loginError = false;
+        this.loginErrorMessage = "";
+
+        console.log("Token : " , JSON.stringify(response.data.token));
+        this.saveUserInfo(JSON.stringify(response.data.token));
+        setTimeout(() => {
+          this.isLoading = false;
+          this.$router.push('/client/home');
+        }, 1000);
+
+      }).catch(error => {
+        console.log("ERROR " , error);
+        this.loginError = true;
+        this.loginErrorMessage = "Error occurred during login. Server error code: " + error.response.data;
+      });
+    }
+  }
+}
 </script>
+
 <style scoped>
 .seperator h5 {
   display: flex;
