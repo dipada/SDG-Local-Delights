@@ -5,7 +5,7 @@ for dir in */ ; do
       cd "$dir"
       (
         echo "Installing ${dir%*/} ..."
-        mvn clean > /dev/null && mvn install > /dev/null
+        mvn clean > /dev/null && mvn -U install > /dev/null
         echo "  ... ${dir%*/} correctly installed"
       ) &
       cd ..
