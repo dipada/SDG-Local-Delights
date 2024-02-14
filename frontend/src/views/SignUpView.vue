@@ -20,14 +20,14 @@
       </div>
 
       <div>
-        <label> Username </label>
-        <input v-model="formData.username" type="text" placeholder="Username" required
+        <label> Email Address </label>
+        <input v-model="formData.email" type="email" placeholder="Info@example.com" required
                class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
       </div>
 
       <div>
-        <label> Email Address </label>
-        <input v-model="formData.email" type="email" placeholder="Info@example.com" required
+        <label> Shipping address </label>
+        <input v-model="formData.shippingAddress" type="text" placeholder="Via roma 1" required
                class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
       </div>
 
@@ -40,7 +40,7 @@
       <div class="grid gap-3 lg:grid-cols-2">
         <div>
           <label> Phone: <span class="text-sm text-gray-400">(optional)</span> </label>
-          <input v-model="formData.phone" @input="filterPhoneInput" type="tel" placeholder="333 1231234"
+          <input v-model="formData.phoneNumber" @input="filterPhoneInput" required type="tel" placeholder="333 1231234"
                  class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
         </div>
       </div>
@@ -56,6 +56,8 @@
 
 <script>
 import HeaderBase from "@/components/HeaderBase.vue";
+import axios from "axios";
+
 const defaultAvatar = "https://innostudio.de/fileuploader/images/default-avatar.png";
 export default {
   components: {HeaderBase},
@@ -65,10 +67,11 @@ export default {
       formData: {
         firstName: "",
         lastName: "",
-        username: "",
         email: "",
+        shippingAddress: "",
         password: "",
-        phone: "",
+        phoneNumber: "", // optional
+        picture: defaultAvatar,
       },
     };
   },
@@ -81,12 +84,22 @@ export default {
       }
 
       console.log(JSON.stringify(this.formData));
-      // TODO: POST to the server
+
+      axios.post("http://localhost:8080/auth/signup", this.formData)
+          .then((response) => {
+            console.log(response);
+            alert("User registered successfully, you will be redirected to the login page.");
+            this.$router.push("/login");
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Error occurred while registering user" + error.response.data);
+          });
     },
 
     filterPhoneInput(event) {
       const value = event.target.value;
-      this.formData.phone = value.replace(/[^0-9]/g, '');
+      this.formData.phoneNumber = value.replace(/[^0-9]/g, '');
     },
 
     validateData() {
