@@ -16,9 +16,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -254,15 +257,19 @@ public class UserController {
     })
     @GetMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String password){
-        Optional<User> user = userRepository.findUserByEmail(email);
+
+        final String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+        final String decodedPassword = URLDecoder.decode(password, StandardCharsets.UTF_8);
+
+        Optional<User> user = userRepository.findUserByEmail(decodedEmail);
         if (user.isPresent()){
-            if (user.get().getPassword().equals(password)){
-                return ResponseEntity.status(200).body("User verified");
+            if (user.get().getPassword().equals(decodedPassword)){
+                return ResponseEntity.status(HttpStatus.OK).body("User verified");
             }else{
-                return ResponseEntity.status(404).body("User password not valid");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User password not valid");
             }
         }else{
-            return ResponseEntity.status(404).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
 

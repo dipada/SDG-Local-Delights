@@ -26,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
@@ -146,8 +147,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
+        final String emailEncoded = URLEncoder.encode(loginRequest.getEmail(), StandardCharsets.UTF_8);
+        final String passwordEncoded = URLEncoder.encode(loginRequest.getPassword(), StandardCharsets.UTF_8);
 
+        final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + emailEncoded + "&password=" + passwordEncoded;
         try {
             RestTemplate restTemplate = new RestTemplate();
             HttpStatusCode responseStatusCode = restTemplate.getForEntity(verifyUrl, String.class).getStatusCode();
