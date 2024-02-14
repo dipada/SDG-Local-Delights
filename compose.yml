@@ -133,7 +133,7 @@ services:
       - shopservice
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-shop:5433/sdgshops
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-shop:5432/sdgshops
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -173,7 +173,7 @@ services:
       - productservice
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-product:5439/sdgproducts
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-product:5432/sdgproducts
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -230,7 +230,7 @@ services:
       - paymentservice_net
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-payment:5435/sdgpayments
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-payment:5432/sdgpayments
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -278,7 +278,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
 
-  postgres_delivery:
+  postgres-delivery:
     container_name: postgres_container_deliveryservice
     image: 'postgres:latest'
     hostname: localhost
@@ -296,19 +296,19 @@ services:
 
   deliveryservice:
     build: ./deliveryservice
-    image: deliveryservice
+    image: dipada/deliveryservice
     container_name: deliveryservice
     ports:
       - '8087:8087'
     depends_on:
-      - postgres_delivery
+      - postgres-delivery
       - discovery-server
       - rabbitmq
     networks:
       - delivery_net
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_delivery:5432/sdgdelivery
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-delivery:5432/sdgdelivery
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update

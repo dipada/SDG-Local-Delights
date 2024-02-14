@@ -12,6 +12,7 @@ DOCKER_USERNAME="dipada"
 IMAGES=(
     "apigateway:./apigateway"
     "authenticationservice:./authenticationservice"
+    "deliveryservice:./deliveryservice"
     "discoveryserver:./discoveryserver"
     "orderservice:./orderservice"
     "paymentservice:./paymentservice"
@@ -35,7 +36,5 @@ for IMAGE_INFO in "${IMAGES[@]}"; do
     #echo "Pushing ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
     docker push "${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}" || exit 1
 done
-
-wait
 
 echo "All images have been built and pushed successfully."

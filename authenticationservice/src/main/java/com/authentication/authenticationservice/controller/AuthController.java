@@ -2,7 +2,6 @@ package com.authentication.authenticationservice.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.authentication.authenticationservice.dto.ClientResponse;
 import com.authentication.authenticationservice.dto.LoginRequest;
 import com.authentication.authenticationservice.model.UserDetails;
 import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
@@ -13,7 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -37,15 +39,11 @@ public class AuthController {
   private static final long TOKEN_EXP = 600000; // 10 minute
   private final String SECRET_KEY = "secret";
   private final RabbitMQSender rabbitMQSender;
-  private final RestTemplate restTemplate;
-
 
   @Autowired
-  public AuthController(RabbitMQSender rabbitMQSender, RestTemplate restTemplate) {
+  public AuthController(RabbitMQSender rabbitMQSender) {
     this.rabbitMQSender = rabbitMQSender;
-    this.restTemplate = restTemplate;
   }
-
 
   // Entrypoint will be triggered by Spring Security when the user is not authenticated.
   // This method is called when the user is successfully authenticated with Google.
@@ -62,7 +60,7 @@ public class AuthController {
             .sign(Algorithm.HMAC256(SECRET_KEY));
 
     if (redirectUri == null || redirectUri.isEmpty()) {
-      redirectUri = "http://localhost:5173/redirect/oauth";
+      redirectUri = "http://localhost:30073/redirect/oauth";
     }
     //send a message to the user service to create the user
     UserDetails userDetails = new UserDetails();
@@ -177,7 +175,7 @@ public class AuthController {
     new SecurityContextLogoutHandler().logout(request, response, null);
     // TODO: jwt blacklist or invalidation
 
-    String redirectUri = "http://localhost:5173/";
+    String redirectUri = "http://localhost:30073/";
 
     // redirect to the client
     HttpHeaders headers = new HttpHeaders();
