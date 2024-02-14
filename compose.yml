@@ -278,6 +278,45 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
 
+  postgres_delivery:
+    container_name: postgres_container_deliveryservice
+    image: 'postgres:latest'
+    hostname: localhost
+    environment:
+      POSTGRES_DB: sdgdelivery
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5437:5432'
+    volumes:
+      - delivery-db-data:/var/lib/postgresql/data
+    networks:
+      - delivery_net
+    restart: unless-stopped
+
+  deliveryservice:
+    build: ./deliveryservice
+    image: deliveryservice
+    container_name: deliveryservice
+    ports:
+      - '8087:8087'
+    depends_on:
+      - postgres_delivery
+      - discovery-server
+      - rabbitmq
+    networks:
+      - delivery_net
+      - apigateway_net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_delivery:5432/sdgdelivery
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+      - spring.profiles.active=docker
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+
   frontend:
     build: ./frontend
     container_name: frontend
@@ -294,6 +333,7 @@ volumes:
   data-rabbitmq:
   payment-db-data:
   orders-db-data:
+  delivery-db-data:
 
 
 networks:
@@ -310,4 +350,6 @@ networks:
   paymentservice_net:
     driver: bridge
   order_net:
+    driver: bridge
+  delivery_net:
     driver: bridge

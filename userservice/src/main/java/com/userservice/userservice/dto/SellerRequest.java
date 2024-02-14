@@ -10,4 +10,5 @@ public class SellerRequest {
         private String phoneNumber;
         private String vatNumber;
         private String picture;
+        private Boolean googleAccount;
 }
