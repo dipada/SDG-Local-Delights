@@ -12,27 +12,31 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthController {
 
+    private final String SECRETKEY = "secret";
     private final RabbitMQSender rabbitMQSender;
 
     // RestTemplate per effettuare chiamate HTTP ad altri microservizi
@@ -58,7 +62,7 @@ public class AuthController {
 
         //make jwt token
         String token = JWT.create().withSubject(user.getAttribute("email")).withClaim("name", (String) user.getAttribute("given_name")).withClaim("surname", (String) user.getAttribute("family_name")).withClaim("picture", (String) user.getAttribute("picture")).withExpiresAt(new Date(System.currentTimeMillis() + 600000)) //10 minuti
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(Algorithm.HMAC256(SECRETKEY));
 
         if (redirectUri == null || redirectUri.isEmpty()) {
             redirectUri = "http://localhost:5173/redirect/oauth";
@@ -135,36 +139,38 @@ public class AuthController {
 
     @Operation(summary = "Login")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirect to the client"),
+            @ApiResponse(responseCode = "200", description = "Login successful"),
             @ApiResponse(responseCode = "401", description = "Invalid credentials"),
             @ApiResponse(responseCode = "500", description = "An error occurred"),
     })
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        // URL di UserService per la verifica dell'utente
-        String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
-        System.out.println("URL A CUI HO MANDATO LA RICHIESTA VERIFY USER: " + verifyUrl);
+    @PostMapping("/customLogin")
+    public ResponseEntity<?> customLogin(@RequestBody LoginRequest loginRequest) {
 
-        // Invia richiesta a UserService per verificare l'utente
-        ResponseEntity<String> response = restTemplate.getForEntity(verifyUrl, String.class);
-        System.out.println("response: " + response);
+        final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
 
-        if (response.getStatusCode() != HttpStatus.OK) {
-            // Credenziali non valide
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpStatusCode responseStatusCode = restTemplate.getForEntity(verifyUrl, String.class).getStatusCode();
+            if (responseStatusCode != HttpStatus.OK) {
+                return ResponseEntity.status(responseStatusCode).body("Invalid credentials");
+            }
+
+            // Generate JWT token
+            String token = JWT.create()
+                    .withSubject(loginRequest.getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 600000))
+                    .sign(Algorithm.HMAC256(SECRETKEY));
+
+            Map<String,String> body = new HashMap<>();
+            body.put("token", token);
+
+            return ResponseEntity.status(HttpStatus.OK).body(body);
+
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
         }
-        System.out.println("CREDENZIALI VALIDE");
-        String redirectUri = "http://localhost:5173/";
-        // Se UserService verifica l'utente, genera JWT token
-        String token = JWT.create()
-                .withSubject(loginRequest.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 600000)) // 10 minuti di validità
-                .sign(Algorithm.HMAC256("secret")); // Utilizza una chiave segreta più sicura in un ambiente reale
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URLDecoder.decode(redirectUri, StandardCharsets.UTF_8) + "?token=" + token);
-        return ResponseEntity.status(HttpStatus.FOUND).body("found");
-        // return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
 
