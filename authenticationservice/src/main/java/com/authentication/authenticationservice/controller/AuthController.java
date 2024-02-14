@@ -6,17 +6,14 @@ import com.authentication.authenticationservice.dto.ClientResponse;
 import com.authentication.authenticationservice.dto.LoginRequest;
 import com.authentication.authenticationservice.model.UserDetails;
 import com.authentication.authenticationservice.rabbitMQ.RabbitMQSender;
-import com.nimbusds.jose.Header;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -71,8 +68,8 @@ public class AuthController {
         //send a message to the user service to create the user
         UserDetails userDetails = new UserDetails();
         userDetails.setEmail(user.getAttribute("email"));
-        userDetails.setName(user.getAttribute("given_name"));
-        userDetails.setSurname(user.getAttribute("family_name"));
+        userDetails.setFirstName(user.getAttribute("given_name"));
+        userDetails.setLastName(user.getAttribute("family_name"));
         userDetails.setPicture(user.getAttribute("picture"));
         userDetails.setGoogleAccount(true);
 
@@ -158,9 +155,23 @@ public class AuthController {
                 return ResponseEntity.status(responseStatusCode).body("Invalid credentials");
             }
 
+            final String userInfoUrl = userServiceUrl + "/api/v1/user/client/" + loginRequest.getEmail();
+            ResponseEntity<UserDetails> response = restTemplate.getForEntity(userInfoUrl, UserDetails.class);
+
+            if (response.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error occurred");
+            }
+
+            System.out.println("User info received successfully");
+            System.out.println(response.getBody());
+
+
             // Generate JWT token
             String token = JWT.create()
                     .withSubject(loginRequest.getEmail())
+                    .withClaim("name", response.getBody().getFirstName() != null ? response.getBody().getFirstName() : "")
+                    .withClaim("surname", response.getBody().getLastName() != null ? response.getBody().getLastName() : "")
+                    .withClaim("picture", response.getBody().getPicture() != null ? response.getBody().getPicture() : "")
                     .withExpiresAt(new Date(System.currentTimeMillis() + 600000))
                     .sign(Algorithm.HMAC256(SECRETKEY));
 
