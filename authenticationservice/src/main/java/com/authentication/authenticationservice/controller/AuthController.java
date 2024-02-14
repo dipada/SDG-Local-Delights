@@ -143,8 +143,8 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Invalid credentials"),
             @ApiResponse(responseCode = "500", description = "An error occurred"),
     })
-    @PostMapping("/customLogin")
-    public ResponseEntity<?> customLogin(@RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
         final String verifyUrl = userServiceUrl + "/api/v1/user/verify?email=" + loginRequest.getEmail() + "&password=" + loginRequest.getPassword();
 
