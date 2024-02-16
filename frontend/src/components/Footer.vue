@@ -1,8 +1,9 @@
 <script setup>
 
 import SdgLogo from "@/components/icons/sdgLogo.vue";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import store from "@/store/index.js";
+import axios from "axios";
 
 //TODO REMOVE
 // prende il token da vuex store e lo passa al componente footer
@@ -10,7 +11,24 @@ const token = computed(() => store.getters.getUserToken);
 // fa is autenticated
 const isAutenticated = computed(() => store.getters.isAuthenticated);
 const userInfo = computed(() => store.getters.getUserInfo);
+const welcomeMessage2 = ref('');
 
+const fetchWelcomeMessage2 = async () => {
+  try {
+    const response = await axios.get('http://localhost:30085/api/v1/user/client/dani96dipalma@gmail.com', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    });
+    console.log("da welcome 2 --> " , response);
+    console.log("da welcome 2 DATA --> " , response.data);
+    welcomeMessage2.value = response.data.message;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+fetchWelcomeMessage2();
 
 </script>
 
@@ -42,6 +60,8 @@ const userInfo = computed(() => store.getters.getUserInfo);
     <div class="bg-black text-white">token: {{token}}</div><br/>
     <div class="bg-black text-white">autenticated: {{isAutenticated}}</div><br/>
     <div class="bg-black text-white">userInfo: {{userInfo}}</div>
+
+    <div class="bg-black text-white">WELCOME-2: {{welcomeMessage2}}</div><br/>
   </footer>
 </template>
 

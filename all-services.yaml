@@ -90,6 +90,8 @@ spec:
       nodePort: 30085
   selector:
     io.kompose.service: gateway
+status:
+  loadBalancer: {}
 ---
 apiVersion: v1
 kind: Service
