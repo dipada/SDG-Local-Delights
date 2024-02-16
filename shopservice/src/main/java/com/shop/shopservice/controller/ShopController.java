@@ -48,7 +48,7 @@ public class ShopController {
         shop.setDescription(shopRequest.getDescription());
         shop.setAddress(shopRequest.getAddress());
         shop.setPhoneNumber(shopRequest.getPhoneNumber());
-        shop.setShopEmail(shopRequest.getEmail());
+        shop.setShopEmail(shopRequest.getShopEmail());
         shop.setSellerEmail(shopRequest.getSellerEmail());
         shop.setLatitude(shopRequest.getLatitude());
         shop.setLongitude(shopRequest.getLongitude());
@@ -126,7 +126,7 @@ public class ShopController {
         shopResponse.setDescription(shop.get().getDescription());
         shopResponse.setAddress(shop.get().getAddress());
         shopResponse.setPhoneNumber(shop.get().getPhoneNumber());
-        shopResponse.setEmail(shop.get().getShopEmail());
+        shopResponse.setShopEmail(shop.get().getShopEmail());
         shopResponse.setSellerEmail(shop.get().getSellerEmail());
         shopResponse.setLatitude(shop.get().getLatitude());
         shopResponse.setLongitude(shop.get().getLongitude());

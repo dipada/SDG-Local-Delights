@@ -129,6 +129,20 @@ public class ProductController {
         product.setShopId(productRequest.getShopId());
     }
 
+    //get all products by shop id
+    @Operation(summary = "Get all products by shop id", description = "Get all products by shop id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the products"),
+            @ApiResponse(responseCode = "404", description = "Products not found")
+    })
+    @GetMapping("/products/{shopId}")
+    public ResponseEntity<Iterable<Product>> getProductsByShopId(@PathVariable Long shopId) {
+        Iterable<Product> products = productRepository.findByShopId(shopId);
+        if (products.iterator().hasNext()) {
+            return ResponseEntity.status(HttpStatus.OK).body(products);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
 
 
 }

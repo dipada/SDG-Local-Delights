@@ -9,7 +9,7 @@ public class ShopRequest {
     private String description;
     private String address;
     private String phoneNumber;
-    private String email;
+    private String shopEmail;
     private String sellerEmail;
     private String longitude;
     private String latitude;
