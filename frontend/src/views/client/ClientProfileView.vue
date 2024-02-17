@@ -28,7 +28,6 @@ import HeaderBase from "@/components/HeaderBase.vue";
 import UserProfileBodyComponent from "@/components/UserProfileBodyComponent.vue";
 import OrderListComponent from "@/components/OrderListComponent.vue";
 import axios from "axios";
-import {mapState} from "vuex";
 
 export default defineComponent({
   components: {OrderListComponent, UserProfileBodyComponent, HeaderBase},
