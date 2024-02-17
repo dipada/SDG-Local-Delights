@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -81,6 +82,20 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(products);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @Operation(summary = "Get products by shopId", description = "Get products by shopId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the products"),
+            @ApiResponse(responseCode = "404", description = "Products not found")
+    })
+    @GetMapping("/shop/{shopId}")
+    public ResponseEntity<List<Product>> getProductsByShopId(@PathVariable Long shopId) {
+        List<Product> products = productRepository.findByShopId(shopId);
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @Operation(summary = "Update a product", description = "Update a product")
