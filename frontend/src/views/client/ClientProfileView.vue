@@ -3,6 +3,7 @@
   <div class="flex-auto justify-center m-20 text-secondary">
     <div class="flex flex-col sm:flex-row sm:justify-between justify-center items-center">
       <img class="rounded w-36 h-36" :src="userInfo.picture" alt="Extra large avatar">
+      <div><b>Your balance</b>: {{money}}</div>
       <button @click="navigateSellerHome" type="button"
               class="mt-5 h-fit w-fit focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
         Your shops
@@ -38,6 +39,7 @@ export default defineComponent({
   data() {
     // 3 orders for testing purposes
     return {
+      money: 0,
       orderDetails: [],
       // TODO abbinare alla get Orders e reperire info mancanti, nome negozio da id, convertire timestamp in data
       // TODO aggiungere amount su be
@@ -78,6 +80,22 @@ export default defineComponent({
   methods: {
     navigateSellerHome() {
       this.$router.push({name: 'seller-home'});
+    },
+
+    fetchUserBalance(){
+      axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
+          'Accept': '*/*'
+        },
+      })
+          .then(response => {
+            console.log("User balance: " , response.data);
+            this.money = response.data;
+          })
+          .catch(error => {
+            console.log(error);
+          });
     },
 
     fetchOrderDetails() {
@@ -124,6 +142,7 @@ export default defineComponent({
 
   mounted() {
     this.fetchOrderDetails();
+    this.fetchUserBalance();
   }
 });
 
