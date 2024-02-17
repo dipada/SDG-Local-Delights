@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,5 +29,6 @@ public class Order {
     private List<Long> listOfProductsIds;
 
     private OrderStatus orderStatus;
-
+    private Double amount;
+    private String timestamp;
 }

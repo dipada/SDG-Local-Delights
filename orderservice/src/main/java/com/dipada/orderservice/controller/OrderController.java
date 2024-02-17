@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -82,6 +84,8 @@ public class OrderController {
         order.setListOfProductsIds(orderRequest.getListOfProductIds());
         order.setOrderStatus(OrderStatus.PENDING); //At creation, the order is pending
         order.setPaid(false);
+        order.setAmount(orderRequest.getAmount());
+        order.setTimestamp(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 
         orderRepository.save(order);
 
@@ -90,7 +94,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body("Order created successfully");
     }
 
-    // TODO modifica stato ordine
     @Operation(summary = "Update the status of an order")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order status updated successfully"),

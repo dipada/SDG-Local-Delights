@@ -30,12 +30,6 @@ export default {
 </script>
 
 <template>
-  <div class="text-dark">
-    ordiniiii -->
-    {{ orders }}
-  </div>
-
-
   <div class="w-screen">
     <div class="mx-auto mt-8 max-w-screen-lg px-2">
       <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">

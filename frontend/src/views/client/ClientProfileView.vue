@@ -10,18 +10,15 @@
       </button>
     </div>
     <user-profile-body-component :email="userInfo.email" :full_name="userInfo.name + ' ' + userInfo.surname"/>
-    <OrderListComponent :orders="testOrders"/>
-    <OrderListComponent :orders="orderDetails"/>
-  </div>
 
-  <div class="text-black">
-    test -->
-    {{ testOrders }}
-  </div>
-
-  <div class="text-black">
-    da get -->
-    {{ orderDetails }}
+    <OrderListComponent v-if="orderDetails && orderDetails.length" :orders="orderDetails"/>
+    <div v-else class="w-screen">
+      <div class="mt-8 max-w-screen-lg">
+        <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
+          <p class="flex-1 text-base font-bold text-gray-900 ">No orders here  :(</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -37,38 +34,9 @@ export default defineComponent({
   components: {OrderListComponent, UserProfileBodyComponent, HeaderBase},
 
   data() {
-    // 3 orders for testing purposes
     return {
       money: 0,
       orderDetails: [],
-      // TODO abbinare alla get Orders e reperire info mancanti, nome negozio da id, convertire timestamp in data
-      // TODO aggiungere amount su be
-      testOrders: [
-        {
-          shopname: "Shop1",
-          date: "2021-10-10",
-          amount: "100",
-          status: "completed"
-        },
-        {
-          shopname: "Shop2",
-          date: "2021-10-11",
-          amount: "200",
-          status: "cancelled"
-        },
-        {
-          shopname: "Shop3",
-          date: "2021-10-12",
-          amount: "300",
-          status: "to_be_delivered"
-        },
-        {
-          shopname: "Shop3",
-          date: "2021-10-12",
-          amount: "300",
-          status: "pending"
-        }
-      ]
     }
   },
 
