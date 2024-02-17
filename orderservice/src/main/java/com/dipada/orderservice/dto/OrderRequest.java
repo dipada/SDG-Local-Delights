@@ -10,4 +10,5 @@ public class OrderRequest {
     private Long shopId;
     private List<Long> listOfProductIds;
     private Double amount;
+    //TODO aggiungere via di consegna
 }
