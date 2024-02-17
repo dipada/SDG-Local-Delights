@@ -13,4 +13,5 @@ public class ClientRequest {
     private String phoneNumber;
     private String shippingAddress;
     private String picture;
+    private Boolean googleAccount;
 }

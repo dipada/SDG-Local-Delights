@@ -7,8 +7,7 @@
 </template>
 
 <script>
-import {mapActions, mapState} from 'vuex';
-import axios from "axios";
+import {mapActions} from 'vuex';
 
 export default {
   data() {
@@ -22,13 +21,7 @@ export default {
   async created() {
     const token = this.$route.query.token;
     if (token) {
-      this.saveUserInfo(token);
-
-      // set the default authorization header
-      //axios.interceptors.request.use(config => {
-       // config.headers.Authorization = `Bearer ${token}`;
-        //return config;
-      //});
+      await this.saveUserInfo(token);
 
       setTimeout(() => {
         this.isLoading = false;
