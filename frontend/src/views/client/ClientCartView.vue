@@ -10,13 +10,12 @@
     </template>
   </HeaderBase>
 
-  <h1 class="text-black">ITEM DETAIL : {{ store.state.cartProducts }}</h1>
-
   <section class="py-24 bg-gray-100 font-poppins dark:bg-gray-700">
     <div class="px-4 py-6 mx-auto max-w-7xl lg:py-4 md:px-6">
       <div class="text-black">
-        <h2 class="mb-8 text-4xl font-bold dark:text-gray-400">Your Cart</h2>
-        <div class="p-6 mb-8 border bg-gray-50 dark:bg-gray-800 dark:border-gray-800">
+        <h2 v-if="cartItems && cartItems.length" class="mb-8 text-4xl font-bold dark:text-gray-400">Your Cart</h2>
+        <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400">Empty cart :(</h2>
+        <div v-if="cartItems && cartItems.length" class="p-6 mb-8 border bg-gray-50 dark:bg-gray-800 dark:border-gray-800">
           <div class="flex-wrap items-center hidden mb-6 -mx-4 md:flex md:mb-8">
             <div class="w-full px-4 mb-6 md:w-4/6 lg:w-6/12 md:mb-0">
               <h2 class="font-bold text-gray-500 dark:text-gray-400">Product name</h2>
@@ -129,7 +128,6 @@
                         :class="{'bg-secondary hover:bg-green-800': canCheckout, 'bg-gray-400 cursor-not-allowed': !canCheckout}">
                   Checkout
                 </button>
-
               </div>
             </div>
           </div>
