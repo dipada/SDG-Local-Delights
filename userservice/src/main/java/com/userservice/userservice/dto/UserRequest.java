@@ -12,4 +12,5 @@ public class UserRequest {
     private String shippingAddress;
     private String paymentMethod;
     private String shopName;
+    private Boolean googleAccount;
 }

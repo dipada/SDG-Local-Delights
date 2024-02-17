@@ -12,5 +12,6 @@ public class SellerResponse {
     private String picture;
     private String phoneNumber;
     private String vatNumber;
+    private Boolean googleAccount;
 
 }

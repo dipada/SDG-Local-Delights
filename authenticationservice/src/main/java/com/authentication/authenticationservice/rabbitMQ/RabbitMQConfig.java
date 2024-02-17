@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
-
 @Configuration
 public class RabbitMQConfig {
         @Value("${spring.rabbitmq.host}")
@@ -22,6 +21,10 @@ public class RabbitMQConfig {
 
         @Value("${spring.rabbitmq.password}")
         String password;
+        @Bean
+        public Queue queue() {
+                return new Queue("userQueue", true);
+        }
 
         @Bean
         CachingConnectionFactory connectionFactory() {
@@ -41,6 +44,4 @@ public class RabbitMQConfig {
                 rabbitTemplate.setMessageConverter(jsonMessageConverter());
                 return rabbitTemplate;
         }
-
-
 }
