@@ -1,11 +1,11 @@
-package com.order.orderservice.controller;
+package com.dipada.orderservice.controller;
 
-import com.order.orderservice.RabbitMQ.RabbitMQSender;
-import com.order.orderservice.dto.OrderRequest;
-import com.order.orderservice.dto.ShopDetails;
-import com.order.orderservice.model.Order;
-import com.order.orderservice.model.OrderStatus;
-import com.order.orderservice.repository.OrderRepository;
+import com.dipada.orderservice.repository.OrderRepository;
+import com.dipada.orderservice.RabbitMQ.RabbitMQSender;
+import com.dipada.orderservice.dto.OrderRequest;
+import com.dipada.orderservice.dto.ShopDetails;
+import com.dipada.orderservice.model.Order;
+import com.dipada.orderservice.model.OrderStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

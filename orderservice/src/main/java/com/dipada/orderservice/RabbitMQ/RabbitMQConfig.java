@@ -1,4 +1,4 @@
-package com.order.orderservice.RabbitMQ;
+package com.dipada.orderservice.RabbitMQ;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;

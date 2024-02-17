@@ -1,8 +1,8 @@
-package com.order.orderservice.RabbitMQ;
+package com.dipada.orderservice.RabbitMQ;
 
-import com.order.orderservice.dto.PaymentOutcome;
-import com.order.orderservice.model.Order;
-import com.order.orderservice.repository.OrderRepository;
+import com.dipada.orderservice.repository.OrderRepository;
+import com.dipada.orderservice.dto.PaymentOutcome;
+import com.dipada.orderservice.model.Order;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
