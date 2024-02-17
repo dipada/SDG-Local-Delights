@@ -22,6 +22,6 @@ public class Wallet {
 
     public Wallet(String email) {
         this.email = email;
-        this.balance = 0;
+        this.balance = 10000; // for demo purposes
     }
 }
