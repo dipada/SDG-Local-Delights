@@ -10,10 +10,6 @@
     </template>
   </HeaderBase>
 
-  <!--
-  <h1 class="text-black">Carrello: {{ cartItems }}</h1>
-  <h1 class="text-black">ITEM DETAIL : {{ cartItemsDetails }}</h1>
-  -->
   <h1 class="text-black">ITEM DETAIL : {{ store.state.cartProducts }}</h1>
 
   <section class="py-24 bg-gray-100 font-poppins dark:bg-gray-700">
@@ -80,7 +76,8 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap justify-between">
+        <div v-if="cartItemsDetails && cartItemsDetails.length" class="flex flex-wrap justify-between">
+
           <div class="w-full px-4 mb-4 lg:w-1/2">
             <div class="flex flex-wrap items-center gap-4">
               <span class="text-green-800 dark:text-gray-400">Apply Coupon</span>
@@ -108,7 +105,7 @@
                 <span class="text-gray-700 dark:text-gray-400">Order Total</span>
                 <span class="text-xl font-bold text-gray-700 dark:text-gray-400">€{{ orderTotal.toFixed(2) }}</span>
               </div>
-              <!-- ... (modalità di pagamento, ecc.) ... -->
+
               <h2 class="text-lg text-gray-500 dark:text-gray-400">We offer:</h2>
               <div class="flex items-center gap-2 mb-4 ">
                 <a href="#">
@@ -124,11 +121,15 @@
                        class="object-cover h-16 w-26">
                 </a>
               </div>
+              <div class="flex items-center justify-between mx-auto mb-2"><b>Your balance:</b> {{money}} </div>
+              <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckout}"><b>Your balance after order:</b> {{money - this.orderTotal}} </div>
               <div class="flex items-center justify-between ">
-                <button
-                    class="block w-full py-4 font-bold text-center text-gray-100 uppercase bg-secondary rounded-md hover:bg-green-800">
+                <button :disabled="!canCheckout"
+                        class="block w-full py-4 font-bold text-center text-gray-100 uppercase rounded-md"
+                        :class="{'bg-secondary hover:bg-green-800': canCheckout, 'bg-gray-400 cursor-not-allowed': !canCheckout}">
                   Checkout
                 </button>
+
               </div>
             </div>
           </div>
@@ -151,10 +152,14 @@ export default {
   components: {LogoutButtonComponent, AvatarComponent, HeaderBase},
   data() {
     return {
-      cartItemsDetails: []
+      cartItemsDetails: [],
+      money: null
     };
   },
   computed: {
+    canCheckout() {
+      return this.money - this.orderTotal >= 0;
+    },
     store() {
       return store
     },
@@ -168,7 +173,26 @@ export default {
       return this.$store.getters.getUserInfo;
     }
   },
+
   methods: {
+
+
+    fetchUserBalance(){
+      axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
+          'Accept': '*/*'
+        },
+      })
+          .then(response => {
+            console.log("User balance: " , response.data);
+            this.money = response.data;
+          })
+          .catch(error => {
+            console.log(error);
+          });
+    },
+
     calculateSubtotal(item) {
       return item.price * item.quantity;
     },
@@ -207,6 +231,7 @@ export default {
 
   mounted() {
     this.fetchCartItemsDetails();
+    this.fetchUserBalance();
   }
 };
 </script>
