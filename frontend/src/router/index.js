@@ -80,6 +80,12 @@ const router = createRouter({
             name: 'seller-shop',
             component: () => import('../views/seller/ShopView.vue'),
         },
+
+        {
+            path: '/prova',
+            name: 'prova',
+            component: () => import('../views/client/RicercaInLat.vue'),
+        },
     ]
 });
 

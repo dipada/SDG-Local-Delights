@@ -1,6 +1,6 @@
-package com.order.orderservice.dto;
+package com.dipada.orderservice.dto;
 
-import com.order.orderservice.model.OrderStatus;
+import com.dipada.orderservice.model.OrderStatus;
 import lombok.Data;
 
 import java.util.List;

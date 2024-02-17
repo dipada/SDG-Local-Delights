@@ -1,4 +1,4 @@
-package com.order.orderservice.dto;
+package com.dipada.orderservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

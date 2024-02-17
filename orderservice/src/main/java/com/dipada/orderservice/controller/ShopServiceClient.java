@@ -1,6 +1,6 @@
-package com.order.orderservice.controller;
+package com.dipada.orderservice.controller;
 
-import com.order.orderservice.dto.ShopDetails;
+import com.dipada.orderservice.dto.ShopDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -25,7 +25,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
-      <module name="deliveryservice" options="-parameters" />
+      <module name="deliveryservice" options="" />
       <module name="discoveryserver" options="-parameters" />
       <module name="orderservice" options="-parameters" />
       <module name="paymentservice" options="-parameters" />

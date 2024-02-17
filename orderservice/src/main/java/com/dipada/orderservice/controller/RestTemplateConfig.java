@@ -1,4 +1,4 @@
-package com.order.orderservice.controller;
+package com.dipada.orderservice.controller;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
