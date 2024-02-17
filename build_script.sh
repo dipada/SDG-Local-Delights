@@ -1,4 +1,4 @@
-#!/bin/zsh
+#! /bin/bash
 
 for dir in */ ; do
     if [[ ${dir:0:1} != "." ]]; then
