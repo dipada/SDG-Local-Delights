@@ -55,7 +55,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
-    //TODO inserisci ordine
     @Operation(summary = "Create a new order")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order created successfully"),
@@ -67,14 +66,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order request");
         }
 
-        //TODO check if products exist, or check in frontend
-
-        //recupero dettagli negozio dell'ordine
         ShopDetails shopDetails = shopServiceClient.getShopDetails(orderRequest.getShopId());
-
-        System.out.println("ShopDetails recived from OrderService: " + shopDetails);
-
-
         Order order = new Order();
         order.setUserEmail(orderRequest.getUserEmail());
         order.setShopId(orderRequest.getShopId());
@@ -91,7 +83,7 @@ public class OrderController {
 
         rabbitMQSender.sendOrder(order);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Order created successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(order.getId().toString());
     }
 
     @Operation(summary = "Update the status of an order")

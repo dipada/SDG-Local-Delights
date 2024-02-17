@@ -56,8 +56,11 @@ export default createStore({
                     state.cartProducts.splice(productIndex, 1);
                 }
             }
-        }
+        },
 
+        emptyCart(state) {
+            state.cartProducts = [];
+        },
     },
     actions: {
         addProductToCart({commit}, productId) {
@@ -66,6 +69,10 @@ export default createStore({
 
         removeProductFromCart({commit}, productId) {
             commit('removeProductFromCart', productId);
+        },
+
+        emptyCart({commit}) {
+            commit('emptyCart');
         },
 
         saveShopId({commit}, shopId) {

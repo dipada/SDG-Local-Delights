@@ -123,7 +123,7 @@
               <div class="flex items-center justify-between mx-auto mb-2"><b>Your balance:</b> {{money}} </div>
               <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckout}"><b>Your balance after order:</b> {{money - this.orderTotal}} </div>
               <div class="flex items-center justify-between ">
-                <button :disabled="!canCheckout"
+                <button @click="makeCheckout" :disabled="!canCheckout"
                         class="block w-full py-4 font-bold text-center text-gray-100 uppercase rounded-md"
                         :class="{'bg-secondary hover:bg-green-800': canCheckout, 'bg-gray-400 cursor-not-allowed': !canCheckout}">
                   Checkout
@@ -173,7 +173,48 @@ export default {
   },
 
   methods: {
+    async makeCheckout() {
+      const email = this.$store.state.userInfo.email;
+      const shopId = this.$store.state.shopId;
+      let orderProductsIds = [];
+      this.$store.state.cartProducts.forEach(product => {
+        for (let i = 0; i < product.quantity; i++) {
+          orderProductsIds.push(product.id);
+        }
+      });
+      const amount = this.orderTotal;
 
+      const orderResponse = await axios.post('http://localhost:8085/api/v1/order/create-order', {
+        userEmail: email,
+        shopId: shopId,
+        listOfProductIds: orderProductsIds,
+        amount: amount
+      }, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
+          'Accept': '*/*'
+        },
+      });
+
+      const orderId = orderResponse.data;
+
+      axios.post('http://localhost:8085/payment/pay',{
+        email: email,
+        amount: amount,
+        orderId: orderId
+      }, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
+          'Accept': '*/*'
+        },
+      }).then(response => {
+        console.log("Pagamento effettuato con successo: " , response);
+        this.$store.dispatch('emptyCart');
+        this.$router.push('/client/home');
+      }).catch(error => {
+        console.log("Errore nel pagamento: " , error);
+      });
+    },
 
     fetchUserBalance(){
       axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
@@ -202,7 +243,6 @@ export default {
     },
 
     decrementQuantity(productId) {
-      //this.cartItemsDetails.find(item => item.id === productId).quantity--;
       this.$store.commit('removeProductFromCart', productId);
       this.fetchCartItemsDetails();
     },
