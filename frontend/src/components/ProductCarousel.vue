@@ -2,12 +2,11 @@
   <section class="flex bg-gray-100 dark:bg-gray-800">
     <div class="p-4 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 gap-4 lg:gap-4 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Iterazione sugli articoli -->
         <div v-for="item in items" :key="item.id" class="mt-56 bg-white rounded shadow dark:bg-gray-700">
           <div class="relative z-20 p-6 group">
             <div class="relative block h-64 mb-4 -mt-56 overflow-hidden rounded -top-full ">
               <img class="pointer-events-none object-cover w-full h-full transition-all group-hover:scale-110"
-                   :src="item.imageUrl" :alt="item.name">
+                   :src="item.image" :alt="item.name">
 
               <div @click="addToCart(item.id)" class="absolute flex flex-col top-4 right-4">
                   <div
@@ -27,7 +26,7 @@
               </h2>
             </a>
             <p class="mb-3 text-lg font-bold text-blue-500 dark:text-blue-300 ">
-              <span>{{ item.price }}</span>
+              <span><b class="text-black">price:</b> {{ item.price }} &euro;</span>
             </p>
           </div>
         </div>
