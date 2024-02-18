@@ -114,12 +114,12 @@ export default {
               'Accept': '*/*'
             }
           }
-      ).then(response => {
+      ).then(async response => {
         this.loginError = false;
         this.loginErrorMessage = "";
 
-        console.log("Token : " , JSON.stringify(response.data.token));
-        this.saveUserInfo(JSON.stringify(response.data.token));
+        console.log("Token : ", JSON.stringify(response.data.token));
+        await this.saveUserInfo(response.data.token);
         setTimeout(() => {
           this.isLoading = false;
           this.$router.push('/client/home');

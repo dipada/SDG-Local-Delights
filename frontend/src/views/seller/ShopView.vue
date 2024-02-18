@@ -2,95 +2,85 @@
 
 import HeaderBase from "@/components/HeaderBase.vue";
 import ShopTopContentComponentEdit from "@/components/ShopTopContentComponentEdit.vue";
-import ProductContentEdit from "@/components/ProductContentEdit.vue";
+import SellerProductCarousel from "@/components/SellerProductCarousel.vue";
+
 
 </script>
 
 <template>
   <HeaderBase/>
   <ShopTopContentComponentEdit :shop-info="shopInfo"/>
-  <div class="mx-auto max-w-screen-lg">
-    <main class="grid grid-cols-2 gap-x-6 gap-y-10 px-2 pb-20 sm:grid-cols-3 sm:px-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-4 lg:px-0">
-      <article class="relative" v-for="prodotto in prodotti">
-        <div class="aspect-square overflow-hidden">
-          <img class="h-full w-full object-cover transition-all duration-300 group-hover:scale-125" src="https://media.allure.com/photos/595d3d701533d77186041858/master/pass/edsfaves-07032017-lede.jpg?mbid=social_retweet" alt=""/>
-        </div>
-        <div class="mt-4 flex items-start justify-between">
-          <div class="">
-            <h3 class="text-xs font-semibold sm:text-sm md:text-base ">
-              <a href="#" title="" class="">
-                {{prodotto.nome}}
-                <span class="absolute" aria-hidden="true"></span>
-              </a>
-            </h3>
-          </div>
-          <div class="text-right">
-            <p class="text-xs font-normal sm:text-sm md:text-base">{{prodotto.prezzoAttuale}}</p>
-          </div>
-        </div>
-      </article>
-
-    </main>
-  </div>
-
+  <SellerProductCarousel :items="products" :new-product/>
 
 </template>
 
 <script>
-import ShopTopContentComponent from "@/components/ShopTopContentComponent.vue";
+
+import {mapActions, mapState} from "vuex";
 import axios from "axios";
 import store from "@/store/index.js";
+import router from "@/router/index.js";
+import ShopTopContentComponentEdit from "@/components/ShopTopContentComponentEdit.vue";
+import SellerProductCarousel from "@/components/SellerProductCarousel.vue";
 
 export default {
-  components: {ShopTopContentComponent},
+  name: 'ShopView',
+  components: { ShopTopContentComponentEdit, SellerProductCarousel},
   data() {
     return {
       shopInfo: null,
-      prodotti: [{
-        id: 1,
-        nome: "Arabian Musk",
-        imageUrl: "https://media.allure.com/photos/595d3d701533d77186041858/master/pass/edsfaves-07032017-lede.jpg?mbid=social_retweet",
-        prezzoAttuale: "$49.00",
-        prezzoVecchio: "$79.00",
-        sconto: true
-      },
-        {
-          id: 2,
-          nome: "Arabian Musk",
-          imageUrl: "https://media.allure.com/photos/595d3d701533d77186041858/master/pass/edsfaves-07032017-lede.jpg?mbid=social_retweet",
-          prezzoAttuale: "$49.00",
-          prezzoVecchio: "$79.00",
-          sconto: true
-        }
-        ]
-    }
+      products:[]
+    };
+  },
+  computed: {
+    ...mapState({
+      shopId: state => state.shopId,
+      userInfo: state => state.userInfo,
+    }),
+  },
+  mounted() {
+    this.fetchShopInfo();
   },
   methods: {
-    // Esempio di metodo
-    getShopInfo() {
-      // Chiamata API per ottenere le informazioni del negozio
-      axios.get('http://localhost:8085/shop/seller/' + store.state.userInfo.email, {
+    ...mapActions(['saveShopId']),
+
+    fetchShopInfo() {
+      if (this.userInfo) {
+        axios.get(`http://localhost:8085/shop/seller/${this.userInfo.email}`, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*'
+          },
+        })
+            .then(response => {
+              this.shopInfo = response.data[0];
+              this.saveShopId(response.data[0].id);
+              console.log(this.shopId);
+              this.getShopProducts(this.shopId);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+      } else {
+        router.push({name: 'client-home'});
+      }
+    },
+
+    getShopProducts(shopId) {
+      axios.get(`http://localhost:8085/product/products/`+ shopId , {
         headers: {
-          'Authorization': 'Bearer ' + store.getters.getUserToken,
+          'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
         },
       }).then(response => {
-            console.log(response.data);
-            this.shopInfo = response.data[0];
-            return this.shopInfo;
+        console.log(response.data);
+        this.products = response.data;
+      }).catch(error => {
+        console.log(error);
+      });
+    },
 
-          })
-          .catch(error => {
-            console.error(error);
-          });
-    }
-  },
-  mounted() {
-    this.getShopInfo();
   }
-}
+};
+
 </script>
-
-<style scoped>
-
-</style>

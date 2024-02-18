@@ -30,11 +30,22 @@
         <div class="w-full mb-10 lg:mb-0 ">
           <ul class="mb-10 text-base leading-7 text-gray-500 dark:text-gray-400">
             <li v-if="shopInfo"><b>Indirizzo:</b> {{ shopInfo.address }}</li>
+
             <label for="address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Edit
               address</label>
+            <!--
             <input type="text" id="address"
                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                    placeholder="Via Roma 1" required @change="editShopAddress"/>
+            -->
+            <input class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" type="text" v-model="query"
+                   @input="cercaIndirizzo"
+                   placeholder="Inserisci un indirizzo..." required />
+            <ul class="bg-gray-400" v-if="indirizzi.length">
+              <li v-for="(indirizzo, index) in indirizzi" :key="index" @click="selezionaIndirizzo(indirizzo)">
+                {{ indirizzo.display_name }}
+              </li>
+            </ul>
             <li v-if="shopInfo"><b>Telefono:</b> {{ shopInfo.phoneNumber }}</li>
             <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Edit phone
               number</label>
@@ -56,6 +67,8 @@
 
 <script>
 import axios from "axios";
+import {mapActions} from "vuex";
+import store from "@/store/index.js";
 
 export default {
   name: 'ShopTopContentComponent',
@@ -71,10 +84,47 @@ export default {
       sellerEmail: String,
       longitude: Number,
       latitude: Number
+    },
+
+  },
+
+  data() {
+    return {
+      query: '',
+      indirizzi: [],
+      savedAddresses: [],
+      selectedAddress: null,
     }
   },
 
+  created() {
+
+  },
+
   methods: {
+    cercaIndirizzo() {
+      if (this.query.length > 2) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.query)}`;
+        axios.get(url)
+            .then(response => {
+              this.indirizzi = response.data;
+              console.log("Indirizzi salvati: ",this.indirizzi);
+            })
+            .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
+      }
+    },
+    selezionaIndirizzo(indirizzo) {
+      this.query = indirizzo.display_name;
+      this.indirizzi = [];
+      this.selectedAddress = indirizzo; // Memorizza l'indirizzo selezionato
+      if (this.selectedAddress) {
+        this.savedAddresses=this.selectedAddress; // Aggiungi l'indirizzo alla lista degli indirizzi salvati
+        this.selectedAddress = null; // Resetta l'indirizzo selezionato
+        this.query = ''; // Pulisci la query
+        this.editShopAddress(indirizzo);
+      }
+    },
+
     editShopImage(e) {
       const file = e.target.files[0];
       const reader = new FileReader();
@@ -93,7 +143,9 @@ export default {
     },
 
     editShopAddress(e) {
-      this.shopInfo.address = e.target.value;
+      this.shopInfo.address = e.display_name;
+      this.shopInfo.longitude = e.lon;
+      this.shopInfo.latitude = e.lat;
     },
 
     editShopNumber(e) {
@@ -120,7 +172,7 @@ export default {
           .catch(error => {
             console.log(error);
           });
-    }
+    },
   },
 
   watch: {
