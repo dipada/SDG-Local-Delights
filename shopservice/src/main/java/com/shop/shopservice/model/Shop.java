@@ -2,6 +2,7 @@ package com.shop.shopservice.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Shop {
     private String longitude;
     @Column(name="latitude")
     private String latitude;
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     // Relazione con Seller

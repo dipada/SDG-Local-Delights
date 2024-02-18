@@ -4,9 +4,9 @@
     <div class="flex flex-col sm:flex-row sm:justify-between justify-center items-center">
       <img class="rounded w-36 h-36" :src="userInfo.picture" alt="Extra large avatar">
       <div><b>Your balance</b>: {{money}}</div>
-      <button @click="navigateSellerHome" type="button"
+      <button @click="navigateSellerShop" type="button"
               class="mt-5 h-fit w-fit focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-        Your shops
+        Your shop
       </button>
     </div>
     <user-profile-body-component :email="userInfo.email" :full_name="userInfo.name + ' ' + userInfo.surname"/>
@@ -45,7 +45,7 @@ export default defineComponent({
     },
   },
   methods: {
-    navigateSellerHome() {
+    navigateSellerShop() {
       this.$router.push({name: 'seller-home'});
     },
 
