@@ -43,12 +43,12 @@
             <div class="w-full md:w-1/2 px-2 mb-4">
               <label for="brand" class="block text-sm font-medium text-green-600">Brand</label>
               <input type="text" id="brand" v-model="newProduct.brand" required
-                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm text-black">
             </div>
             <div class="w-full md:w-1/2 px-2 mb-4">
               <label for="price" class="block text-sm font-medium text-green-600">Prezzo</label>
               <input type="number" id="price" v-model="newProduct.price" required
-                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm text-black">
             </div>
             <div class="w-full px-2">
               <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-600">Aggiungi
