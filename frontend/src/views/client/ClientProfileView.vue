@@ -3,7 +3,20 @@
   <div class="flex-auto justify-center m-20 text-secondary">
     <div class="flex flex-col sm:flex-row sm:justify-between justify-center items-center">
       <img class="rounded w-36 h-36" :src="userInfo.picture" alt="Extra large avatar">
-      <div><b>Your balance</b>: {{money}}</div>
+      <div class="mt-4">
+        <b>Your balance</b>: {{ money }} &euro;
+        <div class="flex justify-center items-center">
+          <div class="flex flex-col sm:flex-row sm:space-x-4 w-full max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
+            <input v-model="topUpAmount" type="number" placeholder="Amount"
+                   class="h-12 w-full rounded-md bg-gray-100 px-3"/>
+            <button @click="makeTopUp" type="button"
+                    class="mt-4 sm:mt-0 h-12 w-full min-w-max sm:w-auto focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm flex justify-center items-center px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+              Top up
+            </button>
+          </div>
+        </div>
+
+      </div>
       <button @click="navigateSellerShop" type="button"
               class="mt-5 h-fit w-fit focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
         Your shop
@@ -15,7 +28,7 @@
     <div v-else class="w-screen">
       <div class="mt-8 max-w-screen-lg">
         <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
-          <p class="flex-1 text-base font-bold text-gray-900 ">No orders here  :(</p>
+          <p class="flex-1 text-base font-bold text-gray-900 ">No orders here :(</p>
         </div>
       </div>
     </div>
@@ -34,6 +47,7 @@ export default defineComponent({
 
   data() {
     return {
+      topUpAmount: 0,
       money: 0,
       orderDetails: [],
     }
@@ -45,11 +59,34 @@ export default defineComponent({
     },
   },
   methods: {
+    async makeTopUp() {
+      console.log("Ricarica di", this.topUpAmount, "euro");
+      await axios.post(`http://localhost:8085/payment/topup`, {
+            email: this.$store.state.userInfo.email,
+            amount: this.topUpAmount,
+            //orderId: ""
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
+              'Accept': '*/*'
+            },
+          }
+      )
+          .then(response => {
+            console.log("Ricarica effettuata con successo");
+            this.fetchUserBalance();
+            this.topUpAmount = 0;
+          })
+          .catch(error => {
+            console.log(error);
+          });
+    },
+
     navigateSellerShop() {
       this.$router.push({name: 'seller-home'});
     },
 
-    fetchUserBalance(){
+    fetchUserBalance() {
       axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
@@ -57,7 +94,7 @@ export default defineComponent({
         },
       })
           .then(response => {
-            console.log("User balance: " , response.data);
+            console.log("User balance: ", response.data);
             this.money = response.data;
           })
           .catch(error => {
