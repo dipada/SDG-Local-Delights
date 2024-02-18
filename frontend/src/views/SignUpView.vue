@@ -94,17 +94,19 @@ export default {
     },
 
     searchAddress() {
-      // Utilizza formData.shippingAddress invece di this.query
-      if (this.formData.shippingAddress.length > 2) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.formData.shippingAddress)}`;
-        axios.get(url)
-            .then(response => {
-              this.indirizzi = response.data;
-            })
-            .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
-      } else {
-        this.indirizzi = [];
-      }
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        if (this.formData.shippingAddress.length > 2) {
+          const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.formData.shippingAddress)}`;
+          axios.get(url)
+              .then(response => {
+                this.indirizzi = response.data;
+              })
+              .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
+        } else {
+          this.indirizzi = [];
+        }
+      }, 500);
     },
 
 

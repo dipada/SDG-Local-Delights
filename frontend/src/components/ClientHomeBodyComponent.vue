@@ -88,7 +88,7 @@ export default {
       clearTimeout(this.searchTimeout);
       this.searchTimeout = setTimeout(() => {
         this.searchAddress();
-      }, 100);
+      }, 500);
     },
 
     selezionaIndirizzo(indirizzo) {

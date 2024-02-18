@@ -15,7 +15,8 @@
       <div class="text-black">
         <h2 v-if="cartItems && cartItems.length" class="mb-8 text-4xl font-bold dark:text-gray-400">Your Cart</h2>
         <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400">Empty cart :(</h2>
-        <div v-if="cartItems && cartItems.length" class="p-6 mb-8 border bg-gray-50 dark:bg-gray-800 dark:border-gray-800">
+        <div v-if="cartItems && cartItems.length"
+             class="p-6 mb-8 border bg-gray-50 dark:bg-gray-800 dark:border-gray-800">
           <div class="flex-wrap items-center hidden mb-6 -mx-4 md:flex md:mb-8">
             <div class="w-full px-4 mb-6 md:w-4/6 lg:w-6/12 md:mb-0">
               <h2 class="font-bold text-gray-500 dark:text-gray-400">Product name</h2>
@@ -54,7 +55,8 @@
                     class="inline-flex items-center px-4 font-semibold text-gray-500 border border-gray-200 rounded-md dark:border-gray-700">
                   <button class="py-2 hover:text-gray-700 dark:text-gray-400" @click="decrementQuantity(item.id)">
                     <svg width="20" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 12L18 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M6 12L18 12" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round"/>
                     </svg>
                     <!-- Icon for decrement -->
                   </button>
@@ -63,7 +65,8 @@
                          v-model.number="item.quantity">
                   <button class="py-2 hover:text-gray-700 dark:text-gray-400" @click="incrementQuantity(item.id)">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 12H18M12 6V18" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M6 12H18M12 6V18" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round"/>
                     </svg>
                   </button>
                 </div>
@@ -120,8 +123,24 @@
                        class="object-cover h-16 w-26">
                 </a>
               </div>
-              <div class="flex items-center justify-between mx-auto mb-2"><b>Your balance:</b> {{money}} </div>
-              <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckout}"><b>Your balance after order:</b> {{money - this.orderTotal}} </div>
+              <div class="flex items-center justify-between mx-auto mb-2"><b>Your balance:</b> {{ money }}</div>
+              <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckout}"><b>Your
+                balance after order:</b> {{ money - this.orderTotal }}
+              </div>
+              <div class="mx-auto mb-2">
+                <label> Shipping address </label>
+                <input @input="searchAddress" v-model="query" type="text" placeholder="Via roma 1" required
+                       class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
+                <div v-if="indirizzi.length" class="relative w-full mt-1 text-secondary">
+                  <ul class="bg-white border border-gray-300 rounded-lg text-sm">
+                    <li v-for="(adr, index) in indirizzi" :key="index"
+                        @click="selectAddress(adr)"
+                        class="p-2 hover:bg-gray-100 cursor-pointer">
+                      {{ adr.display_name }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
               <div class="flex items-center justify-between ">
                 <button @click="makeCheckout" :disabled="!canCheckout"
                         class="block w-full py-4 font-bold text-center text-gray-100 uppercase rounded-md"
@@ -151,12 +170,15 @@ export default {
   data() {
     return {
       cartItemsDetails: [],
-      money: null
+      money: null,
+      indirizzi: [],
+      query: '',
+      addressSelected: false
     };
   },
   computed: {
     canCheckout() {
-      return this.money - this.orderTotal >= 0;
+      return (this.money - this.orderTotal >= 0) && this.query.length > 2 && this.addressSelected;
     },
     store() {
       return store
@@ -173,6 +195,33 @@ export default {
   },
 
   methods: {
+    selectAddress(address) {
+      this.query = address.display_name;
+      this.indirizzi = [];
+      this.addressSelected = true;
+    },
+
+
+    searchAddress() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        if (this.query.length > 2) {
+          this.addressSelected = false;
+          const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.query)}`; // Usa this.query
+          axios.get(url)
+              .then(response => {
+                this.indirizzi = response.data;
+              })
+              .catch(error => {
+                console.error('Errore nel recupero degli indirizzi:', error);
+              });
+        } else {
+          this.indirizzi = [];
+        }
+      }, 500);
+    },
+
+
     async makeCheckout() {
       const email = this.$store.state.userInfo.email;
       const shopId = this.$store.state.shopId;
@@ -183,12 +232,12 @@ export default {
         }
       });
       const amount = this.orderTotal;
-
       const orderResponse = await axios.post('http://localhost:8085/api/v1/order/create-order', {
         userEmail: email,
         shopId: shopId,
         listOfProductIds: orderProductsIds,
-        amount: amount
+        amount: amount,
+        shippingAddress: this.query
       }, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
@@ -198,7 +247,7 @@ export default {
 
       const orderId = orderResponse.data;
 
-      axios.post('http://localhost:8085/payment/pay',{
+      axios.post('http://localhost:8085/payment/pay', {
         email: email,
         amount: amount,
         orderId: orderId
@@ -208,15 +257,15 @@ export default {
           'Accept': '*/*'
         },
       }).then(response => {
-        console.log("Pagamento effettuato con successo: " , response);
+        console.log("Pagamento effettuato con successo: ", response);
         this.$store.dispatch('emptyCart');
         this.$router.push('/client/home');
       }).catch(error => {
-        console.log("Errore nel pagamento: " , error);
+        console.log("Errore nel pagamento: ", error);
       });
     },
 
-    fetchUserBalance(){
+    fetchUserBalance() {
       axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
@@ -224,7 +273,7 @@ export default {
         },
       })
           .then(response => {
-            console.log("User balance: " , response.data);
+            console.log("User balance: ", response.data);
             this.money = response.data;
           })
           .catch(error => {
@@ -257,7 +306,7 @@ export default {
               },
             }).then(response => {
               // bind the quantity of the item in the cart to the response
-              return { ...response.data, quantity: item.quantity };
+              return {...response.data, quantity: item.quantity};
             })
         );
         this.cartItemsDetails = await Promise.all(requests);

@@ -28,4 +28,5 @@ public class Order {
     private OrderStatus orderStatus;
     private Double amount;
     private String timestamp;
+    private String shippingAddress;
 }

@@ -66,6 +66,7 @@ public class OrderController {
         order.setPaid(false);
         order.setAmount(orderRequest.getAmount());
         order.setTimestamp(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+        order.setShippingAddress(orderRequest.getShippingAddress());
 
         orderRepository.save(order);
 
