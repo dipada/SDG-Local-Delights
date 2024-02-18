@@ -27,8 +27,17 @@
 
       <div>
         <label> Shipping address </label>
-        <input v-model="formData.shippingAddress" type="text" placeholder="Via roma 1" required
+        <input @input="searchAddress" v-model="formData.shippingAddress" type="text" placeholder="Via roma 1" required
                class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
+        <div v-if="indirizzi.length" class="relative w-full mt-1 text-secondary">
+          <ul class="bg-white border border-gray-300 rounded-lg text-sm">
+            <li v-for="(address, index) in indirizzi" :key="index"
+                @click="selectAddress(address)"
+                class="p-2 hover:bg-gray-100 cursor-pointer">
+              {{ address.display_name }}
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div>
@@ -73,10 +82,32 @@ export default {
         phoneNumber: "", // optional
         picture: defaultAvatar,
       },
+      indirizzi: [],
+      query: '',
     };
   },
 
   methods: {
+    selectAddress(address) {
+      this.formData.shippingAddress = address.display_name;
+      this.indirizzi = [];
+    },
+
+    searchAddress() {
+      // Utilizza formData.shippingAddress invece di this.query
+      if (this.formData.shippingAddress.length > 2) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.formData.shippingAddress)}`;
+        axios.get(url)
+            .then(response => {
+              this.indirizzi = response.data;
+            })
+            .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
+      } else {
+        this.indirizzi = [];
+      }
+    },
+
+
     register() {
       if (!this.validateData()) {
         alert("Check the form for errors.");
