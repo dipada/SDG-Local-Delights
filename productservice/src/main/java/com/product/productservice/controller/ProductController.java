@@ -151,7 +151,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Products not found")
     })
     @GetMapping("/products/{shopId}")
-    public ResponseEntity<Iterable<Product>> getProductsByShopId(@PathVariable Long shopId) {
+    public ResponseEntity<Iterable<Product>> getListProductsByShopId(@PathVariable Long shopId) {
         Iterable<Product> products = productRepository.findByShopId(shopId);
         if (products.iterator().hasNext()) {
             return ResponseEntity.status(HttpStatus.OK).body(products);
