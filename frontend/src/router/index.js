@@ -47,12 +47,6 @@ const router = createRouter({
             meta: {requiresAuth: true}
         },
         {
-            path: '/client/shops', // list of shops view
-            name: 'client-shops',
-            component: () => import('../views/client/ClientShopsView.vue'),
-            meta: {requiresAuth: true}
-        },
-        {
             path: '/client/shop', // single shop view
             name: 'client-shop',
             component: () => import('../views/client/ClientShopView.vue'),
