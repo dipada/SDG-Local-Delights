@@ -1,11 +1,9 @@
 package com.dipada.orderservice.controller;
 
-import com.dipada.orderservice.repository.OrderRepository;
-import com.dipada.orderservice.RabbitMQ.RabbitMQSender;
 import com.dipada.orderservice.dto.OrderRequest;
-import com.dipada.orderservice.dto.ShopDetails;
 import com.dipada.orderservice.model.Order;
 import com.dipada.orderservice.model.OrderStatus;
+import com.dipada.orderservice.repository.OrderRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,17 +21,11 @@ import java.util.List;
 public class OrderController {
 
     private final OrderRepository orderRepository;
-    private final ShopServiceClient shopServiceClient;
-
-    private final RabbitMQSender rabbitMQSender;
 
     @Autowired
-    protected OrderController(OrderRepository orderRepository, ShopServiceClient shopServiceClient, RabbitMQSender rabbitMQSender) {
+    protected OrderController(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.shopServiceClient = shopServiceClient;
-        this.rabbitMQSender = rabbitMQSender;
     }
-
 
     @Operation(summary = "Get all orders of a user")
     @ApiResponses(value = {
@@ -66,13 +58,9 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order request");
         }
 
-        ShopDetails shopDetails = shopServiceClient.getShopDetails(orderRequest.getShopId());
         Order order = new Order();
         order.setUserEmail(orderRequest.getUserEmail());
         order.setShopId(orderRequest.getShopId());
-        order.setShopName(shopDetails.getName());
-        order.setShopAddress(shopDetails.getAddress());
-        order.setShopEmail(shopDetails.getEmail());
         order.setListOfProductsIds(orderRequest.getListOfProductIds());
         order.setOrderStatus(OrderStatus.PENDING); //At creation, the order is pending
         order.setPaid(false);
@@ -80,8 +68,6 @@ public class OrderController {
         order.setTimestamp(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 
         orderRepository.save(order);
-
-        rabbitMQSender.sendOrder(order);
 
         return ResponseEntity.status(HttpStatus.OK).body(order.getId().toString());
     }

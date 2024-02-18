@@ -20,9 +20,6 @@ public class Order {
 
     private String userEmail;
     private Long shopId;
-    private String shopName;
-    private String shopAddress;
-    private String shopEmail;
     private Boolean paid;
 
     @ElementCollection(fetch = FetchType.EAGER)
