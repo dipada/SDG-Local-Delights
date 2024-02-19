@@ -120,13 +120,13 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found")
     })
     @PostMapping("/take-order/{orderId}")
-    public ResponseEntity<String> takeOrder(@PathVariable Long orderId, @RequestParam Long deliveryId) {
+    public ResponseEntity<String> takeOrder(@PathVariable Long orderId, @RequestParam String deliveryEmail) {
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
         }
 
-        order.setDeliveryId(deliveryId);
+        order.setDeliveryEmail(deliveryEmail);
         order.setOrderStatus(OrderStatus.IN_TRANSIT);
         orderRepository.save(order);
 
@@ -157,9 +157,9 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Found the orders"),
             @ApiResponse(responseCode = "404", description = "No orders found")
     })
-    @GetMapping("/orderByDeliveryId/{deliveryId}")
-    public ResponseEntity<List<Order>> getOrderByDeliveryId(@Parameter(description = "Delivery Id") @PathVariable Long deliveryId) {
-        List<Order> orders = orderRepository.findAllOrdersByDeliveryId(deliveryId).orElse(null);
+    @GetMapping("/orderByDeliveryId/{deliveryEmail}")
+    public ResponseEntity<List<Order>> getOrderByDeliveryId(@Parameter(description = "Delivery Email") @PathVariable String deliveryEmail) {
+        List<Order> orders = orderRepository.findAllOrdersByDeliveryEmail(deliveryEmail).orElse(null);
         if (orders == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

@@ -29,5 +29,5 @@ public class Order {
     private Double amount;
     private String timestamp;
     private String shippingAddress;
-    private Long deliveryId;
+    private String deliveryEmail;
 }

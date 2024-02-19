@@ -85,11 +85,20 @@ export default {
     },
 
     async takeOrder(orderId) {
+      const deliveryEmail = this.$store.state.userInfo.email;
+      const url = `http://localhost:8085/api/v1/order/take-order/${orderId}?deliveryEmail=${deliveryEmail}`;
+
       try {
-        await axios.post('/your-post-endpoint', { orderId });
-        // Aggiungi qui la logica per gestire la risposta
+        const response = await axios.post(url, {}, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        console.log("Order taken successfullyFE", response.data);
+        await this.fetchOrders();
       } catch (error) {
-        console.error("There was an error taking the order:", error);
+        console.error("There was an error taking the order:", error.response ? error.response.data : error.message);
       }
     },
   },
