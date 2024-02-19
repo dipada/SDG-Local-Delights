@@ -78,7 +78,19 @@ const router = createRouter({
         {
             path: '/prova',
             name: 'prova',
-            component: () => import('../views/client/RicercaInLat.vue'),
+            component: () => import('../views/delivery/DeliveryAvaibleOrdersView.vue'),
+        },
+
+        {
+            path: '/prova2',
+            name: 'prova2',
+            component: () => import('../views/delivery/DeliveryOrderManagement.vue'),
+        },
+
+        {
+            path: '/prova3',
+            name: 'prova3',
+            component: () => import('../views/delivery/DeliveryAvaibleOrders.vue'),
         },
     ]
 });
