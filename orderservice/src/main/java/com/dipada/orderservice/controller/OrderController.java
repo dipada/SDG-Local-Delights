@@ -95,4 +95,20 @@ public class OrderController {
 
         return ResponseEntity.status(HttpStatus.OK).body("Order status updated successfully");
     }
+
+
+    @Operation(summary = "Get all orders to be delivered")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/get-to-be-delivered-orders")
+    public ResponseEntity<List<Order>> getToBeDeliveredOrders() {
+        List<Order> orders = orderRepository.findAllOrdersByOrderStatus(OrderStatus.TO_BE_DELIVERED).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
 }

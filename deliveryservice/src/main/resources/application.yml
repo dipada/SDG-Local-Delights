@@ -19,3 +19,6 @@ eureka:
     register-with-eureka: true
     refresh:
       enable: true
+
+orderservice:
+  url: http://orderservice:8086

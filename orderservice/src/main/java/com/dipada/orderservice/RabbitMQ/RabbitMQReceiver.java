@@ -1,11 +1,14 @@
 package com.dipada.orderservice.RabbitMQ;
 
+import com.dipada.orderservice.model.OrderStatus;
 import com.dipada.orderservice.repository.OrderRepository;
 import com.dipada.orderservice.dto.PaymentOutcome;
 import com.dipada.orderservice.model.Order;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -33,5 +36,30 @@ public class RabbitMQReceiver {
             System.out.println("Order " + paymentOutcome.getOrderId() + " not paid");
         }
     }
+    @RabbitListener(queues = "orderTakenQueue")
+    public void receiveOrderTaken(Long orderId) {
+        System.out.println("Received order taken for ID: " + orderId);
+        Optional<Order> order = orderRepository.findById(orderId);
+        order.ifPresent(o -> {
+            o.setOrderStatus(OrderStatus.IN_TRANSIT);
+            orderRepository.save(o);
+        });
+    }
+
+    @RabbitListener(queues = "orderDeliveredQueue")
+    public void receiveOrderDelivered(Long orderId) {
+        System.out.println("Received order delivered for ID: " + orderId);
+        Optional<Order> order = orderRepository.findById(orderId);
+        order.ifPresent(o -> {
+            o.setOrderStatus(OrderStatus.COMPLETED);
+            orderRepository.save(o);
+        });
+    }
 
 }
+
+
+
+
+
+

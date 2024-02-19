@@ -2,6 +2,7 @@ package com.delivery.deliveryservice.controller;
 
 import com.delivery.deliveryservice.enumeration.DeliveryStatus;
 import com.delivery.deliveryservice.model.Delivery;
+import com.delivery.deliveryservice.rabbitMQ.RabbitMQSender;
 import com.delivery.deliveryservice.repository.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,14 @@ import java.time.Instant;
 public class DeliveryController {
 
     private final DeliveryRepository deliveryRepository;
+    private final RabbitMQSender rabbitMQSender;
 
     @Autowired
-    protected DeliveryController(DeliveryRepository deliveryRepository) {
+    protected DeliveryController(DeliveryRepository deliveryRepository, RabbitMQSender rabbitMQSender) {
         this.deliveryRepository = deliveryRepository;
+        this.rabbitMQSender = rabbitMQSender;
     }
 
-    //todo inserire endpoint per presa in carico ordine
     @PostMapping("/takeOrder")
     public ResponseEntity<String> takeOrder(@RequestParam Long orderId, @RequestParam Long shopId, @RequestParam Long userId) {
 
@@ -33,9 +35,8 @@ public class DeliveryController {
 
         deliveryRepository.save(delivery);
 
+        rabbitMQSender.sendOrderTaken(delivery);
         return ResponseEntity.ok("Order" + delivery.getOrderId() + " taken");
-
-
     }
 
     @GetMapping("/getAll")
@@ -43,7 +44,6 @@ public class DeliveryController {
         return ResponseEntity.ok(deliveryRepository.findAll());
     }
 
-    //set order status to in transit
     @PutMapping("/deliveryStatusInTransit")
     public ResponseEntity<String> updateDeliveryStatus(@RequestParam Long Id) {
 
@@ -76,24 +76,9 @@ public class DeliveryController {
         delivery.setUpdatedAt(Instant.now());
 
         deliveryRepository.save(delivery);
+        rabbitMQSender.sendOrderDelivered(delivery);
 
         return ResponseEntity.ok("Order" + delivery.getId() + " status updated to " + delivery.getStatus());
 
     }
- 
-
-
-
-    //per tutte le modifiche Controllare che la richiesta provenga dal deliverer che ha preso in carico l'ordine.
-    //todo inserire endpoint per consegna ordine
-    //todo inserire endpoint per annullamento ordine
-    //todo inserire endpoint per visualizzare ordini presi in carico
-    //todo inserire endpoint per visualizzare ordini consegnati
-    //todo inserire endpoint per visualizzare ordini annullati
-    //todo inserire endpoint per visualizzare ordini in attesa di presa in carico
-    //todo inserire endpoint per visualizzare ordini in attesa di consegna
-    //todo inserire endpoint per visualizzare ordini in attesa di annullamento
-    //todo inserire endpoint per visualizzare ordini in attesa di presa in carico di un determinato utente
-    //todo inserire endpoint per visualizzare ordini in attesa di consegna di un determinato utente
-
 }
