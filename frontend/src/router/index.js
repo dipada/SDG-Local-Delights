@@ -88,9 +88,9 @@ const router = createRouter({
         },
 
         {
-            path: '/prova3',
-            name: 'prova3',
-            component: () => import('../views/delivery/DeliveryAvaibleOrders.vue'),
+            path: '/delivery/available-orders',
+            name: 'delivery-available-orders',
+            component: () => import('../views/delivery/DeliveryAvailableOrders.vue'),
         },
     ]
 });
