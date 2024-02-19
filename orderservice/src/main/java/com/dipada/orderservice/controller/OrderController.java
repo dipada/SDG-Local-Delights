@@ -5,6 +5,7 @@ import com.dipada.orderservice.model.Order;
 import com.dipada.orderservice.model.OrderStatus;
 import com.dipada.orderservice.repository.OrderRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,4 +112,59 @@ public class OrderController {
 
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
+
+
+    @Operation(summary = "Take an order to deliver")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order taken successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/take-order/{orderId}")
+    public ResponseEntity<String> takeOrder(@PathVariable Long orderId, @RequestParam Long deliveryId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        order.setDeliveryId(deliveryId);
+        order.setOrderStatus(OrderStatus.IN_TRANSIT);
+        orderRepository.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order taken successfully");
+    }
+
+
+    @Operation(summary = "Mark an order as delivered")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order delivered successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/order-delivered/{orderId}")
+    public ResponseEntity<String> orderDelivered(@PathVariable Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        order.setOrderStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order delivered successfully");
+    }
+
+    @Operation(summary = "Get all orders of a delivery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/orderByDeliveryId/{deliveryId}")
+    public ResponseEntity<List<Order>> getOrderByDeliveryId(@Parameter(description = "Delivery Id") @PathVariable Long deliveryId) {
+        List<Order> orders = orderRepository.findAllOrdersByDeliveryId(deliveryId).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
+
 }

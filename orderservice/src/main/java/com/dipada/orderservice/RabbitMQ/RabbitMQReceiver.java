@@ -36,26 +36,6 @@ public class RabbitMQReceiver {
             System.out.println("Order " + paymentOutcome.getOrderId() + " not paid");
         }
     }
-    @RabbitListener(queues = "orderTakenQueue")
-    public void receiveOrderTaken(Long orderId) {
-        System.out.println("Received order taken for ID: " + orderId);
-        Optional<Order> order = orderRepository.findById(orderId);
-        order.ifPresent(o -> {
-            o.setOrderStatus(OrderStatus.IN_TRANSIT);
-            orderRepository.save(o);
-        });
-    }
-
-    @RabbitListener(queues = "orderDeliveredQueue")
-    public void receiveOrderDelivered(Long orderId) {
-        System.out.println("Received order delivered for ID: " + orderId);
-        Optional<Order> order = orderRepository.findById(orderId);
-        order.ifPresent(o -> {
-            o.setOrderStatus(OrderStatus.COMPLETED);
-            orderRepository.save(o);
-        });
-    }
-
 }
 
 
