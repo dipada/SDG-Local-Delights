@@ -11,7 +11,7 @@ export default{
 
 <template>
   <button @click="navigateDelivery" type="button" class="text-white bg-secondary hover:bg-green-800 focus:ring-4 focus:outline-none peer-focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-green-800 dark:hover:bg-green-700 dark:focus:ring-offset-green-300">
-    <svg class="w-5 h-5 me-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 5.498l-5.5-2.26L7 5.499v5.655l-5 2.054v6.443l5.5 2.259 5-2.054 5 2.054 5.5-2.26v-6.442l-5-2.054zm-.5 9.462l-3.432-1.404 3.576-1.468 3.432 1.41zM12 8.127v4.669l-4-1.643V6.492zm1 4.669V8.127l4-1.635v4.661zm-2.068.76L7.5 14.96l-3.576-1.463 3.432-1.41zM8 15.836l4-1.636v4.78l-4 1.642zm8.076-10.047L12.5 7.25 8.924 5.79 12.5 4.32zM3 14.2l4 1.636v4.786L3 18.98zm10 0l4 1.636v4.786l-4-1.642zm5 6.422v-4.786l4-1.636v4.78z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+    <svg viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"><circle class="cls-1" cx="5.78" cy="16.33" r="2.39"/><path class="cls-1" d="M1.48,23.5V23a4.29,4.29,0,0,1,4.3-4.3h0a4.29,4.29,0,0,1,4.3,4.3v.48"/><polyline class="cls-1" points="15.71 16.69 18.69 13.7 21.68 16.69"/><path class="cls-1" d="M18.69,13.93V16.8A5.74,5.74,0,0,1,13,22.54h0"/><polyline class="cls-1" points="7.33 8.31 4.34 11.3 1.36 8.31"/><path class="cls-1" d="M4.35,11.07V8.2a5.73,5.73,0,0,1,5.73-5.74h0"/><rect class="cls-1" x="12.95" y="1.5" width="9.57" height="8.61"/><line class="cls-1" x1="17.74" y1="4.37" x2="17.74" y2="1.5"/></svg>
   </button>
 </template>
 

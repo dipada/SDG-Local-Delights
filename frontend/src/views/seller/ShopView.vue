@@ -3,12 +3,21 @@
 import HeaderBase from "@/components/HeaderBase.vue";
 import ShopTopContentComponentEdit from "@/components/ShopTopContentComponentEdit.vue";
 import SellerProductCarousel from "@/components/SellerProductCarousel.vue";
+import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
+import SellerOrderButtonComponent from "@/components/SellerOrderButtonComponent.vue";
 
 
 </script>
 
 <template>
-  <HeaderBase/>
+  <HeaderBase>
+    <template #nav>
+      <div class="flex items-center">
+        <SellerOrderButtonComponent/>
+        <LogoutButtonComponent/>
+      </div>
+    </template>
+  </HeaderBase>
   <ShopTopContentComponentEdit :shop-info="shopInfo"/>
   <SellerProductCarousel :items="products" :new-product/>
 

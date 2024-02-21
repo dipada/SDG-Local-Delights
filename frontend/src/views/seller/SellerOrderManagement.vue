@@ -4,11 +4,6 @@
 
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;1,600&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      font-family: 'Source Sans Pro';
-    }
-  </style>
   <div class="mx-auto max-w-screen-xl bg-white">
     <h1 class="mt-20 mb-10 ml-5 text-2xl font-bold text-gray-900">Order Management</h1>
     <div class="bg-white py-2 px-3">
