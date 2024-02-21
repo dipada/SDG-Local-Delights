@@ -1,4 +1,12 @@
 <template>
+  <HeaderBase>
+    <template #nav>
+      <div class="flex flex-row justify-end px-4 py-2">
+        <AvatarComponent class="pr-4" :image-url="userInfo.picture" :name="userInfo.name"/>
+        <logout-button-component class="p"/>
+      </div>
+    </template>
+  </HeaderBase>
   <ul class="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
     <li v-for="order in orders" :key="order.id" class="py-3 sm:py-4">
       <div class="flex items-center space-x-4 rtl:space-x-reverse">
@@ -26,8 +34,14 @@
 <script>
 import axios from 'axios';
 import store from "@/store/index.js";
+import HeaderBase from "@/components/HeaderBase.vue";
+import DeliveryButtonComponent from "@/components/DeliveryButtonComponent.vue";
+import CartButtonComponent from "@/components/cartButtonComponent.vue";
+import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
+import AvatarComponent from "@/components/avatarComponent.vue";
 
 export default {
+  components: {AvatarComponent, LogoutButtonComponent, CartButtonComponent, DeliveryButtonComponent, HeaderBase},
   data() {
     return {
       orders: [],
@@ -102,6 +116,12 @@ export default {
       }
     },
   },
+
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo;
+    }
+  }
 };
 </script>
 
