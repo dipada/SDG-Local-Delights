@@ -1,12 +1,21 @@
 <template>
-  <HeaderBase/>
+  <HeaderBase>
+    <template #nav>
+      <div class="flex lg:flex-1 justify-end">
+        <div class="flex items-center gap-4">
+          <LogoutButtonComponent/>
+        </div>
+      </div>
+    </template>
+  </HeaderBase>
   <div class="flex-auto justify-center m-20 text-secondary">
     <div class="flex flex-col sm:flex-row sm:justify-between justify-center items-center">
       <img class="rounded w-36 h-36" :src="userInfo.picture" alt="Extra large avatar">
       <div class="mt-4">
         <b>Your balance</b>: {{ money }} &euro;
         <div class="flex justify-center items-center">
-          <div class="flex flex-col sm:flex-row sm:space-x-4 w-full max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
+          <div
+              class="flex flex-col sm:flex-row sm:space-x-4 w-full max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
             <input v-model="topUpAmount" type="number" placeholder="Amount"
                    class="h-12 w-full rounded-md bg-gray-100 px-3"/>
             <button @click="makeTopUp" type="button"
@@ -17,10 +26,12 @@
         </div>
 
       </div>
+
       <button @click="navigateSellerShop" type="button"
               class="mt-5 h-fit w-fit focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
         Your shop
       </button>
+
     </div>
     <user-profile-body-component :email="userInfo.email" :full_name="userInfo.name + ' ' + userInfo.surname"/>
 
@@ -41,9 +52,10 @@ import HeaderBase from "@/components/HeaderBase.vue";
 import UserProfileBodyComponent from "@/components/UserProfileBodyComponent.vue";
 import OrderListComponent from "@/components/OrderListComponent.vue";
 import axios from "axios";
+import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
 
 export default defineComponent({
-  components: {OrderListComponent, UserProfileBodyComponent, HeaderBase},
+  components: {LogoutButtonComponent, OrderListComponent, UserProfileBodyComponent, HeaderBase},
 
   data() {
     return {
