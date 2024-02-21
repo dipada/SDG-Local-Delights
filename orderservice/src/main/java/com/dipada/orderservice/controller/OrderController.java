@@ -167,4 +167,19 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
+
+    @Operation(summary = "Get all orders of a shop")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/orderByShopId/{shopId}")
+    public ResponseEntity<List<Order>> getOrderByShopId(@Parameter(description = "Shop Id") @PathVariable Long shopId) {
+        List<Order> orders = orderRepository.findAllOrdersByShopId(shopId).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
 }
