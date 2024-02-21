@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -95,6 +96,19 @@ public class PaymentController {
       if (wallet.get().getBalance() <= paymentRequest.getAmount()) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough money");
       }
+
+      RestTemplate restTemplate = new RestTemplate();
+      String url = "http://orderservice:8086/api/v1/order/get-order-shop/" + paymentRequest.getOrderId();
+      Long shopId = restTemplate.getForEntity(url, Long.class).getBody();
+      System.out.println("Shop ID: " + shopId);
+      String sellerEmail = restTemplate.getForEntity("http://shopservice:8082/shop/seller-email/" + shopId, String.class).getBody();
+      System.out.println("Seller email: " + sellerEmail);
+
+      // fai il topup del saldo del venditore
+      PaymentRequest paymentRequestSeller = new PaymentRequest();
+      paymentRequestSeller.setEmail(sellerEmail);
+      paymentRequestSeller.setAmount(paymentRequest.getAmount());
+      makeTopUp(paymentRequestSeller);
 
       wallet.get().setBalance(wallet.get().getBalance() - paymentRequest.getAmount());
       walletRepository.save(wallet.get());

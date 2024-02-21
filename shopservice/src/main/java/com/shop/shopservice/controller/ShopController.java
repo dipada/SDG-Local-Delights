@@ -134,6 +134,12 @@ public class ShopController {
         return ResponseEntity.status(HttpStatus.OK).body(shopResponse);
     }
 
+    @GetMapping("/seller-email/{shopId}")
+    public ResponseEntity<String> getSellerEmail(@PathVariable Long shopId) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value.getSellerEmail())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
     @Operation(summary = "Add a new product to a shop")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Product add request sent successfully"),})
     @PostMapping("/addProduct/{shopId}")

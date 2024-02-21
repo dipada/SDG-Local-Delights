@@ -48,6 +48,20 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
+    @Operation(summary = "Get order shop id by order id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found shop"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @GetMapping("/get-order-shop/{orderId}")
+    public ResponseEntity<Long> getShopIdByOrderId(@PathVariable Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(order.getShopId());
+    }
+
     @Operation(summary = "Create a new order")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order created successfully"),
