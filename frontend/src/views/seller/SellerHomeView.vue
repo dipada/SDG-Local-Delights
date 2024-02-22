@@ -1,10 +1,7 @@
 <template>
   <HeaderBase/>
   <h1>Seller home</h1>
-  <div class="bg-red-800" v-if="errorMessage">{{ errorMessage }}</div>
-  <div class="bg-black" v-if="welcomeMessage">{{ welcomeMessage }}</div>
-  <div class="bg-black" v-if="noSellerMessage">{{ noSellerMessage }}</div>
-  <div v-if="noSellerMessage">
+  <div class="mt-4 mb-4" v-if="noSellerMessage">
     <form @submit.prevent="registerSeller"
           class="relative border border-gray-100 space-y-3 max-w-screen-md mx-auto rounded-md bg-white p-6 shadow-xl lg:p-10">
       <h1 class="mb-6 text-xl font-semibold lg:text-2xl text-green-800">Register as a seller</h1>
@@ -27,18 +24,16 @@
           <input class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" type="text" v-model="query"
                  @input="cercaIndirizzo"
                  placeholder="Inserisci un indirizzo..."/>
-          <ul class="bg-gray-400" v-if="indirizzi.length">
-            <li v-for="(indirizzo, index) in indirizzi" :key="index" @click="selezionaIndirizzo(indirizzo)">
-              {{ indirizzo.display_name }}
-            </li>
-          </ul>
+          <div v-if="indirizzi.length" class="relative w-full mt-1 text-secondary">
+            <ul class="bg-white border border-gray-300 rounded-lg text-sm" v-if="indirizzi.length">
+              <li v-for="(indirizzo, index) in indirizzi" :key="index" @click="selezionaIndirizzo(indirizzo)"
+                  class="p-2 hover:bg-gray-100 cursor-pointer">
+                {{ indirizzo.display_name }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-
-      <div class="bg-black">{{ this.indirizzi }}</div>
-      <div class="bg-violet-950">{{ this.savedAddresses }}</div>
-      <div class="bg-orange-500">{{ this.savedAddresses[0]}}</div>
-
       <div>
         <button type="submit" class="mt-5 w-full rounded-md bg-secondary p-2 text-center font-semibold text-white">
           Register as seller
@@ -110,15 +105,18 @@ export default {
     },
 
     cercaIndirizzo() {
-      if (this.query.length > 2) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.query)}`;
-        axios.get(url)
-            .then(response => {
-              this.indirizzi = response.data;
-              console.log("Indirizzi salvati: ",this.indirizzi);
-            })
-            .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
-      }
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        if (this.query.length > 2) {
+          const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.query)}`;
+          axios.get(url)
+              .then(response => {
+                this.indirizzi = response.data;
+                console.log("Indirizzi salvati: ", this.indirizzi);
+              })
+              .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
+        }
+      }, 500);
     },
     selezionaIndirizzo(indirizzo) {
       this.query = indirizzo.display_name;
