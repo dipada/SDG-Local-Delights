@@ -16,13 +16,27 @@
           </thead>
           <tbody class="bg-white lg:border-gray-300">
           <tr v-for="order in orders" :key="order.id" @click="showModal(order)" class="cursor-pointer">
-            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">{{ order.timestamp }}</td>
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">{{ order.id }}</td>
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">Multiple Products</td>
-            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">{{ order.userEmail }}</td>
-            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">€{{ order.amount }}</td>
+            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">{{
+                order.timestamp
+              }}
+            </td>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.id }}
+            </td>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">Multiple
+              Products
+            </td>
+            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.userEmail }}
+            </td>
+            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">€{{
+                order.amount
+              }}
+            </td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-3 lg:table-cell">
-                <span :class="{'bg-purple-100 text-purple-800': order.orderStatus === 'PENDING', 'bg-green-100 text-green-800': order.orderStatus !== 'PENDING'}" class="px-2 py-0.5 rounded-full">
+                <span
+                    :class="{'bg-purple-100 text-purple-800': order.orderStatus === 'PENDING', 'bg-green-100 text-green-800': order.orderStatus !== 'PENDING'}"
+                    class="px-2 py-0.5 rounded-full">
                   {{ order.orderStatus }}
                 </span>
             </td>
@@ -31,21 +45,26 @@
         </table>
       </div>
     </div>
-    <div v-if="isModalVisible" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex" @click.self="closeModal">
+    <div v-if="isModalVisible"
+         class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex"
+         @click.self="closeModal">
       <div class="relative p-4 w-full max-w-md max-h-full mx-auto z-10">
         <div class="relative text-black bg-white rounded-lg shadow dark:bg-gray-700">
           <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               Order Items fff
             </h3>
-            <button @click="closeModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+            <button @click="closeModal" type="button"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
               <span class="sr-only">Close</span>
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
             </button>
           </div>
-          <div class="p-4 md:p-5 bg-green-300">
+          <div class="p-4 md:p-5">
             <p>Order details:</p>
-            <p>{{orderItems}}</p>
             <ul>
               <li v-for="item in orderItems" :key="item.id" class="border-b last:border-b-0">
                 <div class="flex items-center justify-between p-3">
@@ -60,6 +79,11 @@
                 </div>
               </li>
             </ul>
+            <button class="mt-5 w-full rounded-md bg-secondary p-2 text-center font-semibold text-white"
+                    :class="{ 'opacity-50': isOrderReady }"
+                    @click="orderReady"
+                    :disabled="isOrderReady">Ready
+            </button>
           </div>
         </div>
       </div>
@@ -79,9 +103,32 @@ export default {
       orders: [],
       isModalVisible: false,
       orderItems: [],
+      isOrderReady: false,
+      actualOrder: null,
     };
   },
   methods: {
+
+    orderReady() {
+      console.log('Order is ready');
+      const status = "TO_BE_DELIVERED";
+      console.log('Updating order status to:', this.actualOrder.id + " " + status);
+      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`,{
+        orderStatus: status
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + store.getters.getUserToken,
+              'Accept': '*/*',
+            }
+          }).then(() => {
+        this.isOrderReady = true;
+        this.fetchOrders(store.getters.getShopId);
+      }).catch((error) => {
+        console.error("Error updating order status: ", error);
+        this.isOrderReady = false;
+      });
+    },
+
     async fetchOrders(shopId) {
       try {
         const response = await axios.get(`http://localhost:8085/api/v1/order/orderByShopId/${shopId}`, {
@@ -96,40 +143,21 @@ export default {
       }
     },
 
-    async showModal2(order) {
-      this.orderItems = [];
-      const productIds = [...new Set(order.listOfProductIds)];
-      const productDetailsPromises = productIds.map(async (id) => {
-        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`,{
-          headers: {
-            'Authorization': 'Bearer ' + store.getters.getUserToken,
-            'Accept': '*/*',
-          },
-        });
-        const quantity = order.listOfProductIds.filter(productId => productId === id).length;
-        return { ...productDetails.data, quantity };
-      });
-      try {
-        this.orderItems = await Promise.all(productDetailsPromises);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      }
-      this.isModalVisible = true;
-    },
-
     async showModal(order) {
+      console.log('Showing modal for order:', order);
+      this.actualOrder = order;
       this.orderItems = [];
       const productIds = [...new Set(order.listOfProductsIds)];
       console.log('Product IDs:', productIds);
       const productDetailsPromises = productIds.map(async (id) => {
-        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`,{
+        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*',
           },
         });
         const quantity = order.listOfProductsIds.filter(productId => productId === id).length;
-        return { ...productDetails.data, quantity };
+        return {...productDetails.data, quantity};
       });
       try {
         this.orderItems = await Promise.all(productDetailsPromises);
@@ -141,13 +169,12 @@ export default {
     },
 
 
-
     closeModal() {
       this.isModalVisible = false;
       this.orderItems = [];
+      this.actualOrder = null;
     }
   },
-
 
 
   mounted() {
