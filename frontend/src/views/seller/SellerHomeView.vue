@@ -73,7 +73,7 @@ export default {
       shopEmail: '',
       query: '',
       indirizzi: [],
-      savedAddresses: [], // Lista degli indirizzi salvati
+      savedAddresses: [],
     };
   },
   created() {
@@ -83,17 +83,15 @@ export default {
         'Accept': '*/*'
       },
     }).then(response => {
-      // Gestisci la risposta positiva
-      this.welcomeMessage = response.data; // Assicurati che la risposta abbia un campo 'message'
+      this.welcomeMessage = response.data;
       router.push({name: 'seller-shop'});
     }).catch(error => {
-      // Gestisci gli errori, ad esempio mostrando un messaggio all'utente
       if (error.response && error.response.status === 404) {
         this.noSellerMessage = 'Non autorizzato. Registrati come seller.';
       } else {
         this.errorMessage = 'Si è verificato un errore. Riprova più tardi.' + error;
       }
-      console.error(error); // Per il debug
+      console.error(error);
     });
   },
 
@@ -128,20 +126,20 @@ export default {
     selezionaIndirizzo(indirizzo) {
       this.query = indirizzo.display_name;
       this.indirizzi = [];
-      this.selectedAddress = indirizzo; // Memorizza l'indirizzo selezionato
+      this.selectedAddress = indirizzo;
       if (this.selectedAddress) {
-        this.savedAddresses.push(this.selectedAddress); // Aggiungi l'indirizzo alla lista degli indirizzi salvati
-        this.updateMapMarkers(); // Aggiorna i marker sulla mappa
-        this.selectedAddress = null; // Resetta l'indirizzo selezionato
-        this.query = ''; // Pulisci la query
+        this.savedAddresses.push(this.selectedAddress);
+        this.updateMapMarkers();
+        this.selectedAddress = null;
+        this.query = '';
       }
     },
     saveAddress() {
       if (this.selectedAddress) {
-        this.savedAddresses.push(this.selectedAddress); // Aggiungi l'indirizzo alla lista degli indirizzi salvati
-        this.updateMapMarkers(); // Aggiorna i marker sulla mappa
-        this.selectedAddress = null; // Resetta l'indirizzo selezionato
-        this.query = ''; // Pulisci la query
+        this.savedAddresses.push(this.selectedAddress);
+        this.updateMapMarkers();
+        this.selectedAddress = null;
+        this.query = '';
       }
     },
     registerSeller() {
@@ -161,13 +159,11 @@ export default {
           'Accept': '*/*'
         }
       }).then(response => {
-        // Gestisci la risposta positiva
-        this.welcomeMessage = response.data; // Assicurati che la risposta abbia un campo 'message'
+        this.welcomeMessage = response.data;
         router.push({name: 'seller-shop'});
       }).catch(error => {
-        // Gestisci gli errori, ad esempio mostrando un messaggio all'utente
         this.errorMessage = 'Si è verificato un errore. Riprova più tardi.' + error;
-        console.error(error); // Per il debug
+        console.error(error);
       });
 
       axios.post('http://localhost:8085/shop/add', {
@@ -186,13 +182,11 @@ export default {
           'Accept': '*/*'
         }
       }).then(response => {
-        // Gestisci la risposta positiva
-        this.welcomeMessage = response.data; // Assicurati che la risposta abbia un campo 'message'
+        this.welcomeMessage = response.data;
         router.push({name: 'seller-shop'});
       }).catch(error => {
-        // Gestisci gli errori, ad esempio mostrando un messaggio all'utente
         this.errorMessage = 'Si è verificato un errore. Riprova più tardi.' + error;
-        console.error(error); // Per il debug
+        console.error(error);
       });
     },
   },
