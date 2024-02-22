@@ -77,23 +77,23 @@ const router = createRouter({
             component: () => import('../views/seller/ShopView.vue'),
             meta: {requiresAuth: true}
         },
-
         {
-            path: '/prova',
-            name: 'prova',
-            component: () => import('../views/delivery/DeliveryAvaibleOrdersView.vue'),
+            path: '/seller/orders',
+            name: 'seller-orders',
+            component: () => import('../views/seller/SellerOrderManagement.vue'),
+            meta: {requiresAuth: true}
         },
-
         {
-            path: '/prova2',
-            name: 'prova2',
+            path: '/delivery/order-management',
+            name: 'delivery-order-management',
             component: () => import('../views/delivery/DeliveryOrderManagement.vue'),
+            meta: {requiresAuth: true}
         },
-
         {
             path: '/delivery/available-orders',
             name: 'delivery-available-orders',
             component: () => import('../views/delivery/DeliveryAvailableOrders.vue'),
+            meta: {requiresAuth: true}
         },
     ]
 });

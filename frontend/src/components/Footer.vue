@@ -10,6 +10,7 @@ const token = computed(() => store.getters.getUserToken);
 // fa is autenticated
 const isAutenticated = computed(() => store.getters.isAuthenticated);
 const userInfo = computed(() => store.getters.getUserInfo);
+const shopId = computed(() => store.getters.getShopId);
 
 
 </script>
@@ -42,6 +43,7 @@ const userInfo = computed(() => store.getters.getUserInfo);
     <div class="bg-black text-white">token: {{token}}</div><br/>
     <div class="bg-black text-white">autenticated: {{isAutenticated}}</div><br/>
     <div class="bg-black text-white">userInfo: {{userInfo}}</div>
+    <div class="bg-black text-white">userInfo: {{shopId}}</div>
   </footer>
 </template>
 

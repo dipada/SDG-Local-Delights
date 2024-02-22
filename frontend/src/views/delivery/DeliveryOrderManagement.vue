@@ -1,156 +1,182 @@
-<script setup>
-
-</script>
-
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;1,600&display=swap" rel="stylesheet" />
-  <div class="w-screen">
-
-    <div class="mx-auto mt-8 max-w-screen-lg px-2">
-      <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
-        <p class="flex-1 text-base font-bold text-gray-900">Latest Payments</p>
-
-        <div class="mt-4 sm:mt-0">
-          <div class="flex items-center justify-start sm:justify-end">
-            <div class="flex items-center">
-              <label for="" class="mr-2 flex-shrink-0 text-sm font-medium text-gray-900"> Sort by: </label>
-              <select name="" class="sm: mr-4 block w-full whitespace-pre rounded-lg border p-1 pr-10 text-base outline-none focus:shadow sm:text-sm">
-                <option class="whitespace-no-wrap text-sm">Recent</option>
-              </select>
-            </div>
-
-            <button type="button" class="inline-flex cursor-pointer items-center rounded-lg border border-gray-400 bg-white py-2 px-3 text-center text-sm font-medium text-gray-800 shadow hover:bg-gray-100 focus:shadow">
-              <svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" class=""></path>
-              </svg>
-              Export to CSV
-            </button>
-          </div>
-        </div>
+  <HeaderBase>
+    <template #nav>
+      <div class="flex items-center">
+        <LogoutButtonComponent/>
       </div>
-
-      <div class="mt-6 overflow-hidden rounded-xl border shadow">
-        <table class="min-w-full border-separate border-spacing-y-2 border-spacing-x-2">
+    </template>
+  </HeaderBase>
+  <div class="w-screen bg-gray-50">
+    <div class="mx-auto max-w-screen-xl px-2 py-10">
+      <h1 v-if="orders && orders.length" class="text-black mb-8 text-4xl font-bold dark:text-gray-400"><b>Your delivery orders:</b></h1>
+      <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400 text-black">No order here :(</h2>
+      <div v-if="orders && orders.length" class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
+        <table class="min-w-full border-collapse border-spacing-y-2 border-spacing-x-2">
           <thead class="hidden border-b lg:table-header-group">
-          <tr class="">
-            <td width="50%" class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Invoice</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Date</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Amount</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Status</td>
+          <tr>
+            <th class="whitespace-normal py-4 text-sm font-semibold text-gray-800 sm:px-3">Order Date</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Order ID</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Address</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Price</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Status</th>
           </tr>
           </thead>
-
-          <tbody class="lg:border-gray-300">
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Standard Plan - Feb 2022
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">07 February, 2022</p>
-              </div>
+          <tbody class="bg-white lg:border-gray-300">
+          <tr v-for="order in orders" :key="order.id" @click="showModal(order)" class="cursor-pointer">
+            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">
+              {{ order.timestamp }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">07 February, 2022</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $59.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.id }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.shippingAddress }}
             </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Standard Plan - Jan 2022
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">09 January, 2022</p>
-              </div>
+            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">
+              €{{ order.amount }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">09 January, 2022</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $59.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-red-200 py-1 px-2 text-left font-medium text-red-500 lg:hidden">Canceled</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-red-200 py-1 px-2 text-red-500">Canceled</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Dec 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">15 December, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">15 December, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Nov 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">14 November, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">14 November, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-200 py-1 px-2 text-left font-medium text-blue-500 lg:hidden">Pending</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-200 py-1 px-2 text-blue-500">Pending</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Oct 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">15 October, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">15 October, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-3 lg:table-cell">
+                <span :class="getClassForOrderStatus(order.orderStatus)" class="px-2 py-0.5 rounded-full">
+                  {{ order.orderStatus }}
+                </span>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
     </div>
-
+    <div v-if="isModalVisible" id="popup-modal"
+         class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full">
+      <div class="relative p-4 w-full max-w-md h-auto">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <button type="button"
+                  class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  @click="closeModal">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <div class="p-6 text-center">
+            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Order <b>#{{ actualOrder.id }}</b> will be marked as delivered. Are you sure? </h3>
+            <button @click="closeModal" type="button"
+                    class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+              No, cancel
+            </button>
+            <button
+                @click="confirmDelivery"
+                type="button"
+                class="text-white bg-secondary hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
+                :class="{ 'opacity-50 cursor-not-allowed': actualOrder.orderStatus !== 'IN_TRANSIT' }"
+                :disabled="actualOrder.orderStatus !== 'IN_TRANSIT'">
+              Yes, I'm sure
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<style scoped>
 
-</style>
+<script>
+import axios from 'axios';
+import store from "@/store/index.js";
+import HeaderBase from "@/components/HeaderBase.vue";
+import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
+
+export default {
+  components: {LogoutButtonComponent, HeaderBase},
+  data() {
+    return {
+      orders: [],
+      isModalVisible: false,
+      orderItems: [],
+      actualOrder: null,
+    };
+  },
+
+  methods: {
+    async fetchOrders() {
+      try {
+        console.log("Fetching orders for delivery email:", this.$store.getters.getUserInfo.email);
+        const response = await axios.get(`http://localhost:8085/api/v1/order/orderByDeliveryId/${this.$store.getters.getUserInfo.email}`, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        const orderPriority = ["PENDING", "TO_BE_DELIVERED", "TO_BE_PICKED_UP", "IN_TRANSIT", "COMPLETED", "CANCELLED"];
+        this.orders = response.data.sort((a, b) => {
+          const indexA = orderPriority.indexOf(a.orderStatus);
+          const indexB = orderPriority.indexOf(b.orderStatus);
+
+          if (indexA < indexB) {
+            return -1;
+          }
+          if (indexA > indexB) {
+            return 1;
+          }
+          return 0;
+        });
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    },
+
+    showModal(order) {
+      this.actualOrder = order;
+      this.isModalVisible = true;
+    },
+
+    closeModal() {
+      this.isModalVisible = false;
+      this.actualOrder = null;
+    },
+
+    getClassForOrderStatus(orderStatus) {
+      switch (orderStatus) {
+        case "PENDING":
+          return "bg-yellow-100 text-yellow-800";
+        case "TO_BE_DELIVERED":
+          return "bg-amber-200 text-amber-800";
+        case "TO_BE_PICKED_UP":
+          return "bg-blue-100 text-blue-800";
+        case "IN_TRANSIT":
+          return "bg-blue-100 text-blue-800";
+        case "COMPLETED":
+          return "bg-green-100 text-green-800";
+        case "CANCELLED":
+          return "bg-red-100 text-red-800";
+        default:
+          return "";
+      }
+    },
+
+    confirmDelivery() {
+      const status = "COMPLETED";
+      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
+        headers: {
+          'Authorization': 'Bearer ' + store.getters.getUserToken,
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        }
+      }).then(() => {
+        this.fetchOrders(store.getters.getShopId);
+      }).catch((error) => {
+        console.error("Error updating order status: ", error);
+      });
+
+      this.fetchOrders()
+      this.closeModal();
+    },
+
+  },
+
+  mounted() {
+    this.fetchOrders();
+  },
+};
+</script>
