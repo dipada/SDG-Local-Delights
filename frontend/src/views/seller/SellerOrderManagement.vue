@@ -35,7 +35,13 @@
             </td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-3 lg:table-cell">
                 <span
-                    :class="{'bg-purple-100 text-purple-800': order.orderStatus === 'PENDING', 'bg-green-100 text-green-800': order.orderStatus !== 'PENDING'}"
+                    :class="{
+                      'bg-yellow-100 text-yellow-800': order.orderStatus === 'PENDING',
+                      'bg-amber-200 text-amber-800': order.orderStatus === 'TO_BE_DELIVERED',
+                      'bg-blue-100 text-blue-800': order.orderStatus === 'TO_BE_PICKED_UP' || order.orderStatus === 'IN_TRANSIT',
+                      'bg-green-100 text-green-800': order.orderStatus === 'COMPLETED',
+                      'bg-red-100 text-red-800': order.orderStatus === 'CANCELLED'
+                    }"
                     class="px-2 py-0.5 rounded-full">
                   {{ order.orderStatus }}
                 </span>
@@ -52,7 +58,7 @@
         <div class="relative text-black bg-white rounded-lg shadow dark:bg-gray-700">
           <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Order Items fff
+              Order Items:
             </h3>
             <button @click="closeModal" type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -80,9 +86,9 @@
               </li>
             </ul>
             <button class="mt-5 w-full rounded-md bg-secondary p-2 text-center font-semibold text-white"
-                    :class="{ 'opacity-50': isOrderReady }"
+                    :class="{ 'opacity-50 cursor-not-allowed': actualOrder.orderStatus !== 'PENDING' }"
                     @click="orderReady"
-                    :disabled="isOrderReady">Ready
+                    :disabled="actualOrder.orderStatus !== 'PENDING'">Ready
             </button>
           </div>
         </div>
@@ -103,7 +109,6 @@ export default {
       orders: [],
       isModalVisible: false,
       orderItems: [],
-      isOrderReady: false,
       actualOrder: null,
     };
   },
@@ -113,19 +118,18 @@ export default {
       console.log('Order is ready');
       const status = "TO_BE_DELIVERED";
       axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
-            headers: {
-              'Authorization': 'Bearer ' + store.getters.getUserToken,
-              'Accept': '*/*',
-              'Content-Type': 'application/json'
-            }
-          }).then(() => {
-        this.isOrderReady = true;
+        headers: {
+          'Authorization': 'Bearer ' + store.getters.getUserToken,
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        }
+      }).then(() => {
         this.fetchOrders(store.getters.getShopId);
       }).catch((error) => {
         console.error("Error updating order status: ", error);
-        this.isOrderReady = false;
       });
     },
+
 
     async fetchOrders(shopId) {
       try {
@@ -135,9 +139,21 @@ export default {
             'Accept': '*/*',
           },
         });
-        this.orders = response.data.sort((a, b) => a.orderStatus === "PENDING" && b.orderStatus !== "PENDING" ? -1 : 1);
+        const orderPriority = ["PENDING", "TO_BE_DELIVERED", "TO_BE_PICKED_UP", "IN_TRANSIT", "COMPLETED", "CANCELLED"];
+        this.orders = response.data.sort((a, b) => {
+          const indexA = orderPriority.indexOf(a.orderStatus);
+          const indexB = orderPriority.indexOf(b.orderStatus);
+
+          if (indexA < indexB) {
+            return -1;
+          }
+          if (indexA > indexB) {
+            return 1;
+          }
+          return 0;
+        });
       } catch (error) {
-        console.error("Errore durante il fetch degli ordini:", error);
+        console.error("Error during orders fetch:", error);
       }
     },
 
