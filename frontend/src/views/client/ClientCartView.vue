@@ -124,11 +124,11 @@
                 </a>
               </div>
               <div class="flex items-center justify-between mx-auto mb-2"><b>Your balance:</b> {{ money }}</div>
-              <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckout}"><b>Your
+              <div class="flex items-center justify-between mx-auto mb-2" :class="{'text-red-500': !canCheckoutWallet}"><b>Your
                 balance after order:</b> {{ money - this.orderTotal }}
               </div>
               <div class="mx-auto mb-2">
-                <label> Shipping address </label>
+                <label :class="{'text-red-500': !canCheckoutAddress}"><b>Shipping address</b></label>
                 <input @input="searchAddress" v-model="query" type="text" placeholder="Via roma 1" required
                        class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
                 <div v-if="indirizzi.length" class="relative w-full mt-1 text-secondary">
@@ -177,9 +177,18 @@ export default {
     };
   },
   computed: {
-    canCheckout() {
-      return (this.money - this.orderTotal >= 0) && this.query.length > 2 && this.addressSelected;
+    canCheckoutWallet() {
+      return (this.money - this.orderTotal >= 0);
     },
+
+    canCheckoutAddress(){
+      return this.query.length > 2 && this.addressSelected
+    },
+
+    canCheckout(){
+      return this.canCheckoutWallet && this.canCheckoutAddress
+    },
+
     store() {
       return store
     },
@@ -213,7 +222,7 @@ export default {
                 this.indirizzi = response.data;
               })
               .catch(error => {
-                console.error('Errore nel recupero degli indirizzi:', error);
+                console.error('Error fetching address:', error);
               });
         } else {
           this.indirizzi = [];
