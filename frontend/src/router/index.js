@@ -81,16 +81,19 @@ const router = createRouter({
             path: '/seller/orders',
             name: 'seller-orders',
             component: () => import('../views/seller/SellerOrderManagement.vue'),
+            meta: {requiresAuth: true}
         },
         {
             path: '/delivery/order-management',
             name: 'delivery-order-management',
             component: () => import('../views/delivery/DeliveryOrderManagement.vue'),
+            meta: {requiresAuth: true}
         },
         {
             path: '/delivery/available-orders',
             name: 'delivery-available-orders',
             component: () => import('../views/delivery/DeliveryAvailableOrders.vue'),
+            meta: {requiresAuth: true}
         },
     ]
 });
