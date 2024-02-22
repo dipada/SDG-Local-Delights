@@ -8,8 +8,9 @@
   </HeaderBase>
   <div class="w-screen bg-gray-50">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
-      <h1 class="text-black"><b>Your delivery orders:</b></h1>
-      <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
+      <h1 v-if="orders && orders.length" class="text-black mb-8 text-4xl font-bold dark:text-gray-400"><b>Your delivery orders:</b></h1>
+      <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400 text-black">No order here :(</h2>
+      <div v-if="orders && orders.length" class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
         <table class="min-w-full border-collapse border-spacing-y-2 border-spacing-x-2">
           <thead class="hidden border-b lg:table-header-group">
           <tr>
