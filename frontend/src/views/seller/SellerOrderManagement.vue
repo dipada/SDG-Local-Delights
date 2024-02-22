@@ -112,13 +112,11 @@ export default {
     orderReady() {
       console.log('Order is ready');
       const status = "TO_BE_DELIVERED";
-      console.log('Updating order status to:', this.actualOrder.id + " " + status);
-      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`,{
-        orderStatus: status
-          }, {
+      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
             headers: {
               'Authorization': 'Bearer ' + store.getters.getUserToken,
               'Accept': '*/*',
+              'Content-Type': 'application/json'
             }
           }).then(() => {
         this.isOrderReady = true;
