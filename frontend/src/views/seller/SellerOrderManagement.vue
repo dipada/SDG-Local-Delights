@@ -8,6 +8,7 @@
   </HeaderBase>
   <div class="w-screen bg-gray-50">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
+      <h1 class="text-black"><b>Shop orders:</b></h1>
       <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
         <table class="min-w-full border-collapse border-spacing-y-2 border-spacing-x-2">
           <thead class="hidden border-b lg:table-header-group">
@@ -132,6 +133,9 @@ export default {
       }).catch((error) => {
         console.error("Error updating order status: ", error);
       });
+
+      this.fetchOrders(store.getters.getShopId);
+      this.closeModal();
     },
 
 
