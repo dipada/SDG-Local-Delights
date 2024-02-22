@@ -1,5 +1,5 @@
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;1,600&display=swap" rel="stylesheet" />
+  <HeaderBase/>
   <div class="w-screen bg-gray-50">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
       <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
@@ -15,37 +15,53 @@
           </tr>
           </thead>
           <tbody class="bg-white lg:border-gray-300">
-          <tr v-for="order in orders" :key="order.id">
-            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">
-              {{ order.timestamp }}
-              <div class="mt-1 flex flex-col text-xs font-medium lg:hidden">
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  {{ order.userEmail }}
-                </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                  Multiple Products
-                </div>
-              </div>
-            </td>
+          <tr v-for="order in orders" :key="order.id" @click="showModal(order)" class="cursor-pointer">
+            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">{{ order.timestamp }}</td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">{{ order.id }}</td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">Multiple Products</td>
-            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell lg:text-left">{{ order.userEmail }}</td>
-            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">€{{ order.amount }}
-              <span class="mt-1 ml-auto block w-fit whitespace-nowrap rounded-full bg-purple-100 px-2 py-0.5 text-center text-xs text-purple-800 lg:hidden">{{ order.orderStatus }}</span>
-            </td>
+            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">{{ order.userEmail }}</td>
+            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">€{{ order.amount }}</td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-3 lg:table-cell">
-              <span class="ml-2 mr-3 whitespace-nowrap rounded-full px-2 py-0.5" :class="{'bg-purple-100 text-purple-800': order.orderStatus === 'PENDING', 'bg-green-100 text-green-800': order.orderStatus !== 'PENDING'}">{{ order.orderStatus }}</span>
+                <span :class="{'bg-purple-100 text-purple-800': order.orderStatus === 'PENDING', 'bg-green-100 text-green-800': order.orderStatus !== 'PENDING'}" class="px-2 py-0.5 rounded-full">
+                  {{ order.orderStatus }}
+                </span>
             </td>
-            <td>asddasasd</td>
           </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    <div v-if="isModalVisible" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex" @click.self="closeModal">
+      <div class="relative p-4 w-full max-w-md max-h-full mx-auto z-10">
+        <div class="relative text-black bg-white rounded-lg shadow dark:bg-gray-700">
+          <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              Order Items fff
+            </h3>
+            <button @click="closeModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+              <span class="sr-only">Close</span>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          <div class="p-4 md:p-5 bg-green-300">
+            <p>Order details:</p>
+            <p>{{orderItems}}</p>
+            <ul>
+              <li v-for="item in orderItems" :key="item.id" class="border-b last:border-b-0">
+                <div class="flex items-center justify-between p-3">
+                  <div class="flex items-center">
+                    <img :src="item.image" alt="product image" class="w-10 h-10 mr-3">
+                    <div>
+                      <div class="font-semibold">{{ item.name }}</div>
+                      <div class="text-gray-500">Quantity: {{ item.quantity }}</div>
+                    </div>
+                  </div>
+                  <div class="text-gray-900">€{{ item.price }}</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -54,13 +70,15 @@
 <script>
 import axios from 'axios';
 import store from "@/store/index.js";
-import {DialogOverlay} from "@headlessui/vue";
+import HeaderBase from "@/components/HeaderBase.vue";
 
 export default {
-  components: {DialogOverlay},
+  components: {HeaderBase},
   data() {
     return {
-      orders: []
+      orders: [],
+      isModalVisible: false,
+      orderItems: [],
     };
   },
   methods: {
@@ -72,22 +90,68 @@ export default {
             'Accept': '*/*',
           },
         });
-        this.orders = response.data.sort((a, b) => {
-          if (a.orderStatus === "PENDING" && b.orderStatus !== "PENDING") {
-            return -1;
-          } else if (a.orderStatus !== "PENDING" && b.orderStatus === "PENDING") {
-            return 1;
-          } else {
-            return new Date(a.timestamp) - new Date(b.timestamp);
-          }
-        });
+        this.orders = response.data.sort((a, b) => a.orderStatus === "PENDING" && b.orderStatus !== "PENDING" ? -1 : 1);
       } catch (error) {
         console.error("Errore durante il fetch degli ordini:", error);
       }
+    },
+
+    async showModal2(order) {
+      this.orderItems = [];
+      const productIds = [...new Set(order.listOfProductIds)];
+      const productDetailsPromises = productIds.map(async (id) => {
+        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`,{
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        const quantity = order.listOfProductIds.filter(productId => productId === id).length;
+        return { ...productDetails.data, quantity };
+      });
+      try {
+        this.orderItems = await Promise.all(productDetailsPromises);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      }
+      this.isModalVisible = true;
+    },
+
+    async showModal(order) {
+      this.orderItems = [];
+      const productIds = [...new Set(order.listOfProductsIds)];
+      console.log('Product IDs:', productIds);
+      const productDetailsPromises = productIds.map(async (id) => {
+        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`,{
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        const quantity = order.listOfProductsIds.filter(productId => productId === id).length;
+        return { ...productDetails.data, quantity };
+      });
+      try {
+        this.orderItems = await Promise.all(productDetailsPromises);
+        console.log('Final orderItems:', this.orderItems);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      }
+      this.isModalVisible = true;
+    },
+
+
+
+    closeModal() {
+      this.isModalVisible = false;
+      this.orderItems = [];
     }
   },
+
+
+
   mounted() {
-    this.fetchOrders(this.$store.getters.getShopId);
+    this.fetchOrders(store.getters.getShopId);
   }
 };
 </script>
