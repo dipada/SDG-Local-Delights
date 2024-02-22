@@ -3,7 +3,6 @@
 </script>
 
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;1,600&display=swap" rel="stylesheet" />
   <div class="w-screen">
 
     <div class="mx-auto mt-8 max-w-screen-lg px-2">

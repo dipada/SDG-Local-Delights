@@ -3,6 +3,7 @@
     <template #nav>
       <div class="flex flex-row justify-end px-4 py-2">
         <AvatarComponent class="pr-4" :image-url="userInfo.picture" :name="userInfo.name"/>
+        <DeliveryOrderButtonComponent class="p"/>
         <logout-button-component class="p"/>
       </div>
     </template>
@@ -40,9 +41,12 @@ import DeliveryButtonComponent from "@/components/DeliveryButtonComponent.vue";
 import CartButtonComponent from "@/components/cartButtonComponent.vue";
 import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
 import AvatarComponent from "@/components/avatarComponent.vue";
+import DeliveryOrderButtonComponent from "@/components/DeliveryOrderButtonComponent.vue";
 
 export default {
-  components: {AvatarComponent, LogoutButtonComponent, CartButtonComponent, DeliveryButtonComponent, HeaderBase},
+  components: {
+    DeliveryOrderButtonComponent,
+    AvatarComponent, LogoutButtonComponent, CartButtonComponent, DeliveryButtonComponent, HeaderBase},
   data() {
     return {
       orders: [],
