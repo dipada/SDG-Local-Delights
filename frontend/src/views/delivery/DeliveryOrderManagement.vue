@@ -11,7 +11,15 @@
       <h1 class="text-black"><b>Your delivery orders:</b></h1>
       <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
         <table class="min-w-full border-collapse border-spacing-y-2 border-spacing-x-2">
-          <thead class="hidden border-b lg:table-header-group"></thead>
+          <thead class="hidden border-b lg:table-header-group">
+          <tr>
+            <th class="whitespace-normal py-4 text-sm font-semibold text-gray-800 sm:px-3">Order Date</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Order ID</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Address</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Price</th>
+            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Status</th>
+          </tr>
+          </thead>
           <tbody class="bg-white lg:border-gray-300">
           <tr v-for="order in orders" :key="order.id" @click="showModal(order)" class="cursor-pointer">
             <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">
@@ -21,7 +29,7 @@
               {{ order.id }}
             </td>
             <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">
-              {{ order.userEmail }}
+              {{ order.shippingAddress }}
             </td>
             <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">
               €{{ order.amount }}
