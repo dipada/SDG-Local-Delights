@@ -77,25 +77,16 @@ const router = createRouter({
             component: () => import('../views/seller/ShopView.vue'),
             meta: {requiresAuth: true}
         },
-
         {
             path: '/seller/orders',
             name: 'seller-orders',
             component: () => import('../views/seller/SellerOrderManagement.vue'),
         },
-
         {
-            path: '/prova',
-            name: 'prova',
-            component: () => import('../views/delivery/DeliveryAvaibleOrdersView.vue'),
-        },
-
-        {
-            path: '/prova2',
-            name: 'prova2',
+            path: '/delivery/order-management',
+            name: 'delivery-order-management',
             component: () => import('../views/delivery/DeliveryOrderManagement.vue'),
         },
-
         {
             path: '/delivery/available-orders',
             name: 'delivery-available-orders',
