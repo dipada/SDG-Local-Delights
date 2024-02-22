@@ -1,155 +1,142 @@
-<script setup>
-
-</script>
-
 <template>
-  <div class="w-screen">
-
-    <div class="mx-auto mt-8 max-w-screen-lg px-2">
-      <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
-        <p class="flex-1 text-base font-bold text-gray-900">Latest Payments</p>
-
-        <div class="mt-4 sm:mt-0">
-          <div class="flex items-center justify-start sm:justify-end">
-            <div class="flex items-center">
-              <label for="" class="mr-2 flex-shrink-0 text-sm font-medium text-gray-900"> Sort by: </label>
-              <select name="" class="sm: mr-4 block w-full whitespace-pre rounded-lg border p-1 pr-10 text-base outline-none focus:shadow sm:text-sm">
-                <option class="whitespace-no-wrap text-sm">Recent</option>
-              </select>
-            </div>
-
-            <button type="button" class="inline-flex cursor-pointer items-center rounded-lg border border-gray-400 bg-white py-2 px-3 text-center text-sm font-medium text-gray-800 shadow hover:bg-gray-100 focus:shadow">
-              <svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" class=""></path>
-              </svg>
-              Export to CSV
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6 overflow-hidden rounded-xl border shadow">
-        <table class="min-w-full border-separate border-spacing-y-2 border-spacing-x-2">
+  <div class="w-screen bg-gray-50">
+    <!-- Altri elementi del template -->
+    <div class="mx-auto max-w-screen-xl px-2 py-10">
+      <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
+        <table class="min-w-full border-collapse border-spacing-y-2 border-spacing-x-2">
           <thead class="hidden border-b lg:table-header-group">
-          <tr class="">
-            <td width="50%" class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Invoice</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Date</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Amount</td>
-
-            <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Status</td>
-          </tr>
+          <!-- Intestazioni della tabella -->
           </thead>
-
-          <tbody class="lg:border-gray-300">
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Standard Plan - Feb 2022
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">07 February, 2022</p>
-              </div>
+          <tbody class="bg-white lg:border-gray-300">
+          <tr v-for="order in orders" :key="order.id" @click="showModal(order)" class="cursor-pointer">
+            <td class="whitespace-no-wrap py-4 text-left text-sm text-gray-600 sm:px-3 lg:text-left">{{
+                order.timestamp
+              }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">07 February, 2022</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $59.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.id }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">
+              {{ order.userEmail }}
             </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Standard Plan - Jan 2022
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">09 January, 2022</p>
-              </div>
+            <td class="whitespace-no-wrap py-4 text-right text-sm text-gray-600 sm:px-3 lg:text-left">€{{
+                order.amount
+              }}
             </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">09 January, 2022</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $59.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-red-200 py-1 px-2 text-left font-medium text-red-500 lg:hidden">Canceled</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-red-200 py-1 px-2 text-red-500">Canceled</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Dec 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">15 December, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">15 December, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Nov 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">14 November, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">14 November, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-200 py-1 px-2 text-left font-medium text-blue-500 lg:hidden">Pending</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-200 py-1 px-2 text-blue-500">Pending</div>
-            </td>
-          </tr>
-
-          <tr class="">
-            <td width="50%" class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
-              Basic Plan - Oct 2021
-              <div class="mt-1 lg:hidden">
-                <p class="font-normal text-gray-500">15 October, 2021</p>
-              </div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">15 October, 2021</td>
-
-            <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
-              $29.00
-              <div class="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden">Complete</div>
-            </td>
-
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
-              <div class="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white">Complete</div>
+            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-3 lg:table-cell">
+                <span :class="getClassForOrderStatus(order.orderStatus)" class="px-2 py-0.5 rounded-full">
+                  {{ order.orderStatus }}
+                </span>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
     </div>
-
+    <!-- Modale per i dettagli dell'ordine -->
   </div>
 </template>
 
-<style scoped>
 
-</style>
+<script>
+import axios from 'axios';
+import {mapActions, mapState} from 'vuex';
+import store from "@/store/index.js";
+
+export default {
+  data() {
+    return {
+      orders: [],
+      isModalVisible: false,
+      orderItems: [],
+      actualOrder: null,
+    };
+  },
+
+  methods: {
+    async fetchOrders() {
+      try {
+        console.log("Fetching orders for delivery email:", this.$store.getters.getUserInfo.email);
+        const response = await axios.get(`http://localhost:8085/api/v1/order/orderByDeliveryId/${this.$store.getters.getUserInfo.email}`, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        const orderPriority = ["PENDING", "TO_BE_DELIVERED", "TO_BE_PICKED_UP", "IN_TRANSIT", "COMPLETED", "CANCELLED"];
+        this.orders = response.data.sort((a, b) => {
+          const indexA = orderPriority.indexOf(a.orderStatus);
+          const indexB = orderPriority.indexOf(b.orderStatus);
+
+          if (indexA < indexB) {
+            return -1;
+          }
+          if (indexA > indexB) {
+            return 1;
+          }
+          return 0;
+        });
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    },
+
+    // Altri metodi come 'showModal', 'closeModal', ecc.
+
+    async showModal(order) {
+      console.log('Showing modal for order:', order);
+      this.actualOrder = order;
+      this.orderItems = [];
+      const productIds = [...new Set(order.listOfProductsIds)];
+      console.log('Product IDs:', productIds);
+      const productDetailsPromises = productIds.map(async (id) => {
+        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*',
+          },
+        });
+        const quantity = order.listOfProductsIds.filter(productId => productId === id).length;
+        return {...productDetails.data, quantity};
+      });
+      try {
+        this.orderItems = await Promise.all(productDetailsPromises);
+        console.log('Final orderItems:', this.orderItems);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      }
+      this.isModalVisible = true;
+    },
+
+
+    closeModal() {
+      this.isModalVisible = false;
+      this.orderItems = [];
+      this.actualOrder = null;
+    },
+
+    getClassForOrderStatus(orderStatus) {
+      switch (orderStatus) {
+        case "PENDING":
+          return "bg-yellow-100 text-yellow-800";
+        case "TO_BE_DELIVERED":
+          return "bg-amber-200 text-amber-800";
+        case "TO_BE_PICKED_UP":
+          return "bg-blue-100 text-blue-800";
+        case "IN_TRANSIT":
+          return "bg-blue-100 text-blue-800";
+        case "COMPLETED":
+          return "bg-green-100 text-green-800";
+        case "CANCELLED":
+          return "bg-red-100 text-red-800";
+        default:
+          return "";
+      }
+    },
+  },
+  mounted() {
+    this.fetchOrders();
+  },
+};
+</script>
+
