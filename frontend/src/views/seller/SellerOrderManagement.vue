@@ -1,5 +1,11 @@
 <template>
-  <HeaderBase/>
+  <HeaderBase>
+    <template #nav>
+      <div class="flex items-center">
+        <LogoutButtonComponent/>
+      </div>
+    </template>
+  </HeaderBase>
   <div class="w-screen bg-gray-50">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
       <div class="mt-6 overflow-hidden rounded-xl bg-white px-6 shadow lg:px-4">
@@ -8,7 +14,6 @@
           <tr>
             <th class="whitespace-normal py-4 text-sm font-semibold text-gray-800 sm:px-3">Order Date</th>
             <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Order ID</th>
-            <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Description</th>
             <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Customer</th>
             <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Price</th>
             <th class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Status</th>
@@ -22,9 +27,6 @@
             </td>
             <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">
               {{ order.id }}
-            </td>
-            <td class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-600 sm:px-3 lg:table-cell">Multiple
-              Products
             </td>
             <td class="whitespace-no-wrap hidden py-4 text-left text-sm text-gray-600 sm:px-3 lg:table-cell">
               {{ order.userEmail }}
@@ -101,9 +103,11 @@
 import axios from 'axios';
 import store from "@/store/index.js";
 import HeaderBase from "@/components/HeaderBase.vue";
+import SellerOrderButtonComponent from "@/components/SellerOrderButtonComponent.vue";
+import LogoutButtonComponent from "@/components/LogoutButtonComponent.vue";
 
 export default {
-  components: {HeaderBase},
+  components: {LogoutButtonComponent, SellerOrderButtonComponent, HeaderBase},
   data() {
     return {
       orders: [],

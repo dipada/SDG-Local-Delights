@@ -1,14 +1,13 @@
 <template>
   <HeaderBase/>
-  <h1>seller home</h1>
-  <!-- Visualizzazione dei messaggi per l'utente -->
+  <h1>Seller home</h1>
   <div class="bg-red-800" v-if="errorMessage">{{ errorMessage }}</div>
   <div class="bg-black" v-if="welcomeMessage">{{ welcomeMessage }}</div>
   <div class="bg-black" v-if="noSellerMessage">{{ noSellerMessage }}</div>
   <div v-if="noSellerMessage">
     <form @submit.prevent="registerSeller"
           class="relative border border-gray-100 space-y-3 max-w-screen-md mx-auto rounded-md bg-white p-6 shadow-xl lg:p-10">
-      <h1 class="mb-6 text-xl font-semibold lg:text-2xl text-green-800">Registrati come venditore</h1>
+      <h1 class="mb-6 text-xl font-semibold lg:text-2xl text-green-800">Register as a seller</h1>
 
       <div class="text-md font-medium text-secondary sm:mb-0 dark:text-gray-400">
         <div>
@@ -18,13 +17,13 @@
         </div>
 
         <div>
-          <label> Email del negozio: </label>
+          <label> Shop email: </label>
           <input v-model="shopEmail" type="email" placeholder="your@email.com" required
                  class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3"/>
         </div>
 
         <div>
-          <label> Indirizzo del negozio: </label>
+          <label> Shop address: </label>
           <input class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" type="text" v-model="query"
                  @input="cercaIndirizzo"
                  placeholder="Inserisci un indirizzo..."/>
@@ -42,13 +41,11 @@
 
       <div>
         <button type="submit" class="mt-5 w-full rounded-md bg-secondary p-2 text-center font-semibold text-white">
-          Registrati come seller
+          Register as seller
         </button>
       </div>
     </form>
   </div>
-  <div class="bg-green-800"> Token che passo {{ store.getters.getUserToken }}</div>
-  <!-- TODO: se l'utente ancora non era un seller, aggiungerà un negozio (rimandare a pagina aggiunta) -->
 </template>
 
 <script>
