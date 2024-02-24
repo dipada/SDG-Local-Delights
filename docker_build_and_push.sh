@@ -12,14 +12,13 @@ DOCKER_USERNAME="dipada"
 IMAGES=(
     "apigateway:./apigateway"
     "authenticationservice:./authenticationservice"
-    "deliveryservice:./deliveryservice"
     "discoveryserver:./discoveryserver"
+    "frontend:./frontend"
     "orderservice:./orderservice"
     "paymentservice:./paymentservice"
     "productservice:./productservice"
     "shopservice:./shopservice"
     "userservice:./userservice"
-    "frontend:./frontend"
 )
 
 # Loop through each image
