@@ -152,8 +152,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Seller created successfully");
       }
     } else {
-      makeSeller(sellerRequest, makeNewUser(sellerRequest));
-      return ResponseEntity.status(HttpStatus.OK).body("Seller created successfully");
+     // makeSeller(sellerRequest, makeNewUser(sellerRequest));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
   }
 
@@ -261,10 +261,10 @@ public class UserController {
   private String validateRequest(SellerRequest sellerRequest) {
 
     // user params
-    String response = validateUserParams(sellerRequest);
-    if (!response.equals("ok")) {
-      return response;
-    }
+    //String response = validateUserParams(sellerRequest);
+    //if (!response.equals("ok")) {
+    //  return response;
+    //}
 
     // specific params of seller
     if (sellerRequest.getVatNumber() == null || sellerRequest.getVatNumber().isEmpty()) {
@@ -314,6 +314,7 @@ public class UserController {
     return "ok";
   }
 
+  /*
   private String validateUserParams(SellerRequest sellerRequest) {
     if (emailValidation(sellerRequest.getEmail()) && sellerRequest.getEmail() != null && !sellerRequest.getEmail().isEmpty()) {
       return "Email non valida";
@@ -337,6 +338,8 @@ public class UserController {
 
     return "ok";
   }
+  
+   */
 
   private void makeClient(ClientRequest clientRequest, User newUser) {
     //User newUser = makeNewUser(clientRequest);
@@ -356,11 +359,13 @@ public class UserController {
     return newUser;
   }
 
+  /*
   private User makeNewUser(SellerRequest sellerRequest) {
     User newUser = new User(sellerRequest.getEmail(), sellerRequest.getPassword(), sellerRequest.getFirstName(), sellerRequest.getLastName(), sellerRequest.getPhoneNumber(), sellerRequest.getPicture(), sellerRequest.getGoogleAccount());
     userRepository.save(newUser);
     return newUser;
   }
+  */
 
   private void updateUser(User user, ClientRequest clientRequest) {
     user.setPassword(clientRequest.getPassword());

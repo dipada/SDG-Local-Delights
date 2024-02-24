@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
 import store from "@/store/index.js";
+import axios from "axios";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,12 +48,6 @@ const router = createRouter({
             meta: {requiresAuth: true}
         },
         {
-            path: '/client/shops', // list of shops view
-            name: 'client-shops',
-            component: () => import('../views/client/ClientShopsView.vue'),
-            meta: {requiresAuth: true}
-        },
-        {
             path: '/client/shop', // single shop view
             name: 'client-shop',
             component: () => import('../views/client/ClientShopView.vue'),
@@ -62,6 +57,7 @@ const router = createRouter({
             path: '/client/cart',
             name: 'client-cart',
             component: () => import('../views/client/ClientCartView.vue'),
+            meta: {requiresAuth: true}
         },
 
         {
@@ -74,11 +70,31 @@ const router = createRouter({
             path: '/client/map',
             name: 'client-map',
             component: () => import('../views/client/MapShopsView.vue'),
+            meta: {requiresAuth: true}
         },
         {
             path: '/seller/shop',
             name: 'seller-shop',
             component: () => import('../views/seller/ShopView.vue'),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/seller/orders',
+            name: 'seller-orders',
+            component: () => import('../views/seller/SellerOrderManagement.vue'),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/delivery/order-management',
+            name: 'delivery-order-management',
+            component: () => import('../views/delivery/DeliveryOrderManagement.vue'),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/delivery/available-orders',
+            name: 'delivery-available-orders',
+            component: () => import('../views/delivery/DeliveryAvailableOrders.vue'),
+            meta: {requiresAuth: true}
         },
     ]
 });
@@ -93,5 +109,18 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
+
+axios.interceptors.response.use(
+    response => {
+        return response;
+    },
+    error => {
+        if (error.response.status === 401) {
+            store.dispatch('logoutUser')
+            router.push('/login');
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default router

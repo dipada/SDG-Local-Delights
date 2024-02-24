@@ -7,7 +7,7 @@
 
   <ShopTopContentComponent :shopInfo="shopInfo"/>
 
-  <ProductCarousel/>
+  <ProductCarousel :items="shopItemsList"/>
 </template>
 
 <script>
@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       shopInfo: null,
+      shopItemsList: [],
     };
   },
   computed: {
@@ -35,8 +36,27 @@ export default {
   },
   mounted() {
     this.fetchShopInfo();
+    this.fetchShopItems();
   },
   methods: {
+    fetchShopItems() {
+      console.log('fetching shop items', this.shopId);
+      if (this.shopId) {
+        axios.get(`http://localhost:8085/product/shop/${this.shopId}`, {
+          headers: {
+            'Authorization': 'Bearer ' + store.getters.getUserToken,
+            'Accept': '*/*'
+          },
+        })
+            .then(response => {
+              this.shopItemsList = response.data;
+            })
+            .catch(error => {
+              console.log(error);
+            });
+      }
+    },
+
     fetchShopInfo() {
       if (this.shopId) {
         axios.get(`/apigateway/shop/get/${this.shopId}`, {
@@ -51,8 +71,6 @@ export default {
             .catch(error => {
               console.log(error);
             });
-      } else {
-        router.push({name: 'client-home'});
       }
     }
   }

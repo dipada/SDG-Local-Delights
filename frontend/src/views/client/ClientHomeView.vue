@@ -4,6 +4,7 @@
       <div class="flex flex-row justify-end px-4 py-2">
         <AvatarComponent class="pr-4" :image-url="userInfo.picture" :name="userInfo.name"/>
         <cart-button-component class="pr-4"/>
+        <delivery-button-component class="pr-4"/>
         <logout-button-component class="p"/>
       </div>
     </template>
@@ -47,9 +48,11 @@ import breadImg from "@/assets/bread.svg";
 import eggsImg from "@/assets/eggs.svg";
 import meatImg from "@/assets/meat.svg";
 import MapShopsView from "@/views/client/MapShopsView.vue";
+import DeliveryButtonComponent from "@/components/DeliveryButtonComponent.vue";
 
 export default defineComponent({
   components: {
+    DeliveryButtonComponent,
     MapShopsView,
     CardHome,
     LogoutButtonComponent, ClientHomeBodyComponent, CartButtonComponent, HeaderBase, AvatarComponent},

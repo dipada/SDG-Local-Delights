@@ -57,27 +57,6 @@
 import axios from 'axios';
 import {mapActions} from "vuex";
 
-// Interceptor per le richieste
-axios.interceptors.request.use(request => {
-  console.log('Starting Request', JSON.stringify(request, null, 2));
-  return request;
-});
-
-// Interceptor per le risposte
-axios.interceptors.response.use(response => {
-  console.log('Response:', JSON.stringify(response, null, 2));
-  return response;
-});
-
-const googleLogin = () => {
-  const oauthUrl = `http://localhost:8080/login`;
-  console.log(encodeURIComponent(window.location.href))
-  console.log(window.location.href)
-  //window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
-  window.location.href = 'http://localhost:30080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:30073/redirect/oauth");
-  //window.location.href = oauthUrl;
-};
-
 export default {
   name: "LoginComponent",
 
@@ -95,8 +74,7 @@ export default {
     ...mapActions(['saveUserInfo']),
 
     googleLogin(){
-      //window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
-      window.location.href = 'http://localhost:30080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
+      window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
     },
 
     customLogin() {
@@ -106,7 +84,7 @@ export default {
         return;
       }
 
-      axios.post('http://localhost:30080/auth/login', {
+      axios.post('http://localhost:8080/auth/login', {
             email: this.email,
             password: this.password
           },
@@ -116,12 +94,12 @@ export default {
               'Accept': '*/*'
             }
           }
-      ).then(response => {
+      ).then(async response => {
         this.loginError = false;
         this.loginErrorMessage = "";
 
-        console.log("Token : " , JSON.stringify(response.data.token));
-        this.saveUserInfo(JSON.stringify(response.data.token));
+        console.log("Token : ", JSON.stringify(response.data.token));
+        await this.saveUserInfo(response.data.token);
         setTimeout(() => {
           this.isLoading = false;
           this.$router.push('/client/home');
