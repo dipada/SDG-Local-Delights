@@ -38,57 +38,7 @@ spec:
           name: authenticationservice
           ports:
             - containerPort: 8080
-              hostPort: 8080
-              protocol: TCP
-      restartPolicy: Always
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations:
-    kompose.cmd: kompose convert -f compose.yml
-    kompose.version: 1.32.0 (765fde254)
-  labels:
-    io.kompose.service: deliveryservice
-  name: deliveryservice
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      io.kompose.service: deliveryservice
-  template:
-    metadata:
-      annotations:
-        kompose.cmd: kompose convert -f compose.yml
-        kompose.version: 1.32.0 (765fde254)
-      labels:
-        io.kompose.network/sdg-local-delights-apigateway-net: "true"
-        io.kompose.network/sdg-local-delights-delivery-net: "true"
-        io.kompose.service: deliveryservice
-    spec:
-      containers:
-        - env:
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: admin
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres-delivery:5437/sdgdelivery
-            - name: SPRING_DATASOURCE_USERNAME
-              value: admin
-            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: update
-            - name: eureka.client.serviceUrl.defaultZone
-              value: http://discovery-server:8761/eureka/
-            - name: spring.profiles.active
-              value: docker
-            - name: spring.rabbitmq.host
-              value: rabbitmq
-            - name: spring.rabbitmq.port
-              value: "5672"
-          image: dipada/deliveryservice
-          name: deliveryservice
-          ports:
-            - containerPort: 8087
-              hostPort: 8087
+              hostPort: 30080
               protocol: TCP
       restartPolicy: Always
 ---
@@ -152,9 +102,8 @@ spec:
           name: frontend
           ports:
             - containerPort: 5173
-              hostPort: 5173
+              hostPort: 30073
               protocol: TCP
-      hostname: localhost
       restartPolicy: Always
 ---
 apiVersion: apps/v1
@@ -188,7 +137,7 @@ spec:
           name: apigateway
           ports:
             - containerPort: 8085
-              hostPort: 8085
+              hostPort: 30085
               protocol: TCP
       restartPolicy: Always
 ---
@@ -341,55 +290,6 @@ spec:
         - name: pgadmin-data
           persistentVolumeClaim:
             claimName: pgadmin-data
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations:
-    kompose.cmd: kompose convert -f compose.yml
-    kompose.version: 1.32.0 (765fde254)
-  labels:
-    io.kompose.service: postgres-delivery
-  name: postgres-delivery
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      io.kompose.service: postgres-delivery
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      annotations:
-        kompose.cmd: kompose convert -f compose.yml
-        kompose.version: 1.32.0 (765fde254)
-      labels:
-        io.kompose.network/sdg-local-delights-delivery-net: "true"
-        io.kompose.service: postgres-delivery
-    spec:
-      containers:
-        - env:
-            - name: POSTGRES_DB
-              value: sdgdelivery
-            - name: POSTGRES_PASSWORD
-              value: admin
-            - name: POSTGRES_USER
-              value: admin
-          image: postgres:latest
-          name: postgres-container-deliveryservice
-          ports:
-            - containerPort: 5432
-              hostPort: 5437
-              protocol: TCP
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: delivery-db-data
-      hostname: localhost
-      restartPolicy: Always
-      volumes:
-        - name: delivery-db-data
-          persistentVolumeClaim:
-            claimName: delivery-db-data
 ---
 apiVersion: apps/v1
 kind: Deployment

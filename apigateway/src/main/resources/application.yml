@@ -20,27 +20,27 @@ spring:
           enabled: true
       routes:
         - id: userservice
-          uri: lb://userservice
+          uri: http://userservice:8081
           predicates:
             - Path=/api/v1/user/**
         - id: authenticationservice
-          uri: lb://authenticationservice
+          uri: http://authenticationservice:8080
           predicates:
             - Path=/auth/**
         - id: shopservice
-          uri: lb://shopservice
+          uri: http://shopservice:8082
           predicates:
             - Path=/shop/**
         - id: paymentservice
-          uri: lb://paymentservice
+          uri: http://paymentservice:8084
           predicates:
             - Path=/payment/**
         - id: productservice
-          uri: lb://productservice
+          uri: http://productservice:8083
           predicates:
             - Path=/product/**
         - id: orderservice
-          uri: lb://orderservice
+          uri: http://orderservice:8086
           predicates:
             - Path=/api/v1/order/**
 

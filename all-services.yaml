@@ -12,29 +12,12 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: "8080"
-      port: 8080
+    - name: "30080"
+      port: 30080
       targetPort: 8080
       nodePort: 30080
   selector:
     io.kompose.service: authenticationservice
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    kompose.cmd: kompose convert -f compose.yml
-    kompose.version: 1.32.0 (765fde254)
-  labels:
-    io.kompose.service: deliveryservice
-  name: deliveryservice
-spec:
-  ports:
-    - name: "8087"
-      port: 8087
-      targetPort: 8087
-  selector:
-    io.kompose.service: deliveryservice
 ---
 apiVersion: v1
 kind: Service
@@ -65,8 +48,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: "5173"
-      port: 5173
+    - name: "30073"
+      port: 30073
       targetPort: 5173
       nodePort: 30073
   selector:
@@ -84,14 +67,12 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: "8085"
-      port: 8085
+    - name: "30085"
+      port: 30085
       targetPort: 8085
       nodePort: 30085
   selector:
     io.kompose.service: gateway
-status:
-  loadBalancer: {}
 ---
 apiVersion: v1
 kind: Service
@@ -143,23 +124,6 @@ spec:
       targetPort: 50
   selector:
     io.kompose.service: pgadmin
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    kompose.cmd: kompose convert -f compose.yml
-    kompose.version: 1.32.0 (765fde254)
-  labels:
-    io.kompose.service: postgres-delivery
-  name: postgres-delivery
-spec:
-  ports:
-    - name: "5437"
-      port: 5437
-      targetPort: 5432
-  selector:
-    io.kompose.service: postgres-delivery
 ---
 apiVersion: v1
 kind: Service
@@ -273,7 +237,6 @@ metadata:
     io.kompose.service: rabbitmq
   name: rabbitmq
 spec:
-  type: NodePort
   ports:
     - name: "15672"
       port: 15672
