@@ -1,9 +1,9 @@
-FROM node:latest
+FROM node:lts-alpine
 
-# install simple http server for serving static content
-RUN npm install -g http-server
+WORKDIR /frontend
+COPY . .
 
-COPY ./dist /dist
+RUN npm cache clean --force
+RUN npm install --force
 
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

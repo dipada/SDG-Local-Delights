@@ -278,6 +278,13 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    image: frontend
+    ports:
+      - '5173:5173'
+
 volumes:
   db-data:
   pgadmin-data:
