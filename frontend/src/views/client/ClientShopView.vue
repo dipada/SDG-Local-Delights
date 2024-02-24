@@ -42,7 +42,7 @@ export default {
     fetchShopItems() {
       console.log('fetching shop items', this.shopId);
       if (this.shopId) {
-        axios.get(`http://localhost:8085/product/shop/${this.shopId}`, {
+        axios.get(`http://localhost:30085/product/shop/${this.shopId}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*'
@@ -59,7 +59,7 @@ export default {
 
     fetchShopInfo() {
       if (this.shopId) {
-        axios.get(`/apigateway/shop/get/${this.shopId}`, {
+        axios.get(`http://localhost:30085/shop/get/${this.shopId}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*'

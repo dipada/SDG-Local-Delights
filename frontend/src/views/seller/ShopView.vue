@@ -55,7 +55,7 @@ export default {
 
     fetchShopInfo() {
       if (this.userInfo) {
-        axios.get(`http://localhost:8085/shop/seller/${this.userInfo.email}`, {
+        axios.get(`http://localhost:30085/shop/seller/${this.userInfo.email}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*'
@@ -76,7 +76,7 @@ export default {
     },
 
     getShopProducts(shopId) {
-      axios.get(`http://localhost:8085/product/products/`+ shopId , {
+      axios.get(`http://localhost:30085/product/products/`+ shopId , {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'

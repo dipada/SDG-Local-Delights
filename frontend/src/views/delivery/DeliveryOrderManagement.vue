@@ -102,7 +102,7 @@ export default {
     async fetchOrders() {
       try {
         console.log("Fetching orders for delivery email:", this.$store.getters.getUserInfo.email);
-        const response = await axios.get(`http://localhost:8085/api/v1/order/orderByDeliveryId/${this.$store.getters.getUserInfo.email}`, {
+        const response = await axios.get(`http://localhost:30085/api/v1/order/orderByDeliveryId/${this.$store.getters.getUserInfo.email}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*',
@@ -157,7 +157,7 @@ export default {
 
     confirmDelivery() {
       const status = "COMPLETED";
-      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
+      axios.put(`http://localhost:30085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
         headers: {
           'Authorization': 'Bearer ' + store.getters.getUserToken,
           'Accept': '*/*',

@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     fetchShops() {
-      axios.get("http://localhost:8085/shop/all", {
+      axios.get("http://localhost:30085/shop/all", {
         headers: {
           'Authorization': 'Bearer ' + store.getters.getUserToken,
           'Accept': '*/*',

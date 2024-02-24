@@ -241,7 +241,7 @@ export default {
         }
       });
       const amount = this.orderTotal;
-      const orderResponse = await axios.post('http://localhost:8085/api/v1/order/create-order', {
+      const orderResponse = await axios.post('http://localhost:30085/api/v1/order/create-order', {
         userEmail: email,
         shopId: shopId,
         listOfProductIds: orderProductsIds,
@@ -256,7 +256,7 @@ export default {
 
       const orderId = orderResponse.data;
 
-      axios.post('http://localhost:8085/payment/pay', {
+      axios.post('http://localhost:30085/payment/pay', {
         email: email,
         amount: amount,
         orderId: orderId
@@ -275,7 +275,7 @@ export default {
     },
 
     fetchUserBalance() {
-      axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
+      axios.get(`http://localhost:30085/payment/balance/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
@@ -308,7 +308,7 @@ export default {
     async fetchCartItemsDetails() {
       try {
         const requests = this.cartItems.map(item =>
-            axios.get(`http://localhost:8085/product/get/${item.id}`, {
+            axios.get(`http://localhost:30085/product/get/${item.id}`, {
               headers: {
                 'Authorization': 'Bearer ' + store.getters.getUserToken,
                 'Accept': '*/*'

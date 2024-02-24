@@ -128,7 +128,7 @@ export default {
     orderReady() {
       console.log('Order is ready');
       const status = "TO_BE_DELIVERED";
-      axios.put(`http://localhost:8085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
+      axios.put(`http://localhost:30085/api/v1/order/update-order-status/${this.actualOrder.id}`, status, {
         headers: {
           'Authorization': 'Bearer ' + store.getters.getUserToken,
           'Accept': '*/*',
@@ -147,7 +147,7 @@ export default {
 
     async fetchOrders(shopId) {
       try {
-        const response = await axios.get(`http://localhost:8085/api/v1/order/orderByShopId/${shopId}`, {
+        const response = await axios.get(`http://localhost:30085/api/v1/order/orderByShopId/${shopId}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*',
@@ -178,7 +178,7 @@ export default {
       const productIds = [...new Set(order.listOfProductsIds)];
       console.log('Product IDs:', productIds);
       const productDetailsPromises = productIds.map(async (id) => {
-        const productDetails = await axios.get(`http://localhost:8085/product/get/${id}`, {
+        const productDetails = await axios.get(`http://localhost:30085/product/get/${id}`, {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*',
