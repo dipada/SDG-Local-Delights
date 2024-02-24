@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center">
     <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-secondary md:text-5xl lg:text-6xl dark:text-secondary">Within a few clicks, find local products near you</h1>
     <div class="border border-secondary rounded-lg p-4 max-w-md w-full">
-      <form class="flex-col">
+      <form @submit.prevent="showOnMap" class="flex-col">
         <div class="mb-4">
           <div class="flex items-center mb-2">
             <label for="delivery" class="text-sm font-medium text-gray-900 dark:text-white mr-2 flex items-center">
@@ -44,8 +44,25 @@
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
             </svg>
           </div>
-          <input type="search" id="default-search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-secondary focus:border-secondary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your address" required>
-          <button @click="findShops" type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-secondary hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-secondary font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+
+          <div class="relative">
+            <input type="search" v-model="query" @input="onInputChanged" id="default-search"
+                   class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-secondary focus:border-secondary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:ring-secondary focus:border-secondary"
+                   placeholder="Your address" required>
+            <button @click="showOnMap" type="submit"
+                    class="text-white absolute right-2.5 bottom-2.5 bg-secondary hover:bg-secondary-dark focus:ring-4 focus:outline-none focus:ring-secondary-dark font-medium rounded-lg text-sm px-4 py-2">
+              Search
+            </button>
+            <div v-if="indirizzi.length" class="relative w-full mt-1 text-secondary">
+              <ul class="bg-white border border-gray-300 rounded-lg text-sm">
+                <li v-for="(indirizzo, index) in indirizzi" :key="index"
+                    @click="selezionaIndirizzo(indirizzo)"
+                    class="p-2 hover:bg-gray-100 cursor-pointer">
+                  {{ indirizzo.display_name }}
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -53,19 +70,59 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'ClientHomeBodyComponent',
 
-  methods: {
-    findShops() {
-      this.$router.push({name: 'client-shops'});
+  data() {
+    return {
+      query: '',
+      indirizzi: [],
+      selectedAddress: null,
     }
-  }
+  },
+
+  methods: {
+    onInputChanged() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.searchAddress();
+      }, 500);
+    },
+
+    selezionaIndirizzo(indirizzo) {
+      this.query = indirizzo.display_name;
+      this.indirizzi = [];
+      this.selectedAddress = indirizzo;
+    },
+
+    searchAddress() {
+      if (this.query.length > 2) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(this.query)}`;
+        axios.get(url)
+            .then(response => {
+              this.indirizzi = response.data;
+            })
+            .catch(error => console.error('Errore nella ricerca degli indirizzi:', error));
+      } else {
+        this.indirizzi = [];
+      }
+    },
+
+    showOnMap() {
+      if (this.selectedAddress && this.selectedAddress.lat && this.selectedAddress.lon) {
+        this.$store.commit('setSelectedCoordinates', {
+          lat: this.selectedAddress.lat,
+          lon: this.selectedAddress.lon
+        });
+      } else {
+        alert("'Select an address from the list'");
+      }
+    },
+  },
 
 }
-
-
-
 </script>
 
 <style>

@@ -1,12 +1,11 @@
 package com.dipada.orderservice.controller;
 
-import com.dipada.orderservice.repository.OrderRepository;
-import com.dipada.orderservice.RabbitMQ.RabbitMQSender;
 import com.dipada.orderservice.dto.OrderRequest;
-import com.dipada.orderservice.dto.ShopDetails;
 import com.dipada.orderservice.model.Order;
 import com.dipada.orderservice.model.OrderStatus;
+import com.dipada.orderservice.repository.OrderRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,17 +22,11 @@ import java.util.List;
 public class OrderController {
 
     private final OrderRepository orderRepository;
-    private final ShopServiceClient shopServiceClient;
-
-    private final RabbitMQSender rabbitMQSender;
 
     @Autowired
-    protected OrderController(OrderRepository orderRepository, ShopServiceClient shopServiceClient, RabbitMQSender rabbitMQSender) {
+    protected OrderController(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.shopServiceClient = shopServiceClient;
-        this.rabbitMQSender = rabbitMQSender;
     }
-
 
     @Operation(summary = "Get all orders of a user")
     @ApiResponses(value = {
@@ -53,7 +48,20 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
-    //TODO inserisci ordine
+    @Operation(summary = "Get order shop id by order id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found shop"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @GetMapping("/get-order-shop/{orderId}")
+    public ResponseEntity<Long> getShopIdByOrderId(@PathVariable Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(order.getShopId());
+    }
+
     @Operation(summary = "Create a new order")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order created successfully"),
@@ -65,32 +73,21 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order request");
         }
 
-        //TODO check if products exist, or check in frontend
-
-        //recupero dettagli negozio dell'ordine
-        ShopDetails shopDetails = shopServiceClient.getShopDetails(orderRequest.getShopId());
-
-        System.out.println("ShopDetails recived from OrderService: " + shopDetails);
-
-
         Order order = new Order();
         order.setUserEmail(orderRequest.getUserEmail());
         order.setShopId(orderRequest.getShopId());
-        order.setShopName(shopDetails.getName());
-        order.setShopAddress(shopDetails.getAddress());
-        order.setShopEmail(shopDetails.getEmail());
         order.setListOfProductsIds(orderRequest.getListOfProductIds());
         order.setOrderStatus(OrderStatus.PENDING); //At creation, the order is pending
         order.setPaid(false);
+        order.setAmount(orderRequest.getAmount());
+        order.setTimestamp(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+        order.setShippingAddress(orderRequest.getShippingAddress());
 
         orderRepository.save(order);
 
-        rabbitMQSender.sendOrder(order);
-
-        return ResponseEntity.status(HttpStatus.OK).body("Order created successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(order.getId().toString());
     }
 
-    // TODO modifica stato ordine
     @Operation(summary = "Update the status of an order")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order status updated successfully"),
@@ -112,5 +109,91 @@ public class OrderController {
         orderRepository.save(order);
 
         return ResponseEntity.status(HttpStatus.OK).body("Order status updated successfully");
+    }
+
+
+    @Operation(summary = "Get all orders to be delivered")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/get-to-be-delivered-orders")
+    public ResponseEntity<List<Order>> getToBeDeliveredOrders() {
+        List<Order> orders = orderRepository.findAllOrdersByOrderStatus(OrderStatus.TO_BE_DELIVERED).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
+
+
+    @Operation(summary = "Take an order to deliver")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order taken successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/take-order/{orderId}")
+    public ResponseEntity<String> takeOrder(@PathVariable Long orderId, @RequestParam String deliveryEmail) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        order.setDeliveryEmail(deliveryEmail);
+        order.setOrderStatus(OrderStatus.IN_TRANSIT);
+        orderRepository.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order taken successfully");
+    }
+
+
+    @Operation(summary = "Mark an order as delivered")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order delivered successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/order-delivered/{orderId}")
+    public ResponseEntity<String> orderDelivered(@PathVariable Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+
+        order.setOrderStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Order delivered successfully");
+    }
+
+    @Operation(summary = "Get all orders of a delivery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/orderByDeliveryId/{deliveryEmail}")
+    public ResponseEntity<List<Order>> getOrderByDeliveryId(@Parameter(description = "Delivery Email") @PathVariable String deliveryEmail) {
+        List<Order> orders = orderRepository.findAllOrdersByDeliveryEmail(deliveryEmail).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
+
+
+    @Operation(summary = "Get all orders of a shop")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "404", description = "No orders found")
+    })
+    @GetMapping("/orderByShopId/{shopId}")
+    public ResponseEntity<List<Order>> getOrderByShopId(@Parameter(description = "Shop Id") @PathVariable Long shopId) {
+        List<Order> orders = orderRepository.findAllOrdersByShopId(shopId).orElse(null);
+        if (orders == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 }

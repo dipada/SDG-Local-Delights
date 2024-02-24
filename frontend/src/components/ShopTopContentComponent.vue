@@ -16,7 +16,7 @@
           <ul class="mb-10 text-base leading-7 text-gray-500 dark:text-gray-400">
             <li v-if="shopInfo"><b>Indirizzo:</b> {{ shopInfo.address }}</li>
             <li v-if="shopInfo"><b>Telefono:</b> {{ shopInfo.phoneNumber }}</li>
-            <li v-if="shopInfo"><b>Email:</b> {{ shopInfo.email }}</li>
+            <li v-if="shopInfo"><b>Email:</b> {{ shopInfo.shopEmail }}</li>
           </ul>
         </div>
       </div>
@@ -29,12 +29,16 @@ export default {
   name: 'ShopTopContentComponent',
   props: {
     shopInfo: {
-      address: String,
+      id: Number,
+      name: String,
       description: String,
+      address: String,
+      phoneNumber: String,
       email: String,
       imageUrl: String,
-      name: String,
-      phoneNumber: String,
+      sellerEmail: String,
+      longitude: Number,
+      latitude: Number
     }
   }
 }

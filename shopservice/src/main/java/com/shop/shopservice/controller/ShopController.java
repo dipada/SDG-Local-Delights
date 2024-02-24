@@ -48,7 +48,7 @@ public class ShopController {
         shop.setDescription(shopRequest.getDescription());
         shop.setAddress(shopRequest.getAddress());
         shop.setPhoneNumber(shopRequest.getPhoneNumber());
-        shop.setShopEmail(shopRequest.getEmail());
+        shop.setShopEmail(shopRequest.getShopEmail());
         shop.setSellerEmail(shopRequest.getSellerEmail());
         shop.setLatitude(shopRequest.getLatitude());
         shop.setLongitude(shopRequest.getLongitude());
@@ -126,12 +126,18 @@ public class ShopController {
         shopResponse.setDescription(shop.get().getDescription());
         shopResponse.setAddress(shop.get().getAddress());
         shopResponse.setPhoneNumber(shop.get().getPhoneNumber());
-        shopResponse.setEmail(shop.get().getShopEmail());
+        shopResponse.setShopEmail(shop.get().getShopEmail());
         shopResponse.setSellerEmail(shop.get().getSellerEmail());
         shopResponse.setLatitude(shop.get().getLatitude());
         shopResponse.setLongitude(shop.get().getLongitude());
         shopResponse.setImageUrl(shop.get().getImageUrl());
         return ResponseEntity.status(HttpStatus.OK).body(shopResponse);
+    }
+
+    @GetMapping("/seller-email/{shopId}")
+    public ResponseEntity<String> getSellerEmail(@PathVariable Long shopId) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value.getSellerEmail())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @Operation(summary = "Add a new product to a shop")

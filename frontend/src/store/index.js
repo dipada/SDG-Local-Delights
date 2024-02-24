@@ -16,8 +16,17 @@ export default createStore({
         // { id: 1, quantity: 2 },
         // { id: 2, quantity: 1 },
         // ... altri prodotti ...
+        selectedCoordinates: {
+            lat: null,
+            lon: null
+        },
     },
     mutations: {
+        setSelectedCoordinates(state, { lat, lon }) {
+            state.selectedCoordinates.lat = lat;
+            state.selectedCoordinates.lon = lon;
+        },
+
         setShopId(state, shopId) {
             state.shopId = shopId;
         },
@@ -56,8 +65,11 @@ export default createStore({
                     state.cartProducts.splice(productIndex, 1);
                 }
             }
-        }
+        },
 
+        emptyCart(state) {
+            state.cartProducts = [];
+        },
     },
     actions: {
         addProductToCart({commit}, productId) {
@@ -66,6 +78,10 @@ export default createStore({
 
         removeProductFromCart({commit}, productId) {
             commit('removeProductFromCart', productId);
+        },
+
+        emptyCart({commit}) {
+            commit('emptyCart');
         },
 
         saveShopId({commit}, shopId) {
@@ -97,6 +113,8 @@ export default createStore({
             localStorage.removeItem('userToken'); // XSS vulnerability, use httpOnly cookies in production
             commit('clearUserInfo');
         },
+
+
 
     },
     getters: {

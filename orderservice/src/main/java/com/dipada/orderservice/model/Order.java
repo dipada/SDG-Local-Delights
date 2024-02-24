@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,14 +20,14 @@ public class Order {
 
     private String userEmail;
     private Long shopId;
-    private String shopName;
-    private String shopAddress;
-    private String shopEmail;
     private Boolean paid;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> listOfProductsIds;
 
     private OrderStatus orderStatus;
-
+    private Double amount;
+    private String timestamp;
+    private String shippingAddress;
+    private String deliveryEmail;
 }

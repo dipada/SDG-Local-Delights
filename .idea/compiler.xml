@@ -12,7 +12,6 @@
         <module name="userservice" />
         <module name="authtest" />
         <module name="productservice" />
-        <module name="deliveryservice" />
         <module name="discoveryserver" />
         <module name="shopservice" />
         <module name="authenticationservice" />
@@ -20,12 +19,15 @@
         <module name="orderservice" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="deliveryservice" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="apigateway" options="-parameters" />
       <module name="authenticationservice" options="-parameters" />
-      <module name="deliveryservice" options="" />
+      <module name="deliveryservice" options="-parameters" />
       <module name="discoveryserver" options="-parameters" />
       <module name="orderservice" options="-parameters" />
       <module name="paymentservice" options="-parameters" />

@@ -10,6 +10,7 @@ const token = computed(() => store.getters.getUserToken);
 // fa is autenticated
 const isAutenticated = computed(() => store.getters.isAuthenticated);
 const userInfo = computed(() => store.getters.getUserInfo);
+const shopId = computed(() => store.getters.getShopId);
 
 
 </script>
@@ -39,9 +40,6 @@ const userInfo = computed(() => store.getters.getUserInfo);
       <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
       <span class="block text-md text-secondary md:text-center dark:text-gray-400">© 2024 <a href="" class="hover:underline">SDGLocalDelights™</a>. All Rights Reserved.</span>
     </div>
-    <div class="bg-black text-white">token: {{token}}</div><br/>
-    <div class="bg-black text-white">autenticated: {{isAutenticated}}</div><br/>
-    <div class="bg-black text-white">userInfo: {{userInfo}}</div>
   </footer>
 </template>
 

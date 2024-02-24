@@ -42,19 +42,19 @@ spring:
         - id: orderservice
           uri: lb://orderservice
           predicates:
-              - Path=/api/v1/order/**
+            - Path=/api/v1/order/**
 
       globalcors:
         cors-configurations:
-            '[/**]':
-                allowedOrigins:
-                - "*"
-                allowedMethods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-                allowedHeaders:
-                - "*"
-                allowCredentials: false
-                maxAge: 3600
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*"
+            allowCredentials: false
+            maxAge: 3600
