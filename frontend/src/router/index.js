@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
 import store from "@/store/index.js";
+import axios from "axios";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -108,5 +109,17 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
+
+axios.interceptors.response.use(
+    response => {
+        return response;
+    },
+    error => {
+        if (error.response.status === 401) {
+            router.push('/login');
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default router

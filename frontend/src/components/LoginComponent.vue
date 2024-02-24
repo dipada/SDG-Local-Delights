@@ -57,26 +57,6 @@
 import axios from 'axios';
 import {mapActions} from "vuex";
 
-// Interceptor per le richieste
-axios.interceptors.request.use(request => {
-  console.log('Starting Request', JSON.stringify(request, null, 2));
-  return request;
-});
-
-// Interceptor per le risposte
-axios.interceptors.response.use(response => {
-  console.log('Response:', JSON.stringify(response, null, 2));
-  return response;
-});
-
-const googleLogin = () => {
-  const oauthUrl = `http://localhost:8080/login`;
-  console.log(encodeURIComponent(window.location.href))
-  console.log(window.location.href)
-  window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
-  //window.location.href = oauthUrl;
-};
-
 export default {
   name: "LoginComponent",
 
