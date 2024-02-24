@@ -6,7 +6,7 @@
       </div>
     </template>
   </HeaderBase>
-  <div class="w-screen bg-gray-50">
+  <div class="w-screen">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
       <div class="flex flex-col justify-center items-center">
         <h1 v-if="orders && orders.length" class="mb-8 text-4xl font-bold dark:text-gray-400 text-black"><b>Shop

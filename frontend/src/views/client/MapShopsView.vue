@@ -1,6 +1,13 @@
 <template>
-  <div id="map" style="height: 500px;"></div>
+  <div id="map" style="justify-content: center; width: 65%; height: 500px;"></div>
 </template>
+
+<style>
+  #map {
+    margin: 0 auto;
+    border: 1px solid green;
+  }
+</style>
 
 <script>
 import L from 'leaflet';

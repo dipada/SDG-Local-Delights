@@ -6,7 +6,7 @@
       </div>
     </template>
   </HeaderBase>
-  <div class="w-screen bg-gray-50">
+  <div class="w-screen">
     <div class="mx-auto max-w-screen-xl px-2 py-10">
       <h1 v-if="orders && orders.length" class="text-black mb-8 text-4xl font-bold dark:text-gray-400"><b>Your delivery orders:</b></h1>
       <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400 text-black">No order here :(</h2>

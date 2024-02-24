@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-  <div class="w-screen">
+  <div class="overflow-hidden">
     <div class="mx-auto mt-8 max-w-screen-lg px-2">
       <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
         <p class="flex-1 text-base font-bold text-gray-900">Your orders</p>

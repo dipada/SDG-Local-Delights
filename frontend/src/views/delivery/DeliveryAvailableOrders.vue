@@ -8,7 +8,7 @@
       </div>
     </template>
   </HeaderBase>
-  <div class="flex flex-col justify-center items-center">
+  <div class="m-4 flex flex-col justify-center items-center">
     <h1 v-if="orders && orders.length" class="mb-8 text-4xl font-bold dark:text-gray-400 text-black"><b>Your delivery orders:</b>
     </h1>
     <h2 v-else class="mb-8 text-4xl font-bold dark:text-gray-400 text-black">No available orders to pick :(</h2>

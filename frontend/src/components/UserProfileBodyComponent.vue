@@ -1,5 +1,4 @@
 <template>
-  <div>
     <div class="mt-6 border-t border-gray-100">
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -24,7 +23,6 @@
         </div>
       </dl>
     </div>
-  </div>
 </template>
 
 <script>

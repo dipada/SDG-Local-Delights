@@ -10,7 +10,7 @@
     </template>
   </HeaderBase>
 
-  <section class="py-24 bg-gray-100 font-poppins dark:bg-gray-700">
+  <section class="py-24 font-poppins dark:bg-gray-700">
     <div class="px-4 py-6 mx-auto max-w-7xl lg:py-4 md:px-6">
       <div class="text-black">
         <h2 v-if="cartItems && cartItems.length" class="mb-8 text-4xl font-bold dark:text-gray-400">Your Cart</h2>

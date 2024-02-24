@@ -11,18 +11,41 @@ if (token) {
 </script>
 
 <template>
-    <RouterView/>
-    <Footer class="flex flex-col h-screen justify-between"/>
+  <div class="flex flex-col min-h-screen">
+    <div class="flex-grow">
+      <RouterView/>
+    </div>
+    <Footer class="mt-auto"/>
+  </div>
 </template>
 
 <style scoped>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background: #DAD7CD;
-    color: #588157;
-    width: 100%;
-    height: auto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#app {
+  background: #DAD7CD;
+  color: #588157;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-grow {
+  flex: 1;
+}
+
+footer {
+  background: #DAD7CD;
+  color: #588157;
 }
 </style>
