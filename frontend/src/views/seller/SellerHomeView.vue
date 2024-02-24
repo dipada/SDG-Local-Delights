@@ -69,7 +69,7 @@ export default {
     };
   },
   created() {
-    axios.get('http://localhost:8085/api/v1/user/seller/' + store.state.userInfo.email, {
+    axios.get('http://localhost:30085/api/v1/user/seller/' + store.state.userInfo.email, {
       headers: {
         'Authorization': 'Bearer ' + store.getters.getUserToken,
         'Accept': '*/*'
@@ -144,7 +144,7 @@ export default {
       }
       console.log(JSON.stringify(this.formData));
 
-      axios.post('http://localhost:8085/api/v1/user/seller', {
+      axios.post('http://localhost:30085/api/v1/user/seller', {
         vatNumber: this.vatNumber,
         email: this.$store.state.userInfo.email,
         shopEmail: this.shopEmail
@@ -161,7 +161,7 @@ export default {
         console.error(error);
       });
 
-      axios.post('http://localhost:8085/shop/add', {
+      axios.post('http://localhost:30085/shop/add', {
         "name": "",
         "description": "",
         "address": this.savedAddresses[0].display_name,

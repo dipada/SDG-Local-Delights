@@ -18,11 +18,11 @@ services:
   gateway:
     container_name: apigateway
     build: ./apigateway
-    image: apigateway
+    image: dipada/apigateway
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     ports:
-      - '8085:8085'
+      - '30085:8085'
     depends_on:
       - discovery-server
       - userservice
@@ -35,7 +35,7 @@ services:
   discovery-server:
     container_name: discoveryserver
     build: ./discoveryserver
-    image: discoveryserver
+    image: dipada/discoveryserver
     ports:
       - '8761:8761'
     networks:
@@ -43,7 +43,7 @@ services:
 
   userservice:
     build: ./userservice
-    image: userservice
+    image: dipada/userservice
     container_name: userservice
     ports:
       - '8081:8081'
@@ -102,7 +102,7 @@ services:
 
   authenticationservice:
     build: ./authenticationservice
-    image: authenticationservice
+    image: dipada/authenticationservice
     container_name: authenticationservice
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
@@ -110,7 +110,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
     ports:
-      - '8080:8080'
+      - '30080:8080'
     depends_on:
       - discovery-server
       - rabbitmq
@@ -121,19 +121,19 @@ services:
 
   shopservice:
     build: ./shopservice
-    image: shopservice
+    image: dipada/shopservice
     container_name: shopservice
     ports:
       - '8082:8082'
     depends_on:
-      - postgres_shop
+      - postgres-shop
       - discovery-server
       - rabbitmq
     networks:
       - shopservice
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_shop:5432/sdgshops
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-shop:5432/sdgshops
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -142,7 +142,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
 
-  postgres_shop:
+  postgres-shop:
     container_name: postgres_container_shopservice
     image: 'postgres:latest'
     hostname: localhost
@@ -160,12 +160,12 @@ services:
 
   productservice:
     build: ./productservice
-    image: productservice
+    image: dipada/productservice
     container_name: productservice
     ports:
       - '8083:8083'
     depends_on:
-      - postgres_product
+      - postgres-product
       - discovery-server
       - rabbitmq
       - shopservice
@@ -173,7 +173,7 @@ services:
       - productservice
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_product:5432/sdgproducts
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-product:5432/sdgproducts
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -183,7 +183,7 @@ services:
       - spring.rabbitmq.port=5672
 
 
-  postgres_product:
+  postgres-product:
     container_name: postgres_container_product
     image: 'postgres:latest'
     hostname: localhost
@@ -200,7 +200,7 @@ services:
     restart: unless-stopped
 
 
-  postgres_payment:
+  postgres-payment:
     container_name: paymentservice_container
     image: 'postgres:latest'
     hostname: localhost
@@ -218,19 +218,19 @@ services:
 
   paymentservice:
     build: ./paymentservice
-    image: paymentservice
+    image: dipada/paymentservice
     container_name: paymentservice
     ports:
       - '8084:8084'
     depends_on:
-      - postgres_payment
+      - postgres-payment
       - discovery-server
       - rabbitmq
     networks:
       - paymentservice_net
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_payment:5432/sdgpayments
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-payment:5432/sdgpayments
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -239,7 +239,7 @@ services:
       - spring.rabbitmq.host=rabbitmq
       - spring.rabbitmq.port=5672
 
-  postgres_order:
+  postgres-order:
     container_name: postgres_container_orderservice
     image: 'postgres:latest'
     hostname: localhost
@@ -257,7 +257,7 @@ services:
 
   orderservice:
     build: ./orderservice
-    image: orderservice
+    image: dipada/orderservice
     container_name: orderservice
     ports:
       - '8086:8086'
@@ -269,7 +269,7 @@ services:
       - order_net
       - apigateway_net
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_order:5432/sdgorders
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/sdgorders
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -281,9 +281,9 @@ services:
   frontend:
     container_name: frontend
     build: ./frontend
-    image: frontend
+    image: dipada/frontend
     ports:
-      - '5173:5173'
+      - '30073:5173'
 
 volumes:
   db-data:

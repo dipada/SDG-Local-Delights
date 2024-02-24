@@ -159,7 +159,7 @@ export default {
 
     updateShopInfo() {
       console.log('shopInfo è cambiato', this.shopInfo);
-      axios.put("http://localhost:8085/shop/update/" + this.shopInfo.id, this.shopInfo,{
+      axios.put("http://localhost:30085/shop/update/" + this.shopInfo.id, this.shopInfo,{
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'

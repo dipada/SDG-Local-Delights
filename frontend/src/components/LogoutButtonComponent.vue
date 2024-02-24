@@ -6,7 +6,7 @@ export default {
   methods: {
     logoutUser() {
       store.dispatch('logoutUser')
-      window.location.href = 'http://localhost:8080/auth/logout/entry' //+ encodeURIComponent("http://localhost:5173/");
+      window.location.href = 'http://localhost:30080/auth/logout'
     }
   }
 }

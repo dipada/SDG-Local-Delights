@@ -138,7 +138,7 @@ export default {
     // Funzione per aggiungere un nuovo prodotto
     addProduct() {
       console.log('Product added to shop:', this.newProduct);
-      axios.post("http://localhost:8085/shop/addProduct/"+ this.$store.getters.getShopId , this.newProduct, {
+      axios.post("http://localhost:30085/shop/addProduct/"+ this.$store.getters.getShopId , this.newProduct, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
@@ -157,7 +157,7 @@ export default {
         return;
       }
       console.log('Product added to cart:', productId);
-      axios.delete("http://localhost:8085/product/delete/" + productId, {
+      axios.delete("http://localhost:30085/product/delete/" + productId, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'

@@ -118,7 +118,7 @@ export default {
 
       console.log(JSON.stringify(this.formData));
 
-      axios.post("http://localhost:8080/auth/signup", this.formData)
+      axios.post("http://localhost:30080/auth/signup", this.formData)
           .then((response) => {
             console.log(response);
             alert("User registered successfully, you will be redirected to the login page.");

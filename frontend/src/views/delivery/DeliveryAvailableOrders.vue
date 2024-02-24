@@ -67,7 +67,7 @@ export default {
   methods: {
     async fetchOrders() {
       try {
-        const response = await axios.get('http://localhost:8085/api/v1/order/get-to-be-delivered-orders', {
+        const response = await axios.get('http://localhost:30085/api/v1/order/get-to-be-delivered-orders', {
           headers: {
             'Authorization': 'Bearer ' + store.getters.getUserToken,
             'Accept': '*/*',
@@ -88,7 +88,7 @@ export default {
       await Promise.all(shopIds.map(async (shopId) => {
         if (!this.shopDetailsCache[shopId]) {
           try {
-            const response = await axios.get(`http://localhost:8085/shop/get/${shopId}`, {
+            const response = await axios.get(`http://localhost:30085/shop/get/${shopId}`, {
               headers: {
                 'Authorization': 'Bearer ' + store.getters.getUserToken,
                 'Accept': '*/*',
@@ -113,7 +113,7 @@ export default {
 
     async takeOrder(orderId) {
       const deliveryEmail = this.$store.state.userInfo.email;
-      const url = `http://localhost:8085/api/v1/order/take-order/${orderId}?deliveryEmail=${deliveryEmail}`;
+      const url = `http://localhost:30085/api/v1/order/take-order/${orderId}?deliveryEmail=${deliveryEmail}`;
 
       try {
         const response = await axios.post(url, {}, {

@@ -74,7 +74,7 @@ export default {
     ...mapActions(['saveUserInfo']),
 
     googleLogin(){
-      window.location.href = 'http://localhost:8080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:5173/redirect/oauth");
+      window.location.href = 'http://localhost:30080/auth/google?redirect_uri=' + encodeURIComponent("http://localhost:30073/redirect/oauth");
     },
 
     customLogin() {
@@ -84,7 +84,7 @@ export default {
         return;
       }
 
-      axios.post('http://localhost:8080/auth/login', {
+      axios.post('http://localhost:30080/auth/login', {
             email: this.email,
             password: this.password
           },

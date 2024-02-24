@@ -73,7 +73,7 @@ export default defineComponent({
   methods: {
     async makeTopUp() {
       console.log("Ricarica di", this.topUpAmount, "euro");
-      await axios.post(`http://localhost:8085/payment/topup`, {
+      await axios.post(`http://localhost:30085/payment/topup`, {
             email: this.$store.state.userInfo.email,
             amount: this.topUpAmount,
             //orderId: ""
@@ -99,7 +99,7 @@ export default defineComponent({
     },
 
     fetchUserBalance() {
-      axios.get(`http://localhost:8085/payment/balance/${this.userInfo.email}`, {
+      axios.get(`http://localhost:30085/payment/balance/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
@@ -116,7 +116,7 @@ export default defineComponent({
 
     fetchOrderDetails() {
       console.log(this.userInfo.email);
-      axios.get(`http://localhost:8085/api/v1/order/get-all-orders/${this.userInfo.email}`, {
+      axios.get(`http://localhost:30085/api/v1/order/get-all-orders/${this.userInfo.email}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
@@ -136,7 +136,7 @@ export default defineComponent({
     },
 
     getOrderDetails(userOrders) {
-      return axios.get(`http://localhost:8085/shop/get/${userOrders.shopId}`, {
+      return axios.get(`http://localhost:30085/shop/get/${userOrders.shopId}`, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.getters.getUserToken,
           'Accept': '*/*'
