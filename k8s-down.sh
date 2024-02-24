@@ -5,11 +5,10 @@ YELLOW='\033[1;33m'
 # reset color
 NC='\033[0m'
 
-DIRECTORY="."
+echo -e "${YELLOW}Deleting deployments${NC}"
+kubectl delete -f all-deployments.yaml
+echo -e "${YELLOW}Deleting services${NC}"
+kubectl delete -f all-services.yaml
 
-for FILE in $DIRECTORY/*.yaml; do
-    echo -e "${YELLOW}Deleting resource in $FILE...${NC}"
-    kubectl delete -f $FILE
-done
 
 echo -e "${YELLOW}All files have been deleted.${NC}"
