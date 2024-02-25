@@ -61,10 +61,16 @@ In both cases, you need first to clone the repository:
 
 ### Run the project with Docker
 Using Docker Compose, you can run the project with the following command:
-```docker-compose up -d``` (Use -d flag to run it in detached mode)
+
+```docker-compose up -d``` 
+
+(Use -d flag to run it in detached mode)
 
 If you want to build the project from scratch, you can use the following command:
-```docker-compose build --parallel --no-cache && docker-compose up -d``` (Use -d flag to run it in detached mode)
+
+```docker-compose build --parallel --no-cache && docker-compose up -d```
+
+(Use -d flag to run it in detached mode)
 
 
 ### Run the project on Kubernetes
@@ -79,9 +85,11 @@ If you want to use minikube you have to change the kubernetes context.
 Ensure you installed kubernetes extension for docker desktop. You can find instructions [here](https://docs.docker.com/desktop/kubernetes/).
 
 After all, check the available contexts with the following command:
+
 ```kubectl config get-contexts```
 
 Then you can switch to docker-desktop context with the following command:
+
 ```kubectl config use-context docker-desktop```
 
 #### All users - start
@@ -89,19 +97,22 @@ Here we assume you have installer docker desktop and enabled kubernetes on it. O
 
 ##### Start
 After satisfying the previous requirements, you can **run** the project executing the following script:
+
 ```./k8s-up.sh```
 
 ##### Stop
 If you want to **stop** the project, you can execute the following script:
+
 ```./k8s-down.sh```
 
 ##### Delete pvcs
 And if you want to **delete** the pvcs, you can execute the following script:
+
 ```kubectl delete -f all-pvcs.yaml```
 
 ## How to use the application
 After running the project on Docker or Kubernets, you can access the application at the following URL:
-```http://localhost:300073```
+```http://localhost:30073```
 Here you will find the landing page of the application. When login with google account or after creating a new user you can:
 - Create a new shop
 - Add some products with images, description, price and category etc
