@@ -1,5 +1,5 @@
 package com.dipada.orderservice.model;
 
 public enum OrderStatus {
-    PENDING, TO_BE_DELIVERED, TO_BE_PICKED_UP, IN_TRANSIT, COMPLETED, CANCELLED
-    }
+	PENDING, TO_BE_DELIVERED, TO_BE_PICKED_UP, IN_TRANSIT, COMPLETED, CANCELLED
+}

@@ -8,28 +8,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitMQSender {
-    private RabbitTemplate rabbitTemplate;
+	private RabbitTemplate rabbitTemplate;
 
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-    @Value("${spring.rabbitmq.routingkey}")
-    private String routingkey;
-    @Autowired
-    public RabbitMQSender(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
+	@Value("${spring.rabbitmq.exchange}")
+	private String exchange;
+	@Value("${spring.rabbitmq.routingkey}")
+	private String routingkey;
 
+	@Autowired
+	public RabbitMQSender(RabbitTemplate rabbitTemplate) {
+		this.rabbitTemplate = rabbitTemplate;
+	}
 
-    /*
-    public void send(String message) {
-        rabbitTemplate.convertAndSend(this.queue.getName(), message);
-    }
-
-     */
-
-    public void sendAddProductRequest(ProductDetails productDetails, Long shopId) {
-        productDetails.setShopId(shopId);
-        rabbitTemplate.convertAndSend(exchange, routingkey, productDetails);
-    }
+	public void sendAddProductRequest(ProductDetails productDetails, Long shopId) {
+		productDetails.setShopId(shopId);
+		rabbitTemplate.convertAndSend(exchange, routingkey, productDetails);
+	}
 
 }

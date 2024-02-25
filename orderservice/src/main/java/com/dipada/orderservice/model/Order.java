@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -14,20 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    private String userEmail;
-    private Long shopId;
-    private Boolean paid;
+	private String userEmail;
+	private Long shopId;
+	private Boolean paid;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<Long> listOfProductsIds;
+	@ElementCollection(fetch = FetchType.EAGER)
+	private List<Long> listOfProductsIds;
 
-    private OrderStatus orderStatus;
-    private Double amount;
-    private String timestamp;
-    private String shippingAddress;
-    private String deliveryEmail;
+	private OrderStatus orderStatus;
+	private Double amount;
+	private String timestamp;
+	private String shippingAddress;
+	private String deliveryEmail;
 }

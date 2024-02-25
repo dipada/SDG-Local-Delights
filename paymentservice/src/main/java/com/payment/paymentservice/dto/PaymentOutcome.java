@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class PaymentOutcome {
-    private String userEmail;
-    private String orderId;
-    private boolean paid;
+	private String userEmail;
+	private String orderId;
+	private boolean paid;
 }

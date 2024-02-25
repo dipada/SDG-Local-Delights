@@ -12,35 +12,38 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    @Value("${spring.rabbitmq.host}")
-    String host;
+	@Value("${spring.rabbitmq.host}")
+	String host;
 
-    @Value("${spring.rabbitmq.username}")
-    String username;
+	@Value("${spring.rabbitmq.username}")
+	String username;
 
-    @Value("${spring.rabbitmq.password}")
-    String password;
+	@Value("${spring.rabbitmq.password}")
+	String password;
 
-    @Bean
-    Queue queuePayment() { return new Queue("orderPaymentQueue", true);}
+	@Bean
+	Queue queuePayment() {
+		return new Queue("orderPaymentQueue", true);
+	}
 
-    @Bean
-    CachingConnectionFactory connectionFactory() {
-        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
-        cachingConnectionFactory.setUsername(username);
-        cachingConnectionFactory.setPassword(password);
-        return cachingConnectionFactory;
-    }
-    @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+	@Bean
+	CachingConnectionFactory connectionFactory() {
+		CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
+		cachingConnectionFactory.setUsername(username);
+		cachingConnectionFactory.setPassword(password);
+		return cachingConnectionFactory;
+	}
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
-        return rabbitTemplate;
-    }
+	@Bean
+	public MessageConverter jsonMessageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
+
+	@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setMessageConverter(jsonMessageConverter());
+		return rabbitTemplate;
+	}
 
 }

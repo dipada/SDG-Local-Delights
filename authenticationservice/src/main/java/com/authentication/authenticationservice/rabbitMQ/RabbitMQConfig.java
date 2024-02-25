@@ -1,6 +1,6 @@
 package com.authentication.authenticationservice.rabbitMQ;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,35 +13,37 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-        @Value("${spring.rabbitmq.host}")
-        String host;
+	@Value("${spring.rabbitmq.host}")
+	String host;
 
-        @Value("${spring.rabbitmq.username}")
-        String username;
+	@Value("${spring.rabbitmq.username}")
+	String username;
 
-        @Value("${spring.rabbitmq.password}")
-        String password;
-        @Bean
-        public Queue queue() {
-                return new Queue("userQueue", true);
-        }
+	@Value("${spring.rabbitmq.password}")
+	String password;
 
-        @Bean
-        CachingConnectionFactory connectionFactory() {
-                CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
-                cachingConnectionFactory.setUsername(username);
-                cachingConnectionFactory.setPassword(password);
-                return cachingConnectionFactory;
-        }
-        @Bean
-        public MessageConverter jsonMessageConverter() {
-                return new Jackson2JsonMessageConverter();
-        }
+	@Bean
+	public Queue queue() {
+		return new Queue("userQueue", true);
+	}
 
-        @Bean
-        public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-                final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-                rabbitTemplate.setMessageConverter(jsonMessageConverter());
-                return rabbitTemplate;
-        }
+	@Bean
+	CachingConnectionFactory connectionFactory() {
+		CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(host);
+		cachingConnectionFactory.setUsername(username);
+		cachingConnectionFactory.setPassword(password);
+		return cachingConnectionFactory;
+	}
+
+	@Bean
+	public MessageConverter jsonMessageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
+
+	@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setMessageConverter(jsonMessageConverter());
+		return rabbitTemplate;
+	}
 }

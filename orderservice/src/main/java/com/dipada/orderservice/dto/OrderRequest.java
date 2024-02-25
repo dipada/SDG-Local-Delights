@@ -6,9 +6,9 @@ import java.util.List;
 
 @Data
 public class OrderRequest {
-    private String userEmail;
-    private Long shopId;
-    private List<Long> listOfProductIds;
-    private Double amount;
-    private String shippingAddress;
+	private String userEmail;
+	private Long shopId;
+	private List<Long> listOfProductIds;
+	private Double amount;
+	private String shippingAddress;
 }

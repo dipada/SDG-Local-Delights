@@ -7,9 +7,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 public class ShopserviceApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(ShopserviceApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ShopserviceApplication.class, args);
+	}
 
 }

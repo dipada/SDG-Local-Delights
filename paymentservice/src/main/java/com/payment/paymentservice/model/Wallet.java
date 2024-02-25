@@ -11,17 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Wallet {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-    @Column(unique = true)
-    private String email;
+	@Column(unique = true)
+	private String email;
 
-    private long balance; // in cents euro
+	private long balance; // in cents euro
 
-    public Wallet(String email) {
-        this.email = email;
-        this.balance = 10000; // for demo purposes
-    }
+	public Wallet(String email) {
+		this.email = email;
+		this.balance = 10000; // for demo purposes
+	}
 }

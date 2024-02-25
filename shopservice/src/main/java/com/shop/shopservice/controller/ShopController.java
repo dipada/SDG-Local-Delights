@@ -20,133 +20,131 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/shop")
 public class ShopController {
-    private final ShopRepository shopRepository;
+	private final ShopRepository shopRepository;
 
-    private final RabbitMQSender rabbitMQSender;
+	private final RabbitMQSender rabbitMQSender;
 
-    @Autowired
-    protected ShopController(ShopRepository shopRepository, RabbitMQSender rabbitMQSender) {
-        this.shopRepository = shopRepository;
-        this.rabbitMQSender = rabbitMQSender;
-    }
+	@Autowired
+	protected ShopController(ShopRepository shopRepository, RabbitMQSender rabbitMQSender) {
+		this.shopRepository = shopRepository;
+		this.rabbitMQSender = rabbitMQSender;
+	}
 
-    @Operation(summary = "Add a new shop")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop added successfully"),})
-    @PostMapping("/add")
-    public ResponseEntity<String> addShop(@RequestBody ShopRequest shopRequest) {
+	private static void modifyShopParameters(ShopRequest shopRequest, Shop shop) {
+		shop.setName(shopRequest.getName());
+		shop.setDescription(shopRequest.getDescription());
+		shop.setAddress(shopRequest.getAddress());
+		shop.setPhoneNumber(shopRequest.getPhoneNumber());
+		shop.setShopEmail(shopRequest.getShopEmail());
+		shop.setSellerEmail(shopRequest.getSellerEmail());
+		shop.setLatitude(shopRequest.getLatitude());
+		shop.setLongitude(shopRequest.getLongitude());
+		shop.setImageUrl(shopRequest.getImageUrl());
+	}
 
-        Shop shop = new Shop();
-        modifyShopParameters(shopRequest, shop);
+	@Operation(summary = "Add a new shop")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop added successfully"),})
+	@PostMapping("/add")
+	public ResponseEntity<String> addShop(@RequestBody ShopRequest shopRequest) {
 
-        shopRepository.save(shop);
+		Shop shop = new Shop();
+		modifyShopParameters(shopRequest, shop);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Shop added successfully");
-    }
+		shopRepository.save(shop);
 
-    private static void modifyShopParameters(ShopRequest shopRequest, Shop shop) {
-        shop.setName(shopRequest.getName());
-        shop.setDescription(shopRequest.getDescription());
-        shop.setAddress(shopRequest.getAddress());
-        shop.setPhoneNumber(shopRequest.getPhoneNumber());
-        shop.setShopEmail(shopRequest.getShopEmail());
-        shop.setSellerEmail(shopRequest.getSellerEmail());
-        shop.setLatitude(shopRequest.getLatitude());
-        shop.setLongitude(shopRequest.getLongitude());
-        shop.setImageUrl(shopRequest.getImageUrl());
-    }
+		return ResponseEntity.status(HttpStatus.OK).body("Shop added successfully");
+	}
 
-
-    @Operation(summary = "Get a shop by id")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop found"), @ApiResponse(responseCode = "404", description = "Shop not found")})
-    @GetMapping("/get/{id}")
-    public ResponseEntity<Shop> getShop(@PathVariable Long id) {
-        Optional<Shop> shop = shopRepository.findById(id);
-        return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-    }
-
-
-    @Operation(summary = "Update a shop")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop updated successfully"),})
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateShop(@PathVariable Long id, @RequestBody ShopRequest shopRequest) {
-        Optional<Shop> shop = shopRepository.findById(id);
-        if (shop.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found");
-        }
+	@Operation(summary = "Get a shop by id")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop found"), @ApiResponse(responseCode = "404", description = "Shop not found")})
+	@GetMapping("/get/{id}")
+	public ResponseEntity<Shop> getShop(@PathVariable Long id) {
+		Optional<Shop> shop = shopRepository.findById(id);
+		return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+	}
 
 
-        modifyShopParameters(shopRequest, shop.get());
-
-        shopRepository.save(shop.get());
-
-        return ResponseEntity.status(HttpStatus.OK).body("Shop updated successfully");
-    }
-
-    @Operation(summary = "Delete a shop")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop deleted successfully"),})
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteShop(@PathVariable Long id) {
-        shopRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Shop deleted successfully");
-    }
-
-    @Operation(summary = "Get a shop by seller email")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop found"), @ApiResponse(responseCode = "404", description = "Shop not found")})
-    @GetMapping("/seller/{email}")
-    public ResponseEntity<List<Shop>> getShopBySellerEmail(@PathVariable String email) {
-        List<Shop> shops = shopRepository.findBySellerEmail(email);
-        if (shops.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(shops);
-    }
+	@Operation(summary = "Update a shop")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop updated successfully"),})
+	@PutMapping("/update/{id}")
+	public ResponseEntity<String> updateShop(@PathVariable Long id, @RequestBody ShopRequest shopRequest) {
+		Optional<Shop> shop = shopRepository.findById(id);
+		if (shop.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found");
+		}
 
 
-    @Operation(summary = "Get all shops")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shops found"), @ApiResponse(responseCode = "404", description = "Shops not found")})
-    @GetMapping("/all")
-    public ResponseEntity<List<Shop>> getAllShops() {
-        List<Shop> shops = shopRepository.findAll();
-        if (shops.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(shops);
+		modifyShopParameters(shopRequest, shop.get());
 
-    }
+		shopRepository.save(shop.get());
 
-    @GetMapping("/details/{shopId}")
-    public ResponseEntity<ShopResponse> getShopDetails(@PathVariable Long shopId) {
-        Optional<Shop> shop = shopRepository.findById(shopId);
-        if (shop.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        ShopResponse shopResponse = new ShopResponse();
-        shopResponse.setId(shop.get().getId());
-        shopResponse.setName(shop.get().getName());
-        shopResponse.setDescription(shop.get().getDescription());
-        shopResponse.setAddress(shop.get().getAddress());
-        shopResponse.setPhoneNumber(shop.get().getPhoneNumber());
-        shopResponse.setShopEmail(shop.get().getShopEmail());
-        shopResponse.setSellerEmail(shop.get().getSellerEmail());
-        shopResponse.setLatitude(shop.get().getLatitude());
-        shopResponse.setLongitude(shop.get().getLongitude());
-        shopResponse.setImageUrl(shop.get().getImageUrl());
-        return ResponseEntity.status(HttpStatus.OK).body(shopResponse);
-    }
+		return ResponseEntity.status(HttpStatus.OK).body("Shop updated successfully");
+	}
 
-    @GetMapping("/seller-email/{shopId}")
-    public ResponseEntity<String> getSellerEmail(@PathVariable Long shopId) {
-        Optional<Shop> shop = shopRepository.findById(shopId);
-        return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value.getSellerEmail())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-    }
+	@Operation(summary = "Delete a shop")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop deleted successfully"),})
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteShop(@PathVariable Long id) {
+		shopRepository.deleteById(id);
+		return ResponseEntity.status(HttpStatus.OK).body("Shop deleted successfully");
+	}
 
-    @Operation(summary = "Add a new product to a shop")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Product add request sent successfully"),})
-    @PostMapping("/addProduct/{shopId}")
-    public String publishProductDetails(@RequestBody ProductDetails productDetails, @PathVariable Long shopId) {
-        rabbitMQSender.sendAddProductRequest(productDetails, shopId);
-        //TODO gestire risposta da consumer e dopo dare risposta al client
-        return "Product add request sent successfully";
-    }
+	@Operation(summary = "Get a shop by seller email")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shop found"), @ApiResponse(responseCode = "404", description = "Shop not found")})
+	@GetMapping("/seller/{email}")
+	public ResponseEntity<List<Shop>> getShopBySellerEmail(@PathVariable String email) {
+		List<Shop> shops = shopRepository.findBySellerEmail(email);
+		if (shops.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(shops);
+	}
+
+
+	@Operation(summary = "Get all shops")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Shops found"), @ApiResponse(responseCode = "404", description = "Shops not found")})
+	@GetMapping("/all")
+	public ResponseEntity<List<Shop>> getAllShops() {
+		List<Shop> shops = shopRepository.findAll();
+		if (shops.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(shops);
+
+	}
+
+	@GetMapping("/details/{shopId}")
+	public ResponseEntity<ShopResponse> getShopDetails(@PathVariable Long shopId) {
+		Optional<Shop> shop = shopRepository.findById(shopId);
+		if (shop.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		ShopResponse shopResponse = new ShopResponse();
+		shopResponse.setId(shop.get().getId());
+		shopResponse.setName(shop.get().getName());
+		shopResponse.setDescription(shop.get().getDescription());
+		shopResponse.setAddress(shop.get().getAddress());
+		shopResponse.setPhoneNumber(shop.get().getPhoneNumber());
+		shopResponse.setShopEmail(shop.get().getShopEmail());
+		shopResponse.setSellerEmail(shop.get().getSellerEmail());
+		shopResponse.setLatitude(shop.get().getLatitude());
+		shopResponse.setLongitude(shop.get().getLongitude());
+		shopResponse.setImageUrl(shop.get().getImageUrl());
+		return ResponseEntity.status(HttpStatus.OK).body(shopResponse);
+	}
+
+	@GetMapping("/seller-email/{shopId}")
+	public ResponseEntity<String> getSellerEmail(@PathVariable Long shopId) {
+		Optional<Shop> shop = shopRepository.findById(shopId);
+		return shop.map(value -> ResponseEntity.status(HttpStatus.OK).body(value.getSellerEmail())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+	}
+
+	@Operation(summary = "Add a new product to a shop")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Product add request sent successfully"),})
+	@PostMapping("/addProduct/{shopId}")
+	public String publishProductDetails(@RequestBody ProductDetails productDetails, @PathVariable Long shopId) {
+		rabbitMQSender.sendAddProductRequest(productDetails, shopId);
+		return "Product add request sent successfully";
+	}
 
 }

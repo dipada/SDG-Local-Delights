@@ -9,21 +9,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitMQSender {
-    @Autowired
-    private final RabbitTemplate rabbitTemplate;
+	@Autowired
+	private final RabbitTemplate rabbitTemplate;
 
-    @Qualifier("queuePayment")
-    @Autowired
-    private final Queue orderPaymentQueue;
+	@Qualifier("queuePayment")
+	@Autowired
+	private final Queue orderPaymentQueue;
 
-    public RabbitMQSender(RabbitTemplate rabbitTemplate, @Qualifier("queuePayment") Queue orderPaymentQueue) {
-        this.rabbitTemplate = rabbitTemplate;
-        this.orderPaymentQueue = orderPaymentQueue;
-    }
+	public RabbitMQSender(RabbitTemplate rabbitTemplate, @Qualifier("queuePayment") Queue orderPaymentQueue) {
+		this.rabbitTemplate = rabbitTemplate;
+		this.orderPaymentQueue = orderPaymentQueue;
+	}
 
 
-    public void sendPaymentOutcome(PaymentOutcome paymentOutcome){
-        System.out.println("Send msg to Order = " + paymentOutcome + " to queue " + orderPaymentQueue.getName());
-        rabbitTemplate.convertAndSend(this.orderPaymentQueue.getName(), paymentOutcome);
-    }
+	public void sendPaymentOutcome(PaymentOutcome paymentOutcome) {
+		rabbitTemplate.convertAndSend(this.orderPaymentQueue.getName(), paymentOutcome);
+	}
 }

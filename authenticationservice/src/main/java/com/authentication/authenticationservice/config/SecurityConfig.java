@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/auth")
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> {
-                    authorize
-                            .requestMatchers("/", "/auth/signup", "/auth/failureLogin", "/auth/login", "/auth/logout").permitAll()
-                            .anyRequest().authenticated();
-                })
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/google")
-                        .defaultSuccessUrl("/auth/google", true)
-                        .failureUrl("/auth/failureLogin")
-                ).logout(logout -> logout.logoutUrl("/auth/logout/entry").logoutSuccessUrl("/auth/logout"));
-        return http.build();
-    }
+		http
+						.csrf(AbstractHttpConfigurer::disable)
+						.authorizeHttpRequests(authorize -> {
+							authorize
+											.requestMatchers("/", "/auth/signup", "/auth/failureLogin", "/auth/login", "/auth/logout").permitAll()
+											.anyRequest().authenticated();
+						})
+						.oauth2Login(oauth2 -> oauth2
+										.loginPage("/oauth2/authorization/google")
+										.defaultSuccessUrl("/auth/google", true)
+										.failureUrl("/auth/failureLogin")
+						).logout(logout -> logout.logoutUrl("/auth/logout/entry").logoutSuccessUrl("/auth/logout"));
+		return http.build();
+	}
 }

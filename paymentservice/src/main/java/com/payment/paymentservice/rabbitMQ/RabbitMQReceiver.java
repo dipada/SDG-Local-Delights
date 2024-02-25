@@ -11,22 +11,20 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableRabbit
 
-public class RabbitMQReceiver{
+public class RabbitMQReceiver {
 
-    @Autowired
-    WalletRepository walletRepository;
+	@Autowired
+	WalletRepository walletRepository;
 
-    @RabbitListener(queues = "userQueueWallet")
-    public void receiveUserDetails(ClientRequest clientRequest) {
-        System.out.println("Received <" + clientRequest + ">");
-        try {
-            walletRepository.save(new Wallet(clientRequest.getEmail()));
-            System.out.println("Wallet created");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+	@RabbitListener(queues = "userQueueWallet")
+	public void receiveUserDetails(ClientRequest clientRequest) {
+		try {
+			walletRepository.save(new Wallet(clientRequest.getEmail()));
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 
 
-    }
+	}
 
 }

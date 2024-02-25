@@ -9,9 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Long> {
+	List<Shop> findBySellerEmail(String email);
 
-
-    List<Shop> findBySellerEmail(String email);
-
-    Optional<Shop> findByIdAndSellerEmail(Long shopId, String sellerEmail);
+	Optional<Shop> findByIdAndSellerEmail(Long shopId, String sellerEmail);
 }
