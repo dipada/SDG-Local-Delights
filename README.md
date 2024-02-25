@@ -57,6 +57,7 @@ You can choose to run the project in two ways:
 - [Run the project on Kubernetes](#run-the-project-on-kubernetes)
 
 In both cases, you need first to clone the repository:
+
 ```git clone https://github.com/dipada/SDG-Local-Delights.git ```
 
 ### Run the project with Docker
@@ -112,7 +113,9 @@ And if you want to **delete** the pvcs, you can execute the following script:
 
 ## How to use the application
 After running the project on Docker or Kubernets, you can access the application at the following URL:
+
 ```http://localhost:30073```
+
 Here you will find the landing page of the application. When login with google account or after creating a new user you can:
 - Create a new shop
 - Add some products with images, description, price and category etc
